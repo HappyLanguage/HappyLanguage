@@ -1,0 +1,78 @@
+happy_start {:
+
+const :I asdfaf := 7895;)
+const :I l := +7895;)
+const :I prd := 0;)
+
+:I asdfaf := 7895;)
+:I asdfaf := +7895;)
+:I asdfaf := -7895;)
+
+:I asdfaf := 5664;) 
+
+const :D asdfaf := 7895.56856;)
+const :D asdfaf := +7895.56856;)
+const :D asdfaf := -7895.56856;)
+
+
+:D asdfaf := 7895;)
+:D asdfaf := +895.56856;)
+:D asdfaf := -7895.56856;)
+
+:*
+	def :V mrdka(::);)
+*:
+def :V ahoj(::){:
+	:** line comment
+	:D asdfaf := ahoj(:aho, asdfa, adfslkjdsf, asdfkljadsf:);)
+	:B asdfaf := true;)
+	:B asdfaf := ahoj(:58984, a:);)
+	:B asdfaf := ahoj(::);)
+
+
+	asdfaf :=  ahoj(:58984, a:);)
+	asdfaf :=  56545;)
+	asdfaf :=  true;)
+	asdfaf :=  0.5456;)
+
+	asdfaf :=  0.5456 + 545.8;)
+
+	asdfaf :=  sadfldskfladkfjl;)
+
+	if(: a < b :){:
+		asdfaf :=  ahoj(:58984, a:);)
+		asdfaf :=  56545;)
+		asdfaf :=  true;)
+
+		asdfaf :=  4564 + (51654 / 654) * 5;)
+
+
+		asdfaf :=  0.5456;)
+		if(: ( ((a) == b) && x != true) && true :){:
+			asdfaf :=  ahoj(:58984, a:);)
+			asdfaf :=  56545;)
+			asdfaf :=  true;)
+			asdfaf :=  0.5456;)
+		:}
+	:}
+
+	for(:i := 5;) i <= 50;):){:
+		while(: s < 5 :){:
+		:}
+	:}
+:}
+
+def :V ahoj(: :I par1:){::}
+
+def :V ahoj(: :I par1, :D par2 :){::}
+
+def :V ahoj(: :I par1, :D par2, :B par3 :){::}
+
+
+mainSmile(::){:
+
+:}
+
+
+
+:}

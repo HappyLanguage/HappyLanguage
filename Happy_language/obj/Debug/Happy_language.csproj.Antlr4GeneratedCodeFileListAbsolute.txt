@@ -1,6 +1,6 @@
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarLexer.cs
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarParser.cs
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarListener.cs
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarBaseListener.cs
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarVisitor.cs
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarBaseVisitor.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarLexer.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarParser.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarListener.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarBaseListener.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarVisitor.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarBaseVisitor.cs

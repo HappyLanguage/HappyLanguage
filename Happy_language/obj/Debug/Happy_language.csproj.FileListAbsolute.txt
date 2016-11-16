@@ -2,7 +2,6 @@ C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\bin\Debug\Happy_language.exe
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\bin\Debug\Happy_language.pdb
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.dll
-C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.xml
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarLexer.cs
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\GrammarParser.cs
@@ -14,3 +13,57 @@ C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\Happy_language.exe
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\Happy_language.pdb
 C:\Users\Jan\Documents\Visual Studio 2015\Projects\Happy_language\Happy_language\obj\Debug\Happy_language.csprojResolveAssemblyReference.cache
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\bin\Debug\Happy_language.exe.config
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\Happy_language.exe
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\Happy_language.pdb
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\bin\Debug\Happy_language.exe
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\bin\Debug\Happy_language.pdb
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.dll
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.xml
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\Happy_language.csprojResolveAssemblyReference.cache
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\GrammarLexer.cs
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\GrammarParser.cs
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\GrammarListener.cs
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\GrammarBaseListener.cs
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\GrammarVisitor.cs
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\GrammarBaseVisitor.cs
+D:\Navazujici\1. Semestr\FJP\Happy_language\Happy_language\obj\Debug\Happy_language.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+G:\Navazujici\Happy_language\Happy_language\bin\Debug\Happy_language.exe.config
+G:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.exe
+G:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.pdb
+G:\Navazujici\Happy_language\Happy_language\bin\Debug\Happy_language.exe
+G:\Navazujici\Happy_language\Happy_language\bin\Debug\Happy_language.pdb
+G:\Navazujici\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.dll
+G:\Navazujici\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.xml
+G:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.csprojResolveAssemblyReference.cache
+G:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+D:\Navazujici\Happy_language\Happy_language\bin\Debug\Happy_language.exe.config
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.exe
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.pdb
+D:\Navazujici\Happy_language\Happy_language\bin\Debug\Happy_language.exe
+D:\Navazujici\Happy_language\Happy_language\bin\Debug\Happy_language.pdb
+D:\Navazujici\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.dll
+D:\Navazujici\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.xml
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.csprojResolveAssemblyReference.cache
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\GrammarLexer.cs
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\GrammarParser.cs
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\GrammarListener.cs
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\GrammarBaseListener.cs
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\GrammarVisitor.cs
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\GrammarBaseVisitor.cs
+D:\Navazujici\Happy_language\Happy_language\obj\Debug\Happy_language.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+C:\Users\Jan\Desktop\Happy_language\Happy_language\bin\Debug\Happy_language.exe.config
+C:\Users\Jan\Desktop\Happy_language\Happy_language\bin\Debug\Happy_language.exe
+C:\Users\Jan\Desktop\Happy_language\Happy_language\bin\Debug\Happy_language.pdb
+C:\Users\Jan\Desktop\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.dll
+C:\Users\Jan\Desktop\Happy_language\Happy_language\bin\Debug\Antlr4.Runtime.xml
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\Happy_language.csprojResolveAssemblyReference.cache
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarLexer.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarParser.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarListener.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarBaseListener.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarVisitor.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\GrammarBaseVisitor.cs
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\Happy_language.csproj.Antlr4GeneratedCodeFileListAbsolute.txt
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\Happy_language.exe
+C:\Users\Jan\Desktop\Happy_language\Happy_language\obj\Debug\Happy_language.pdb

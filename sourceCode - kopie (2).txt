@@ -1,0 +1,44 @@
+happy_start {:
+
+const :I aaa := 7895;)
+const :I bbb := +7895;)
+const :I ccc := -7895;)
+
+
+:I ddd := 7895;)
+:I ggg := +7895;)
+:I eee := -7895;)
+
+
+const :D zzz := 7895.56856;)
+const :D ttt := +7895.56856;)
+const :D uuu := -7895.56856;)
+
+
+:D jjj := 7895.4;)
+:D hhh := +895.56856;)
+:D nnn := -7895.56856;)
+
+def :V ahoj(::){:
+	:I veFci := 15;)
+	aaa := 10;)
+
+:}
+
+def :V ahoj(: :I par1:){:
+	:I vdruha := 5;)
+:}
+
+def :V ahoj(: :I par1, :D par2 :){::}
+
+def :V ahoj(: :I par1, :D par2, :B par3 :){::}
+
+def :I fce(::){::}
+
+mainSmile(::){:
+
+:}
+
+
+
+:}

@@ -35,50 +35,47 @@ namespace Happy_language
             CommonTokenStream c = new CommonTokenStream(lexer);
             GrammarParser helloParser = new GrammarParser(c);
 
-            /*IParseTree tree = helloParser.;*/
-            IParseTree tree = helloParser.start();
+            //IParseTree tree = helloParser.start();
 
-            //ParseTreeWalker walker = new ParseTreeWalker();
+            // ParseTreeWalker walker = new ParseTreeWalker();
             //walker.Walk(new TreeWalkerListener(), tree);
 
-           // Console.WriteLine(tree.ToStringTree(helloParser));
-            GrammarVisitor visitor = new GrammarVisitor();
-           // Console.WriteLine(visitor.Visit(tree));
-
-            //Console.WriteLine(tree.ToStringTree() + " ");
-
-            //Console.WriteLine(tree.GetText() + " ");
+            IParseTree tree = helloParser.start();
             
-            Console.ReadLine();
 
+            Visitor visitor = new Visitor();
+            int t = visitor.Visit(tree);
+            visitor.numberInstructions();
+
+            Console.WriteLine(visitor.GetSymbolTable().VarConstToString());
+            Console.WriteLine("-----------------------------------------");
+            PrintInstructions(visitor.GetInstructions());
+            WriteInstructions(visitor.GetInstructions());
+
+            Console.ReadLine();
+            // skvelej napad, jednopruchod znamena dolu i nahoru, takze dolu udelam jen neco a smerem nahoru zbytek
         }
 
-        /*
-          public void Run()
+        private static void WriteInstructions(List<String> instructions)
         {
-            try
+
+            String text = "";
+            for(int i = 0; i < instructions.Count; i++)
             {
-                Console.WriteLine("START");
-                RunParser();
-                Console.Write("DONE. Hit RETURN to exit: ");
+                text += instructions[i];
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERROR: " + ex);
-                Console.Write("Hit RETURN to exit: ");
-            }
-            Console.ReadLine();
+            File.WriteAllText("../../../insc.txt", text);
         }
 
-        private void RunParser()
+        private static void PrintInstructions(List<String> instructions)
         {
-            AntlrInputStream inputStream = new AntlrInputStream("hello best world 54\n");
-            HelloLexer helloLexer = new HelloLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(helloLexer);
-            HelloParser helloParser = new HelloParser(commonTokenStream);
-            HelloParser.RContext rContext = helloParser.r();
-            MyVisitor visitor = new MyVisitor();
-            visitor.VisitR(rContext);
-        }*/
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                Console.Write(instructions[i]);
+            }
+        }
+
     }
+
+
 }

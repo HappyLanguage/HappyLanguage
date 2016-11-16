@@ -4,15 +4,15 @@ grammar Grammar;
  */
  
 start
-	: Start_prog Start_blok  def_con_var def_function main End_blok;
+	: Start_prog Start_blok  def_con_var def_functions main End_blok;
 
 def_con_var
-    : const_and_var def_con_var
+    : def_const def_con_var
+	| def_var def_con_var
     | ;	// empty
 
-const_and_var
-	: def_var
-	| Const Data_type_bool Identifier Assign Bool Semi
+def_const
+	: Const Data_type_bool Identifier Assign Bool Semi
 	| Const Data_type_int Identifier Assign Int Semi
 	| Const Data_type_double Identifier Assign Double Semi
 	| Const Data_type_double Identifier Assign Int Semi;
@@ -20,14 +20,14 @@ const_and_var
 def_var
 	: Data_type_bool Identifier Assign Bool Semi
 	| Data_type_int Identifier Assign Int Semi
-	| Data_type_double Identifier Assign Int Semi
-	| Data_type_double Identifier Assign Double  Semi;
+	| Data_type_double Identifier Assign Double Semi
+	| Data_type_double Identifier Assign Int Semi;
 
 
 def_var_expression
 	: Data_type_int Identifier Assign expression Semi
 	| Data_type_double Identifier Assign expression Semi
-	| Identifier Assign expression Semi;
+	| 'ass' Identifier Assign expression Semi;
 
 def_var_from_function
 	: Data_type_bool Identifier Assign function_call
@@ -55,9 +55,19 @@ par_in_function
 	| ;  // empty
  
 
-def_function
-	: Function_def function_return_data_typ Identifier Bracket_left parametrs  Bracket_right Start_blok blok_function End_blok def_function
-	| ; // empty
+ def_functions
+	: def_one_function def_functions
+	| ;
+
+def_one_function
+	: Function_def function_return_data_typ Identifier Bracket_left parametrs  Bracket_right Start_blok blok_function function_return End_blok;
+
+function_return
+	: Return Int Semi
+	| Return Double Semi
+	| Return Bool Semi
+	| Return Identifier Semi
+	| ;
 
 
 function_return_data_typ
@@ -153,6 +163,7 @@ parametrs
  * Lexer Rules
 */
  
+Return: 'ret';
 Comment: ':*' .*? '*:' -> skip;
 Line_comment: ':**' ~[\r\n]* -> skip;
 Semi: ';)';
@@ -177,7 +188,6 @@ Int : [+-]?[0-9]+;								// jedno èíslo
 Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak
-
 
 
 

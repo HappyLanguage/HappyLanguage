@@ -30,12 +30,12 @@ def_var_expression
 	| 'ass' Identifier Assign expression Semi;
 
 def_var_from_function
-	: Data_type_bool Identifier Assign function_call
-	| Data_type_int Identifier Assign function_call
-	| Data_type_double Identifier Assign function_call;
+	: Data_type_bool Identifier Assign function_call Semi
+	| Data_type_int Identifier Assign function_call Semi
+	| Data_type_double Identifier Assign function_call Semi;
 
 function_call
-	: Identifier Bracket_left par_in_function Bracket_right Semi;
+	: Identifier Bracket_left par_in_function Bracket_right;
 
 def_var_blok									// definovane promenné jen na zaèátku funkce
 	: def_var def_var_blok
@@ -60,7 +60,7 @@ par_in_function
 	| ;
 
 def_one_function
-	: Function_def function_return_data_typ Identifier Bracket_left parametrs  Bracket_right Start_blok blok_function function_return End_blok;
+	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right Start_blok blok_function function_return End_blok;
 
 function_return
 	: Return Int Semi
@@ -87,7 +87,7 @@ blok_function
 	| ; // empty
 
 blok
-	: assignment blok
+	: assignment Semi blok
 	| if blok
 	| while blok
 	| for blok
@@ -106,8 +106,10 @@ for
 	: 'for'  Bracket_left for_condition Bracket_right Start_blok blok End_blok;
 
 for_condition
-	: assignment condition Semi expression
-	| assignment condition Semi;
+	: assignment Semi condition Semi expression
+	| assignment Semi condition Semi
+	| Semi condition Semi expression
+	| Semi Semi;
 
 expression 
 	:	expression '+' expression			
@@ -125,34 +127,35 @@ condition_item
 	| Double
 	| Bool
 	| '(' Identifier ')'
+	| '(' expression ')'
 	| '(' Int ')'
 	| '(' Double ')'
 	| '(' Bool ')';
 
 condition_expression
 	: condition_item Operator_condition condition_item
-	;
+	| Bool;
+
 condition
 	: condition_expression
-	| condition_expression '||' condition
-	| condition_expression '&&' condition
-	| '('condition')' 
-	| '('condition')' '&&' condition
-	| '('condition')' '||' condition
-	| Bool ;
+	| condition_expression Logical_operator condition
+	//| '!'condition TODO vymyslet jak v PL/0 udelat negaci
+	| '('condition')'
+	| '('condition')' Logical_operator condition;
 
 
 assignment
 	: Identifier Assign function_call
-	| Identifier Assign Identifier Semi
-	| Identifier Assign Bool Semi
-	| Identifier Assign Int Semi
-	| Identifier Assign Double Semi
-	| Identifier Assign expression Semi;
+	| Identifier Assign Identifier
+	| Identifier Assign Bool
+	| Identifier Assign Int
+	| Identifier Assign Double
+	| Identifier Assign expression
+	| Identifier Assign condition;
 
-parametrs
+parameters
 	: data_type Identifier
-	| data_type Identifier ',' parametrs
+	| data_type Identifier ',' parameters
 	| ;	//empty
 
 
@@ -179,6 +182,7 @@ Const: 'const';
 If: 'if';
 Else : 'else';
 Operator_condition: '==' | '!=' | '<=' | '>=' | '>' | '<' ;
+Logical_operator: '&&' | '||' ;
 Start_prog: 'happy_start';					// zaèátek programu
 Main_name: 'mainSmile';							
 Bool: 'true'| 'false';

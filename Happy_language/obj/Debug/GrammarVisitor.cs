@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Jan\Desktop\Happy_language\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -222,10 +222,10 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitAssignment([NotNull] GrammarParser.AssignmentContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.parametrs"/>.
+	/// Visit a parse tree produced by <see cref="GrammarParser.parameters"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitParametrs([NotNull] GrammarParser.ParametrsContext context);
+	Result VisitParameters([NotNull] GrammarParser.ParametersContext context);
 }
 } // namespace Happy_language

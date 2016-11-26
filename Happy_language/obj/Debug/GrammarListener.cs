@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Jan\Desktop\Happy_language\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -329,14 +329,14 @@ public interface IGrammarListener : IParseTreeListener {
 	void ExitAssignment([NotNull] GrammarParser.AssignmentContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="GrammarParser.parametrs"/>.
+	/// Enter a parse tree produced by <see cref="GrammarParser.parameters"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterParametrs([NotNull] GrammarParser.ParametrsContext context);
+	void EnterParameters([NotNull] GrammarParser.ParametersContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="GrammarParser.parametrs"/>.
+	/// Exit a parse tree produced by <see cref="GrammarParser.parameters"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitParametrs([NotNull] GrammarParser.ParametrsContext context);
+	void ExitParameters([NotNull] GrammarParser.ParametersContext context);
 }
 } // namespace Happy_language

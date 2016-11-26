@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Jan\Desktop\Happy_language\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -387,17 +387,17 @@ public partial class GrammarBaseListener : IGrammarListener {
 	public virtual void ExitAssignment([NotNull] GrammarParser.AssignmentContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="GrammarParser.parametrs"/>.
+	/// Enter a parse tree produced by <see cref="GrammarParser.parameters"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterParametrs([NotNull] GrammarParser.ParametrsContext context) { }
+	public virtual void EnterParameters([NotNull] GrammarParser.ParametersContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="GrammarParser.parametrs"/>.
+	/// Exit a parse tree produced by <see cref="GrammarParser.parameters"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitParametrs([NotNull] GrammarParser.ParametrsContext context) { }
+	public virtual void ExitParameters([NotNull] GrammarParser.ParametersContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

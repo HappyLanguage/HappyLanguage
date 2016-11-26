@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\Jan\Desktop\Happy_language\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -332,7 +332,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	public virtual Result VisitAssignment([NotNull] GrammarParser.AssignmentContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.parametrs"/>.
+	/// Visit a parse tree produced by <see cref="GrammarParser.parameters"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -340,6 +340,6 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitParametrs([NotNull] GrammarParser.ParametrsContext context) { return VisitChildren(context); }
+	public virtual Result VisitParameters([NotNull] GrammarParser.ParametersContext context) { return VisitChildren(context); }
 }
 } // namespace Happy_language

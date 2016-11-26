@@ -4,6 +4,7 @@ happy_start {:
 :I bbb := 15;)
 :I ccc := 20;)
 
+
 def :I ahoj(: :I par :){:
 	
    ret 5;)
@@ -19,9 +20,15 @@ def :V ahoj4(: :I par1, :D par2, :B par3 :){::}
 def :I fce(::){::}
 
 mainSmile(::){:
+	:B ddd := false;)
  	aaa := 50;)
  	ccc := aaa;)
  	
+	if (: ( ((a) == b) && x != true) && true && true :) {:
+		aaa := 50;)
+	:}
+	
+	aaa := 5;)
 :}
 
 

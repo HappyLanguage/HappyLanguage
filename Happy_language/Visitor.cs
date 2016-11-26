@@ -58,6 +58,22 @@ namespace Happy_language
         /// </summary>
         private VarConstItem retValTo = null;
 
+        public static string BoolToInt(string value)
+        {
+            if (value.Equals("True", StringComparison.OrdinalIgnoreCase))
+            {
+                return "1";
+            }
+            else if (value.Equals("False", StringComparison.OrdinalIgnoreCase))
+            {
+                return "0";
+            }
+            else
+            {
+                throw new Exception("Invalid Bool value: " + value);
+            }
+        }
+
         public List<String> GetErrors()
         {
             return errors;
@@ -85,60 +101,70 @@ namespace Happy_language
 
         public void AddLIT(String value)
         {
-            instructions.Add(Instructions.LIT.ToString() + " " + 0 + " " + value + Environment.NewLine);
+            instructions.Add(InstructionType.LIT.ToString() + " " + 0 + " " + value + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void AddSTO(int level, int address)
         {
-            instructions.Add(Instructions.STO.ToString() + " " + level + " " + address + Environment.NewLine);
+            instructions.Add(InstructionType.STO.ToString() + " " + level + " " + address + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void AddOPR(int opCode)
         {
-            instructions.Add(Instructions.OPR.ToString() + " " + 0 + " " + opCode + Environment.NewLine);
+            instructions.Add(InstructionType.OPR.ToString() + " " + 0 + " " + opCode + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void AddJMP(int codeAddress)
         {
-            instructions.Add(Instructions.JMP.ToString() + " " + 0 + " " + codeAddress + Environment.NewLine);
+            instructions.Add(InstructionType.JMP.ToString() + " " + 0 + " " + codeAddress + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void ChangeJMP(int codeAddress, int index)
         {
-            instructions[index] = Instructions.JMP.ToString() + " " + 0 + " " + codeAddress + Environment.NewLine;
+            instructions[index] = InstructionType.JMP.ToString() + " " + 0 + " " + codeAddress + Environment.NewLine;
         }
 
         public void AddINT(int value)
         {
-            instructions.Add(Instructions.INT.ToString() + " " + 0 + " " + value + Environment.NewLine);
+            instructions.Add(InstructionType.INT.ToString() + " " + 0 + " " + value + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void AddCAL(int level, int address)
         {
-            instructions.Add(Instructions.CAL.ToString() + " " + level + " " + address + Environment.NewLine);
+            instructions.Add(InstructionType.CAL.ToString() + " " + level + " " + address + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void ChangeCAL(int level, int address, int index)
         {
-            instructions[index] = Instructions.CAL.ToString() + " " + level + " " + address + Environment.NewLine;
+            instructions[index] = InstructionType.CAL.ToString() + " " + level + " " + address + Environment.NewLine;
         }
 
         public void AddRET(int level, int codeAddress)
         {
-            instructions.Add(Instructions.RET.ToString() + " " + level + " " + codeAddress + Environment.NewLine);
+            instructions.Add(InstructionType.RET.ToString() + " " + level + " " + codeAddress + Environment.NewLine);
             instructionCount += 1;
         }
 
         public void AddLOD(int level, int address)
         {
-            instructions.Add(Instructions.LOD.ToString() + " " + level + " " + address + Environment.NewLine);
+            instructions.Add(InstructionType.LOD.ToString() + " " + level + " " + address + Environment.NewLine);
             instructionCount += 1;
+        }
+
+        public void AddJMC(int address)
+        {
+            instructions.Add(InstructionType.JMC.ToString() + " 0 " + address + Environment.NewLine);
+        }
+
+        public void ChangeJMC(int index, int address)
+        {
+            instructions[index] = InstructionType.JMC.ToString() + " 0 " + address + Environment.NewLine;
         }
 
         public void DoInitialJmp(int dest)
@@ -209,7 +235,7 @@ namespace Happy_language
             if (context.Data_type_bool() != null)
             {
                 dt = DataType.Bool;
-                value = context.Bool().GetText();
+                value = BoolToInt(context.Bool().GetText());
             }
             else if (context.Data_type_double() != null)
             {
@@ -239,14 +265,14 @@ namespace Happy_language
         private FuncItem createFunction(GrammarParser.Def_one_functionContext context)
         {
             String name = context.Identifier().GetText(); ;
-            DataType returnDataType = DataType.Void;     
+            DataType returnDataType = DataType.Int;     
             List<FunctionParameter> parameters = new List<FunctionParameter>();
 
             if (context.function_return_data_typ().Data_type_void() != null) returnDataType = DataType.Void;
             else if (context.function_return_data_typ().data_type().Data_type_bool() != null) returnDataType = DataType.Bool;
             else if (context.function_return_data_typ().data_type().Data_type_double() != null) returnDataType = DataType.Double;
 
-            GrammarParser.ParametrsContext paramContext = context.parametrs();
+            GrammarParser.ParametersContext paramContext = context.parameters();
             while (paramContext != null && paramContext.Identifier() != null)
             {
                 DataType dType = DataType.Int;
@@ -254,7 +280,7 @@ namespace Happy_language
                 else if (paramContext.data_type().Data_type_bool() != null) dType = DataType.Bool;
 
                 parameters.Add(new FunctionParameter(paramContext.Identifier().GetText(), dType));
-                paramContext = paramContext.parametrs();
+                paramContext = paramContext.parameters();
             }
 
             return new FuncItem(name, returnDataType, instructionCount, parameters);
@@ -287,7 +313,7 @@ namespace Happy_language
 
             if (inFunction)
             {
-                if (!localSymbolTable.DoContainsVarConstItem(newItem.GetName()))
+                if (!localSymbolTable.ContainsVarConstItem(newItem.GetName()))
                     localSymbolTable.AddVarConstItem(newItem);
                 else
                 {
@@ -298,7 +324,7 @@ namespace Happy_language
             }
             else
             {
-                if (!globalSymbolTable.DoContainsVarConstItem(newItem.GetName()))
+                if (!globalSymbolTable.ContainsVarConstItem(newItem.GetName()))
                     globalSymbolTable.AddVarConstItem(newItem);
                 else
                 {
@@ -312,7 +338,7 @@ namespace Happy_language
             Boolean isNeg = isNegative(newItem.GetValue());
             String value = removeUnaryOperator(newItem.GetValue());
             AddLIT(value);
-            if(isNeg) AddOPR(1);
+            if(isNeg) AddOPR(Instruction.UNARY_MINUS);
 
             base.VisitDef_const(context);
             return 20;
@@ -325,7 +351,7 @@ namespace Happy_language
 
             if (inFunction)
             {
-                if (!localSymbolTable.DoContainsVarConstItem(newItem.GetName()))
+                if (!localSymbolTable.ContainsVarConstItem(newItem.GetName()))
                     localSymbolTable.AddVarConstItem(newItem);
                 else
                 {
@@ -336,7 +362,7 @@ namespace Happy_language
             }
             else
             {
-                if (!globalSymbolTable.DoContainsVarConstItem(newItem.GetName()))
+                if (!globalSymbolTable.ContainsVarConstItem(newItem.GetName()))
                     globalSymbolTable.AddVarConstItem(newItem);
                 else
                 {
@@ -349,7 +375,7 @@ namespace Happy_language
             Boolean isNeg = isNegative(newItem.GetValue());
             String value = removeUnaryOperator(newItem.GetValue());
             AddLIT(value);
-            if (isNeg) AddOPR(1);
+            if (isNeg) AddOPR(Instruction.UNARY_MINUS);
           
             base.VisitDef_var(context);
             return 0;
@@ -365,7 +391,7 @@ namespace Happy_language
             
 
             FuncItem newItem = createFunction(context);
-            if (!globalSymbolTable.DoContainsFuncItem(newItem.GetName())) globalSymbolTable.AddFuncItem(newItem);
+            if (!globalSymbolTable.ContainsFuncItem(newItem.GetName())) globalSymbolTable.AddFuncItem(newItem);
             else {
                 //Console.WriteLine("Funkce s timhle jmenem uz existuje!\n");
                 errors.Add("Funkce " + newItem.GetName() + " už existuje!\n");
@@ -409,14 +435,14 @@ namespace Happy_language
         {
             String newValue = "";
             if (context.Int() != null) newValue = context.Int().GetText();
-            else if (context.Bool() != null) newValue = context.Bool().GetText();
+            else if (context.Bool() != null) newValue = BoolToInt(context.Bool().GetText());
             else if (context.Double() != null) newValue = context.Double().GetText();
 
             Boolean isNeg = isNegative(newValue);
             String value = removeUnaryOperator(newValue);
 
             AddLIT(value);
-            if (isNeg) AddOPR(1);
+            if (isNeg) AddOPR(Instruction.UNARY_MINUS);
 
             /*int varLevel = retValTo.GetLevel();
             int varAddress = retValTo.GetAddress();
@@ -428,8 +454,8 @@ namespace Happy_language
         {
             String rightSideName = context.Identifier(1).GetText();
             VarConstItem rightSideVar = null;
-            if (localSymbolTable.DoContainsVarConstItem(rightSideName)) rightSideVar = localSymbolTable.GetVarConstItemByName(rightSideName);
-            else if (globalSymbolTable.DoContainsVarConstItem(rightSideName)) rightSideVar = globalSymbolTable.GetVarConstItemByName(rightSideName);
+            if (localSymbolTable.ContainsVarConstItem(rightSideName)) rightSideVar = localSymbolTable.GetVarConstItemByName(rightSideName);
+            else if (globalSymbolTable.ContainsVarConstItem(rightSideName)) rightSideVar = globalSymbolTable.GetVarConstItemByName(rightSideName);
             else
             {
                 Console.WriteLine("Promena na prave strane neexistuje");
@@ -447,8 +473,8 @@ namespace Happy_language
         public override int VisitAssignment([NotNull] GrammarParser.AssignmentContext context)
         {
             String retValToName = context.Identifier(0).GetText();
-            if (localSymbolTable.DoContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
-            else if (globalSymbolTable.DoContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
+            if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
+            else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
             else
             {
                 Console.WriteLine("Promena na levy strane neexistuje");
@@ -536,7 +562,7 @@ namespace Happy_language
         {  
             String fName = context.Identifier().GetText();
             FuncItem calledFce = null;
-            if (globalSymbolTable.DoContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
+            if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
             else
             {
                 errors.Add("Funkce " + fName + " neexistuje!\n");
@@ -558,8 +584,8 @@ namespace Happy_language
                 if (paramContext.Identifier() != null)
                 {
                     String parName = paramContext.Identifier().GetText();
-                    if (localSymbolTable.DoContainsVarConstItem(parName)) par = localSymbolTable.GetVarConstItemByName(parName); // tohle hodit do metody
-                    else if (globalSymbolTable.DoContainsVarConstItem(parName)) par = globalSymbolTable.GetVarConstItemByName(parName);
+                    if (localSymbolTable.ContainsVarConstItem(parName)) par = localSymbolTable.GetVarConstItemByName(parName); // tohle hodit do metody
+                    else if (globalSymbolTable.ContainsVarConstItem(parName)) par = globalSymbolTable.GetVarConstItemByName(parName);
                     else
                     {
                         Console.WriteLine("Parametr neexistuje!");
@@ -621,6 +647,51 @@ namespace Happy_language
         {
 
             return base.VisitExpression(context);
+        }
+
+        public override int VisitIf([NotNull] GrammarParser.IfContext context)
+        {
+            Visit(context.condition());
+            int ifAddress = instructionCount;
+            AddJMC(0);
+            Visit(context.blok());
+            ChangeJMC(ifAddress, instructionCount + 1);
+            return 10;
+        }
+
+        public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
+        {
+            if (context.condition_expression() != null)
+            {
+                Visit(context.condition_expression());
+            }
+
+            if (context.GetChild<GrammarParser.ConditionContext>(0) != null)
+            {
+                Visit(context.GetChild<GrammarParser.ConditionContext>(0));
+            }
+
+            if (context.GetChild<GrammarParser.ConditionContext>(1) != null)
+            {
+                Visit(context.GetChild<GrammarParser.ConditionContext>(1));
+            }
+
+            ITerminalNode logicalOperator = context.Logical_operator();
+            if (logicalOperator != null)
+            {
+                if (logicalOperator.GetText() == "||")
+                {
+                    AddOPR(Instruction.ADD);
+                    AddLIT("1");
+                    AddOPR(Instruction.GEQ);
+                }
+                else
+                {
+                    AddOPR(Instruction.MUL);
+                }
+            }
+
+            return 0;
         }
     }
 }

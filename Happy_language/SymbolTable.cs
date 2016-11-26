@@ -33,14 +33,14 @@ namespace Happy_language
             return s;
         }
 
-        public Boolean DoContainsVarConstItem(String key)
+        public Boolean ContainsVarConstItem(String key)
         {
             return varConstTable.ContainsKey(key);
         }
 
         /* FUNCKCE */
 
-        public Boolean DoExist(FuncItem item)
+        public Boolean Exists(FuncItem item)
         {
             Boolean exist = true;
 
@@ -57,7 +57,7 @@ namespace Happy_language
             return funcTable[name];
         }
 
-        public Boolean DoContainsFuncItem(String key)
+        public Boolean ContainsFuncItem(String key)
         {
             return funcTable.ContainsKey(key);
         }

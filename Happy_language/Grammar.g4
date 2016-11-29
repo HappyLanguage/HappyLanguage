@@ -88,6 +88,7 @@ blok_function
 
 blok
 	: assignment Semi blok
+	| function_call Semi blok
 	| if blok
 	| while blok
 	| for blok
@@ -122,7 +123,7 @@ expression
     |   '(' expression ')';  
      
 condition_item
-	:Identifier
+	: Identifier
 	| Int
 	| Double
 	| Bool

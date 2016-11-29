@@ -27,8 +27,7 @@ namespace Happy_language
         /// Seznam vygenerovaných instrukcí
         /// </summary>
         private List<String> instructions = new List<String>();
-        
-        private Boolean initialJmpDone = false;
+
         private Boolean jmpToMainDone = false;
 
         /// <summary>
@@ -171,8 +170,6 @@ namespace Happy_language
         {
             AddJMP(dest);
             AddINT(3);
-
-            initialJmpDone = true;
         }
 
         private void changeJMPtoMain()
@@ -308,7 +305,6 @@ namespace Happy_language
 
         public override int VisitDef_const([NotNull] GrammarParser.Def_constContext context)
         {
-            if (!initialJmpDone)  DoInitialJmp(1);
             VarConstItem newItem = createConst(context);
 
             if (inFunction)
@@ -346,7 +342,6 @@ namespace Happy_language
 
         public override int VisitDef_var([NotNull] GrammarParser.Def_varContext context)
         {
-            if (!initialJmpDone) DoInitialJmp(1);
             VarConstItem newItem = createVar(context);
 
             if (inFunction)
@@ -386,7 +381,6 @@ namespace Happy_language
         {
             inFunction = true;
             localSymbolTable = new SymbolTable();
-            if (!initialJmpDone) DoInitialJmp(1);
             if (!jmpToMainDone) DoMainJmp(0);
             
 
@@ -692,6 +686,31 @@ namespace Happy_language
             }
 
             return 0;
+        }
+
+        public override int VisitCondition_expression([NotNull] GrammarParser.Condition_expressionContext context)
+        {
+            if (context.Bool() != null)
+            {
+                AddLIT(BoolToInt(context.Bool().GetText()));
+                return 1;
+            }
+
+            Visit(context.condition_item()[0]);
+            Visit(context.condition_item()[1]);
+            //TODO takhle to funguje jen pro int a boolean... double se takhle jednoduse neporovna...
+
+            switch(context.Operator_condition().GetText())
+            {
+                case "==": AddOPR(Instruction.EQ); break;
+                case "!=": AddOPR(Instruction.NEQ); break;
+                case "<": AddOPR(Instruction.LESS); break;
+                case "<=": AddOPR(Instruction.LEQ); break;
+                case ">": AddOPR(Instruction.GREATER); break;
+                case ">=": AddOPR(Instruction.GEQ); break;
+            }
+
+            return 2;
         }
     }
 }

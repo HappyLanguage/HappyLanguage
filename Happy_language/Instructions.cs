@@ -36,39 +36,35 @@ namespace Happy_language
         public const int GREATER = 12;
         public const int LEQ = 13;
 
-        private InstructionType instructionType;
-        private int level;
-        private int value;
-
-        public Instruction(InstructionType type, int level, int value)
+        public Instruction(InstructionType type, int level, string value)
         {
-            this.instructionType = type;
-            this.level = level;
-            this.value = value;
+            this.Type = type;
+            this.Level = level;
+            this.Value = value;
         }
 
         public InstructionType Type
         {
-            get { return instructionType; }
-            set { this.instructionType = value; }
+            get;
+            set;
         }
 
         public int Level
         {
-            get { return level; }
-            set { this.level = value; }
+            get;
+            set;
         }
 
-        public int Value
+        public string Value
         {
-            get { return value; }
-            set { this.value = value; }
+            get;
+            set;
         }
 
 
         public override string ToString()
         {
-            return instructionType.ToString() + " " + level + " " + value;
+            return Type.ToString() + " " + Level + " " + Value;
         }
 
     }

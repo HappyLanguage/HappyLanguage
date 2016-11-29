@@ -44,6 +44,7 @@ namespace Happy_language
             
 
             Visitor visitor = new Visitor();
+            visitor.DoInitialJmp(1);
             int t = visitor.Visit(tree);
             visitor.numberInstructions();
 

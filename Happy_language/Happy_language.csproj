@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Attributes.cs" />
     <Compile Include="DataType.cs" />
+    <Compile Include="GrammarErrorListener.cs" />
     <Compile Include="FuncItem.cs" />
     <Compile Include="FunctionParameter.cs" />
     <Compile Include="Instructions.cs" />

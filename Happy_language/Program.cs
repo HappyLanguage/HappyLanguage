@@ -27,31 +27,42 @@ namespace Happy_language
 
             StreamReader pom = new System.IO.StreamReader("../../../sourceCode.txt");
 
-            Console.WriteLine("START");
-            Console.WriteLine("Zpracovavam výraz: ");
-
             AntlrInputStream inputStream = new AntlrInputStream(pom);
             GrammarLexer lexer = new GrammarLexer(inputStream);
-            CommonTokenStream c = new CommonTokenStream(lexer);
+            lexer.RemoveErrorListeners();
+            lexer.AddErrorListener(new GrammarErrorListener());
+            CommonTokenStream c = new CommonTokenStream(lexer);   
             GrammarParser helloParser = new GrammarParser(c);
-
             //IParseTree tree = helloParser.start();
-
             // ParseTreeWalker walker = new ParseTreeWalker();
             //walker.Walk(new TreeWalkerListener(), tree);
+            helloParser.RemoveErrorListeners();
+            helloParser.AddErrorListener(new GrammarErrorListener());
+     
 
-            IParseTree tree = helloParser.start();
-            
+            Console.WriteLine("START");
 
-            Visitor visitor = new Visitor();
-            visitor.DoInitialJmp(1);
-            int t = visitor.Visit(tree);
-            visitor.numberInstructions();
+            try
+            {
+                IParseTree tree = helloParser.start();
+                Console.WriteLine("----------------Lexical analyzation OK----------------------");
 
-            Console.WriteLine(visitor.GetSymbolTable().VarConstToString());
-            Console.WriteLine("-----------------------------------------");
-            PrintInstructions(visitor.GetInstructions());
-            WriteInstructions(visitor.GetInstructions());
+                Visitor visitor = new Visitor();
+                visitor.DoInitialJmp(1);
+                int t = visitor.Visit(tree);
+                visitor.numberInstructions();
+
+                Console.WriteLine(visitor.GetSymbolTable().VarConstToString());
+                Console.WriteLine("-----------------------------------------");
+                PrintInstructions(visitor.GetInstructions());
+                WriteInstructions(visitor.GetInstructions());
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+          
 
             Console.ReadLine();
             // skvelej napad, jednopruchod znamena dolu i nahoru, takze dolu udelam jen neco a smerem nahoru zbytek

@@ -1,0 +1,65 @@
+happy_start {:
+
+:I aaa := 10;)
+:I bbb := 15;)
+:I ccc := 20;)
+:I[:4:] a;)
+:D[:4:] b ;)
+:B [:4:] c ;)
+
+def :I ahoj(: :I par :){:
+	             ahoj1(::) ;)
+   ret ahoj1(::);)
+:}
+
+def :V ahoj2(: :I par1:){:
+:}
+
+def :V ahoj3(: :I par1, :D par2 :){::}
+
+def :V ahoj4(: :I par1, :D par2, :B par3 :){::}
+
+def :I fce(::){::}
+
+mainSmile(::){:
+	:B ddd := false;)
+  :B [:4:] c ;)
+  :I [:4:] c ;)
+  :D [:4:] c ;)
+  
+  c[:4:] := 5 ;)
+  
+  
+  
+  c[:4:] :=  5 * 8 / ahoj(::) + zdar(::) /  c[:2:] ;)
+
+  
+  c[:4:] := ahoj2(::);)
+ 	aaa := 50;)
+ 	ccc := aaa;)
+  
+	if (: ( ((a) == b) && x != true) && true && true :) {:
+		aaa := 50;)
+    c[:4:] := 5 ;)
+	:}
+  else if(:( ((a) == b) && x != true) && true && true:){:
+     c[:4:] :=  5 * 8 / ahoj(::) + zdar(::) /  c[:2:] ;)
+  :}
+  else if(:( ((a) == b) && x != true) && true && true:){:
+     c[:4:] :=  5 * 8 / ahoj(::) + zdar(::) /  c[:2:] ;)
+     
+     do{:
+         c[:4:] :=  5 * 8 / ahoj(::) + zdar(::) /  c[:2:] ;)
+     :}while(: ( ((a) == b) && x != true) && true && true :);)
+     
+  :}
+  else{:
+     c[:4:] :=  5 * 8 / ahoj(::) + zdar(::) /  c[:2:] ;)
+  :}
+	
+	aaa := 5;)
+:}
+
+
+
+:}

@@ -14,14 +14,13 @@ def_con_var
 def_const
 	: Const Data_type_bool Identifier Assign Bool Semi
 	| Const Data_type_int Identifier Assign Int Semi
-	| Const Data_type_double Identifier Assign Double Semi
-	| Const Data_type_double Identifier Assign Int Semi;
+	| Const Data_type_double Identifier Assign Double Semi;
 
 def_var
 	: Data_type_bool Identifier Assign Bool Semi
 	| Data_type_int Identifier Assign Int Semi
 	| Data_type_double Identifier Assign Double Semi
-	| Data_type_double Identifier Assign Int Semi;
+	| array_inicialization;
 
 
 def_var_expression
@@ -34,6 +33,11 @@ def_var_from_function
 	| Data_type_int Identifier Assign function_call Semi
 	| Data_type_double Identifier Assign function_call Semi;
 
+array_inicialization
+    : Data_type_bool '[:' Int ':]' Identifier Semi
+    | Data_type_int '[:' Int ':]' Identifier Semi
+    | Data_type_double '[:' Int ':]' Identifier Semi;
+
 function_call
 	: Identifier Bracket_left par_in_function Bracket_right;
 
@@ -41,6 +45,7 @@ def_var_blok									// definovane promenné jen na zaèátku funkce
 	: def_var def_var_blok
 	| def_var_from_function def_var_blok
 	| def_var_expression def_var_blok
+    | array_inicialization def_var_blok
 	| ;  // empty
 
 par_in_function
@@ -67,6 +72,8 @@ function_return
 	| Return Double Semi
 	| Return Bool Semi
 	| Return Identifier Semi
+    | Return function_call Semi
+    | Return expression Semi
 	| ;
 
 
@@ -88,20 +95,30 @@ blok_function
 
 blok
 	: assignment Semi blok
+    | assignment_array Semi blok
 	| function_call Semi blok
 	| if blok
 	| while blok
+    | do_while
 	| for blok
 	| ; // empty
 
 if
-	: If Bracket_left condition Bracket_right Start_blok blok End_blok else;
+	: If Bracket_left condition Bracket_right Start_blok blok End_blok else_if;
+
+else_if
+    : Else If Bracket_left condition Bracket_right Start_blok blok End_blok else_if
+    | else;
+
 else
 	: Else Start_blok blok End_blok
 	| ;  // empty
 
 while
 	: 'while' Bracket_left condition Bracket_right Start_blok blok End_blok;
+
+do_while
+    : 'do' Start_blok blok End_blok 'while'  Bracket_left condition Bracket_right Semi;
 
 for
 	: 'for'  Bracket_left for_condition Bracket_right Start_blok blok End_blok;
@@ -113,15 +130,23 @@ for_condition
 	| Semi Semi;
 
 expression 
-	:	expression '+' expression			
-    |   expression '-' expression	
-	|   expression '/' expression			
-	|   expression '*' expression					
-    |   Int											
-	|   Double										
-    |   Identifier									
-    |   '(' expression ')';  
-     
+	: expression '+' expression_multiply			
+    | expression '-' expression_multiply	
+	| expression_multiply;
+
+expression_multiply
+    : expression_multiply '*' expression_item 
+    | expression_multiply '/' expression_item 
+    | expression_item;
+ 
+expression_item
+    : Int
+    | Double
+    | Identifier
+    | arrry_index
+    | function_call
+    | '(' expression ')';
+
 condition_item
 	: Identifier
 	| Int
@@ -144,6 +169,16 @@ condition
 	| '('condition')'
 	| '('condition')' Logical_operator condition;
 
+arrry_index
+    : Identifier '[:'Int':]';
+
+assignment_array
+    :  Assign function_call
+    | arrry_index Assign Identifier
+    | arrry_index Assign Bool
+    | arrry_index Assign Int
+    | arrry_index Assign Double
+    | arrry_index Assign expression;
 
 assignment
 	: Identifier Assign function_call

@@ -16,7 +16,7 @@ namespace Happy_language
         public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             //throw new ArgumentException("Syntax error on line: " + line + " (" + msg + ")", msg, e);
-            throw new ArgumentException("Syntax error on line: " + line + ":"+ charPositionInLine + " (" + msg + ")");
+            throw new ArgumentException("Syntax error on line: " + line + ":"+ charPositionInLine + " '" + offendingSymbol.Text + "'");
         }
 
         //IAntlrErrorListener<int> implementation;
@@ -24,7 +24,7 @@ namespace Happy_language
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             //throw new ArgumentException("Syntax error on line: " + line + " (" + msg + ")", msg, e);
-            throw new ArgumentException("Syntax error on line: " + line + ":" + charPositionInLine + " (" + msg + ")");
+            throw new ArgumentException("Syntax error on line: " + line + ":" + charPositionInLine + " '" + offendingSymbol + "'");
         }
 
 

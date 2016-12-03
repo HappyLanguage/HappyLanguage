@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from D:\HappyLanguage\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -73,6 +73,13 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitDef_var_from_function([NotNull] GrammarParser.Def_var_from_functionContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.array_inicialization"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.function_call"/>.
@@ -159,6 +166,13 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitIf([NotNull] GrammarParser.IfContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.else_if"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitElse_if([NotNull] GrammarParser.Else_ifContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.else"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -171,6 +185,13 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitWhile([NotNull] GrammarParser.WhileContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.do_while"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDo_while([NotNull] GrammarParser.Do_whileContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.for"/>.
@@ -194,6 +215,20 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitExpression([NotNull] GrammarParser.ExpressionContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.expression_multiply"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.expression_item"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpression_item([NotNull] GrammarParser.Expression_itemContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.condition_item"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -213,6 +248,20 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCondition([NotNull] GrammarParser.ConditionContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArrry_index([NotNull] GrammarParser.Arrry_indexContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="GrammarParser.assignment_array"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.assignment"/>.

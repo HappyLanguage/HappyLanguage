@@ -16,8 +16,8 @@ namespace Happy_language
         RET,
         CAL,
         LOD,
-        JMC
-
+        JMC,
+        WRI
     }
 
     public class Instruction

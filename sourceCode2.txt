@@ -1,0 +1,10 @@
+happy_start {:
+	def :V fce(::){::}
+	
+	mainSmile(::){:
+		PrintASCII(::);)
+		PrintASCII(::);)
+		PrintASCII(::);)
+		PrintASCII(::);)
+	:}
+:}

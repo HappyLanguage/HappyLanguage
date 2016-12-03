@@ -57,6 +57,21 @@ namespace Happy_language
         /// </summary>
         private VarConstItem retValTo = null;
 
+        public void prepareLibraryFunctions()
+        {
+            preparePrintASCIIFunction();
+            ChangeJMP(instructionCount, 0);
+        }
+
+        public void preparePrintASCIIFunction()
+        {
+            AddJMP(0);
+            AddLIT("65");
+            AddWRI();
+            AddRET(0, 0);
+            globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, 1, new List<FunctionParameter>()));
+        }
+
         public static string BoolToInt(string value)
         {
             if (value.Equals("True", StringComparison.OrdinalIgnoreCase))
@@ -96,6 +111,12 @@ namespace Happy_language
             {
                 instructions[i] = i + " " + instructions[i];
             }
+        }
+
+        public void AddWRI()
+        {
+            instructions.Add(InstructionType.WRI.ToString() + " " + 0 + " " + 0 + Environment.NewLine);
+            instructionCount += 1;
         }
 
         public void AddLIT(String value)
@@ -166,9 +187,9 @@ namespace Happy_language
             instructions[index] = InstructionType.JMC.ToString() + " 0 " + address + Environment.NewLine;
         }
 
-        public void DoInitialJmp(int dest)
+        public void DoInitialJmp()
         {
-            AddJMP(dest);
+            AddJMP(instructionCount + 1);
             AddINT(3);
         }
 
@@ -564,7 +585,7 @@ namespace Happy_language
             }
 
             VarConstItem destForVal = retValTo;
-            if(calledFce.GetReturnDataType() != destForVal.GetDataType())   // overeni navratove hodnoty a dat. typu promeny
+            if(destForVal != null && calledFce.GetReturnDataType() != destForVal.GetDataType())   // overeni navratove hodnoty a dat. typu promeny
             {
                 errors.Add("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
                 Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");

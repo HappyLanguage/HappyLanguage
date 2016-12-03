@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from D:\HappyLanguage\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -112,6 +112,19 @@ public partial class GrammarBaseListener : IGrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitDef_var_from_function([NotNull] GrammarParser.Def_var_from_functionContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.array_inicialization"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.array_inicialization"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.function_call"/>.
@@ -270,6 +283,19 @@ public partial class GrammarBaseListener : IGrammarListener {
 	public virtual void ExitIf([NotNull] GrammarParser.IfContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.else_if"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterElse_if([NotNull] GrammarParser.Else_ifContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.else_if"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitElse_if([NotNull] GrammarParser.Else_ifContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.else"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -294,6 +320,19 @@ public partial class GrammarBaseListener : IGrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitWhile([NotNull] GrammarParser.WhileContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.do_while"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDo_while([NotNull] GrammarParser.Do_whileContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.do_while"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDo_while([NotNull] GrammarParser.Do_whileContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.for"/>.
@@ -335,6 +374,32 @@ public partial class GrammarBaseListener : IGrammarListener {
 	public virtual void ExitExpression([NotNull] GrammarParser.ExpressionContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.expression_multiply"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.expression_multiply"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.expression_item"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExpression_item([NotNull] GrammarParser.Expression_itemContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.expression_item"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExpression_item([NotNull] GrammarParser.Expression_itemContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.condition_item"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -372,6 +437,32 @@ public partial class GrammarBaseListener : IGrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitCondition([NotNull] GrammarParser.ConditionContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterArrry_index([NotNull] GrammarParser.Arrry_indexContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitArrry_index([NotNull] GrammarParser.Arrry_indexContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.assignment_array"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.assignment_array"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.assignment"/>.

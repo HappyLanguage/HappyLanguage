@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
+// Generated from D:\HappyLanguage\HappyLanguage\Happy_language\Grammar.g4 by ANTLR 4.5.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -96,6 +96,17 @@ public interface IGrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitDef_var_from_function([NotNull] GrammarParser.Def_var_from_functionContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.array_inicialization"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.array_inicialization"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.function_call"/>.
@@ -230,6 +241,17 @@ public interface IGrammarListener : IParseTreeListener {
 	void ExitIf([NotNull] GrammarParser.IfContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.else_if"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterElse_if([NotNull] GrammarParser.Else_ifContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.else_if"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitElse_if([NotNull] GrammarParser.Else_ifContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.else"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -250,6 +272,17 @@ public interface IGrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitWhile([NotNull] GrammarParser.WhileContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.do_while"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDo_while([NotNull] GrammarParser.Do_whileContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.do_while"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDo_while([NotNull] GrammarParser.Do_whileContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.for"/>.
@@ -285,6 +318,28 @@ public interface IGrammarListener : IParseTreeListener {
 	void ExitExpression([NotNull] GrammarParser.ExpressionContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.expression_multiply"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.expression_multiply"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.expression_item"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterExpression_item([NotNull] GrammarParser.Expression_itemContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.expression_item"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitExpression_item([NotNull] GrammarParser.Expression_itemContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.condition_item"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -316,6 +371,28 @@ public interface IGrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCondition([NotNull] GrammarParser.ConditionContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterArrry_index([NotNull] GrammarParser.Arrry_indexContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitArrry_index([NotNull] GrammarParser.Arrry_indexContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="GrammarParser.assignment_array"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="GrammarParser.assignment_array"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.assignment"/>.

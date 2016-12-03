@@ -1,6 +1,6 @@
-C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\obj\Debug\GrammarLexer.cs
-C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\obj\Debug\GrammarParser.cs
-C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\obj\Debug\GrammarListener.cs
-C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\obj\Debug\GrammarBaseListener.cs
-C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\obj\Debug\GrammarVisitor.cs
-C:\Users\jdvorak\Dropbox\Skola\FJP\HappyLanguage\Happy_language\obj\Debug\GrammarBaseVisitor.cs
+D:\HappyLanguage\HappyLanguage\Happy_language\obj\Debug\GrammarLexer.cs
+D:\HappyLanguage\HappyLanguage\Happy_language\obj\Debug\GrammarParser.cs
+D:\HappyLanguage\HappyLanguage\Happy_language\obj\Debug\GrammarListener.cs
+D:\HappyLanguage\HappyLanguage\Happy_language\obj\Debug\GrammarBaseListener.cs
+D:\HappyLanguage\HappyLanguage\Happy_language\obj\Debug\GrammarVisitor.cs
+D:\HappyLanguage\HappyLanguage\Happy_language\obj\Debug\GrammarBaseVisitor.cs

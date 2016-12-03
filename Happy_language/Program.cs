@@ -25,7 +25,7 @@ namespace Happy_language
         static void Main(string[] args)
         {
 
-            StreamReader pom = new System.IO.StreamReader("../../../sourceCode.txt");
+            StreamReader pom = new System.IO.StreamReader("../../../sourceCode2.txt");
 
             AntlrInputStream inputStream = new AntlrInputStream(pom);
             GrammarLexer lexer = new GrammarLexer(inputStream);
@@ -48,7 +48,8 @@ namespace Happy_language
                 Console.WriteLine("----------------Lexical analyzation OK----------------------");
 
                 Visitor visitor = new Visitor();
-                visitor.DoInitialJmp(1);
+                visitor.prepareLibraryFunctions();
+                visitor.DoInitialJmp();
                 int t = visitor.Visit(tree);
                 visitor.numberInstructions();
 

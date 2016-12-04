@@ -66,10 +66,13 @@ namespace Happy_language
         public void preparePrintASCIIFunction()
         {
             AddJMP(0);
-            AddLIT("65");
+            AddINT(4);
             AddWRI();
+            AddINT(-4);
             AddRET(0, 0);
-            globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, 1, new List<FunctionParameter>()));
+            List<FunctionParameter> paramList = new List<FunctionParameter>();
+            paramList.Add(new FunctionParameter("asciiValue", DataType.Int));
+            globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, 1, paramList));
         }
 
         public static string BoolToInt(string value)

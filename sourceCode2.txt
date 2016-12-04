@@ -1,10 +1,14 @@
 happy_start {:
-	def :V fce(::){::}
+	def :V PrintHello(::){:
+		PrintASCII(:72:);)
+		PrintASCII(:101:);)
+		PrintASCII(:108:);)
+		PrintASCII(:108:);)
+		PrintASCII(:111:);)
+		PrintASCII(:33:);)
+	:}
 	
 	mainSmile(::){:
-		PrintASCII(::);)
-		PrintASCII(::);)
-		PrintASCII(::);)
-		PrintASCII(::);)
+		PrintHello(::);)
 	:}
 :}

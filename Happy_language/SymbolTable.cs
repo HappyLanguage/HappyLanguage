@@ -20,7 +20,10 @@ namespace Happy_language
 
         public VarConstItem GetVarConstItemByName(String name)
         {
-            return varConstTable[name];
+            if(ContainsVarConstItem(name))
+                return varConstTable[name];
+
+            return null;
         }
 
         public String VarConstToString()

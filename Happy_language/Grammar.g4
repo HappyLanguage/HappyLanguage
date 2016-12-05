@@ -130,20 +130,20 @@ for_condition
 	| Semi Semi;
 
 expression 
-	: expression '+' expression_multiply			
-    | expression '-' expression_multiply	
+	: expression Add expression_multiply			
+    | expression Sub expression_multiply	
 	| expression_multiply;
 
 expression_multiply
-    : expression_multiply '*' expression_item 
-    | expression_multiply '/' expression_item 
+    : expression_multiply Mul expression_item 
+    | expression_multiply Div expression_item 
     | expression_item;
  
 expression_item
     : Int
     | Double
     | Identifier
-    | arrry_index
+    | array_index
     | function_call
     | '(' expression ')';
 
@@ -169,16 +169,16 @@ condition
 	| '('condition')'
 	| '('condition')' Logical_operator condition;
 
-arrry_index
-    : Identifier '[:'Int':]';
+array_index
+    : Identifier '[:' Int ':]';
 
 assignment_array
-    :  Assign function_call
-    | arrry_index Assign Identifier
-    | arrry_index Assign Bool
-    | arrry_index Assign Int
-    | arrry_index Assign Double
-    | arrry_index Assign expression;
+    : array_index Assign function_call
+    | array_index Assign Identifier
+    | array_index Assign Bool
+    | array_index Assign Int
+    | array_index Assign Double
+    | array_index Assign expression;
 
 assignment
 	: Identifier Assign function_call
@@ -227,6 +227,10 @@ End_blok: ':}';
 Int : [+-]?[0-9]+;								// jedno èíslo
 Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
+Add: '+';
+Sub: '-';
+Mul: '*';
+Div: '/';
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak
 
 

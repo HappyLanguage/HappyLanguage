@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using System.Diagnostics;
 
 namespace Happy_language
 {
@@ -26,7 +27,7 @@ namespace Happy_language
         /// <summary>
         /// Seznam vygenerovaných instrukcí
         /// </summary>
-        private List<String> instructions = new List<String>();
+        private List<Instruction> instructions = new List<Instruction>();
 
         private Boolean jmpToMainDone = false;
 
@@ -79,7 +80,7 @@ namespace Happy_language
             return errors;
         }
 
-        public List<String> GetInstructions()
+        public List<Instruction> GetInstructions()
         {
             return this.instructions;
         }
@@ -95,76 +96,84 @@ namespace Happy_language
 
             for(int i = 0; i < instructions.Count; i++)
             {
-                instructions[i] = i + " " + instructions[i];
+                instructions[i].Number = i;
             }
         }
 
         public void AddLIT(String value)
         {
-            instructions.Add(InstructionType.LIT.ToString() + " " + 0 + " " + value + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.LIT, 0, value));
             instructionCount += 1;
         }
 
         public void AddSTO(int level, int address)
         {
-            instructions.Add(InstructionType.STO.ToString() + " " + level + " " + address + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.STO, level, address.ToString()));
             instructionCount += 1;
         }
 
         public void AddOPR(int opCode)
         {
-            instructions.Add(InstructionType.OPR.ToString() + " " + 0 + " " + opCode + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.OPR, 0, opCode.ToString()));
             instructionCount += 1;
         }
 
         public void AddJMP(int codeAddress)
         {
-            instructions.Add(InstructionType.JMP.ToString() + " " + 0 + " " + codeAddress + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.JMP, 0, codeAddress.ToString()));
             instructionCount += 1;
         }
 
         public void ChangeJMP(int codeAddress, int index)
         {
-            instructions[index] = InstructionType.JMP.ToString() + " " + 0 + " " + codeAddress + Environment.NewLine;
+            Debug.Assert(instructions[index].Type == InstructionType.JMP);
+
+            instructions[index].Value = codeAddress.ToString();
         }
 
         public void AddINT(int value)
         {
-            instructions.Add(InstructionType.INT.ToString() + " " + 0 + " " + value + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.INT, 0, value.ToString()));
             instructionCount += 1;
         }
 
         public void AddCAL(int level, int address)
         {
-            instructions.Add(InstructionType.CAL.ToString() + " " + level + " " + address + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.CAL, level, address.ToString()));
             instructionCount += 1;
         }
 
         public void ChangeCAL(int level, int address, int index)
         {
-            instructions[index] = InstructionType.CAL.ToString() + " " + level + " " + address + Environment.NewLine;
+            Debug.Assert(instructions[index].Type == InstructionType.CAL);
+
+            instructions[index].Level = level;
+            instructions[index].Value = address.ToString();
         }
 
         public void AddRET(int level, int codeAddress)
         {
-            instructions.Add(InstructionType.RET.ToString() + " " + level + " " + codeAddress + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.RET, level, codeAddress.ToString()));
             instructionCount += 1;
         }
 
         public void AddLOD(int level, int address)
         {
-            instructions.Add(InstructionType.LOD.ToString() + " " + level + " " + address + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.LOD, level, address.ToString()));
             instructionCount += 1;
         }
 
-        public void AddJMC(int address)
+        public void AddJMC(int codeAddress)
         {
-            instructions.Add(InstructionType.JMC.ToString() + " 0 " + address + Environment.NewLine);
+            instructions.Add(new Instruction(InstructionType.JMC, 0, codeAddress.ToString()));
+            instructionCount += 1;
         }
 
-        public void ChangeJMC(int index, int address)
+        public void ChangeJMC(int index, int codeAddress)
         {
-            instructions[index] = InstructionType.JMC.ToString() + " 0 " + address + Environment.NewLine;
+            Debug.Assert(instructions[index].Type == InstructionType.JMC);
+
+            instructions[index].Value = codeAddress.ToString();
         }
 
         public void DoInitialJmp(int dest)
@@ -934,11 +943,13 @@ namespace Happy_language
 
         public override int VisitIf([NotNull] GrammarParser.IfContext context)
         {
+            instructions.Add(new Instruction(InstructionType.DEBUG, 0, "fdasfdf"));
+            instructionCount++;
             Visit(context.condition());
             int ifAddress = instructionCount;
             AddJMC(0);
             Visit(context.blok());
-            ChangeJMC(ifAddress, instructionCount + 1);
+            ChangeJMC(ifAddress, instructionCount);
             return 10;
         }
 
@@ -1000,6 +1011,12 @@ namespace Happy_language
             }
 
             return 2;
+        }
+
+        public override int VisitCondition_item([NotNull] GrammarParser.Condition_itemContext context)
+        {
+            Console.WriteLine(context.GetText());
+            return base.VisitCondition_item(context);
         }
     }
 }

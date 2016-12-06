@@ -25,7 +25,7 @@ namespace Happy_language
         static void Main(string[] args)
         {
 
-            StreamReader pom = new System.IO.StreamReader("../../../sourceCode2.txt");
+            StreamReader pom = new System.IO.StreamReader("../../../sourceCode.txt");
 
             AntlrInputStream inputStream = new AntlrInputStream(pom);
             GrammarLexer lexer = new GrammarLexer(inputStream);
@@ -48,8 +48,6 @@ namespace Happy_language
                 Console.WriteLine("----------------Lexical analyzation OK----------------------");
 
                 Visitor visitor = new Visitor();
-                visitor.prepareLibraryFunctions();
-                visitor.DoInitialJmp();
                 int t = visitor.Visit(tree);
                 visitor.numberInstructions();
 
@@ -69,7 +67,7 @@ namespace Happy_language
             // skvelej napad, jednopruchod znamena dolu i nahoru, takze dolu udelam jen neco a smerem nahoru zbytek
         }
 
-        private static void WriteInstructions(List<String> instructions)
+        private static void WriteInstructions(List<Instruction> instructions)
         {
 
             String text = "";
@@ -80,7 +78,7 @@ namespace Happy_language
             File.WriteAllText("../../../insc.txt", text);
         }
 
-        private static void PrintInstructions(List<String> instructions)
+        private static void PrintInstructions(List<Instruction> instructions)
         {
             for (int i = 0; i < instructions.Count; i++)
             {

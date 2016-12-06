@@ -17,7 +17,8 @@ namespace Happy_language
         CAL,
         LOD,
         JMC,
-        WRI
+        WRI,
+        DEBUG // DEBUG instrukce na poznaceni kde sme v kodu
     }
 
     public class Instruction
@@ -61,10 +62,17 @@ namespace Happy_language
             set;
         }
 
+        public int Number
+        {
+            get;
+            set;
+        }
+
+
 
         public override string ToString()
         {
-            return Type.ToString() + " " + Level + " " + Value;
+            return Number + " " + Type.ToString() + " " + Level + " " + Value + Environment.NewLine;
         }
 
     }

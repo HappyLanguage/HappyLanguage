@@ -152,6 +152,8 @@ condition_item
 	| Int
 	| Double
 	| Bool
+	| array_index
+    | function_call
 	| '(' Identifier ')'
 	| '(' expression ')'
 	| '(' Int ')'

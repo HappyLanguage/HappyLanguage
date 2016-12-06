@@ -176,6 +176,12 @@ namespace Happy_language
             instructions[index].Value = codeAddress.ToString();
         }
 
+        public void AddDebug(string msg)
+        {
+            instructions.Add(new Instruction(InstructionType.DEBUG, 0, msg));
+            instructionCount += 1;
+        }
+
         public void DoInitialJmp(int dest)
         {
             AddJMP(dest);
@@ -943,14 +949,30 @@ namespace Happy_language
 
         public override int VisitIf([NotNull] GrammarParser.IfContext context)
         {
-            instructions.Add(new Instruction(InstructionType.DEBUG, 0, "fdasfdf"));
-            instructionCount++;
+            AddDebug("IF");
             Visit(context.condition());
-            int ifAddress = instructionCount;
+            int jmcAddress = instructionCount;
             AddJMC(0);
             Visit(context.blok());
-            ChangeJMC(ifAddress, instructionCount);
+            ChangeJMC(jmcAddress, instructionCount);
             return 10;
+        }
+
+        public override int VisitWhile([NotNull] GrammarParser.WhileContext context)
+        {
+            AddDebug("WHILE");
+            int conditionAddress = instructionCount;
+            Visit(context.condition());
+
+            int jmcAddress = instructionCount;
+            AddJMC(0);
+
+            Visit(context.blok());
+            AddJMP(conditionAddress);
+
+            ChangeJMC(jmcAddress, instructionCount);
+
+            return 11;
         }
 
         public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)

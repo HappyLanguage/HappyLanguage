@@ -439,17 +439,17 @@ public partial class GrammarBaseListener : IGrammarListener {
 	public virtual void ExitCondition([NotNull] GrammarParser.ConditionContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// Enter a parse tree produced by <see cref="GrammarParser.array_index"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArrry_index([NotNull] GrammarParser.Arrry_indexContext context) { }
+	public virtual void EnterArray_index([NotNull] GrammarParser.Array_indexContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// Exit a parse tree produced by <see cref="GrammarParser.array_index"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArrry_index([NotNull] GrammarParser.Arrry_indexContext context) { }
+	public virtual void ExitArray_index([NotNull] GrammarParser.Array_indexContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.assignment_array"/>.

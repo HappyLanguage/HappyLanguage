@@ -59,6 +59,24 @@ namespace Happy_language
         /// </summary>
         private VarConstItem retValTo = null;
 
+        public void PrepareLibraryFunctions()
+        {
+            AddJMP(0);
+            PreparePrintASCIIFunction();
+            ChangeJMP(instructionCount, 0);
+        }
+
+        public void PreparePrintASCIIFunction()
+        {
+            AddINT(4);
+            AddWRI();
+            AddINT(-4);
+            AddRET(0, 0);
+            List<FunctionParameter> parameters = new List<FunctionParameter>();
+            parameters.Add(new FunctionParameter("value", DataType.Int));
+            globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, instructionCount - 4, parameters));
+        }
+
         public static string BoolToInt(string value)
         {
             if (value.Equals("True", StringComparison.OrdinalIgnoreCase))
@@ -98,6 +116,11 @@ namespace Happy_language
             {
                 instructions[i].Number = i;
             }
+        }
+        public void AddWRI()
+        {
+            instructions.Add(new Instruction(InstructionType.WRI, 0, "0"));
+            instructionCount += 1;
         }
 
         public void AddLIT(String value)

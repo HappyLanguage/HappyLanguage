@@ -250,11 +250,11 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCondition([NotNull] GrammarParser.ConditionContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// Visit a parse tree produced by <see cref="GrammarParser.array_index"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitArrry_index([NotNull] GrammarParser.Arrry_indexContext context);
+	Result VisitArray_index([NotNull] GrammarParser.Array_indexContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.assignment_array"/>.

@@ -376,7 +376,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	public virtual Result VisitCondition([NotNull] GrammarParser.ConditionContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// Visit a parse tree produced by <see cref="GrammarParser.array_index"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -384,7 +384,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitArrry_index([NotNull] GrammarParser.Arrry_indexContext context) { return VisitChildren(context); }
+	public virtual Result VisitArray_index([NotNull] GrammarParser.Array_indexContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.assignment_array"/>.

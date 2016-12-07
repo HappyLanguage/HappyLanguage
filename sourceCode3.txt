@@ -1,0 +1,6 @@
+happy_start {:
+	
+	mainSmile(::){:
+		PrintASCII(:65:);)
+	:}
+:}

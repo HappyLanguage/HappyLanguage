@@ -373,15 +373,15 @@ public interface IGrammarListener : IParseTreeListener {
 	void ExitCondition([NotNull] GrammarParser.ConditionContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// Enter a parse tree produced by <see cref="GrammarParser.array_index"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterArrry_index([NotNull] GrammarParser.Arrry_indexContext context);
+	void EnterArray_index([NotNull] GrammarParser.Array_indexContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="GrammarParser.arrry_index"/>.
+	/// Exit a parse tree produced by <see cref="GrammarParser.array_index"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitArrry_index([NotNull] GrammarParser.Arrry_indexContext context);
+	void ExitArray_index([NotNull] GrammarParser.Array_indexContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="GrammarParser.assignment_array"/>.

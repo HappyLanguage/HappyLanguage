@@ -184,11 +184,11 @@ assignment_array
 
 assignment
 	: Identifier Assign function_call
+	| Identifier Assign expression
 	| Identifier Assign Identifier
 	| Identifier Assign Bool
 	| Identifier Assign Int
 	| Identifier Assign Double
-	| Identifier Assign expression
 	| Identifier Assign condition;
 
 parameters
@@ -203,7 +203,11 @@ parameters
 /*
  * Lexer Rules
 */
- 
+
+Add: '+';
+Sub: '-';
+Mul: '*';
+Div: '/';
 Return: 'ret';
 Comment: ':*' .*? '*:' -> skip;
 Line_comment: ':**' ~[\r\n]* -> skip;
@@ -229,10 +233,6 @@ End_blok: ':}';
 Int : [+-]?[0-9]+;								// jedno èíslo
 Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
-Add: '+';
-Sub: '-';
-Mul: '*';
-Div: '/';
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak
 
 

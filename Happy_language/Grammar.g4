@@ -12,26 +12,17 @@ def_con_var
     | ;	// empty
 
 def_const
-	: Const Data_type_bool Identifier Assign Bool Semi
-	| Const Data_type_int Identifier Assign Int Semi
-	| Const Data_type_double Identifier Assign Double Semi;
+	: Const Data_type_bool Identifier Assign condition_expression Semi
+    | Const Data_type_bool Identifier Assign function_call Semi
+	| Const Data_type_int Identifier Assign expression Semi
+    | Const Data_type_double Identifier Assign expression Semi;
 
 def_var
-	: Data_type_bool Identifier Assign Bool Semi
-	| Data_type_int Identifier Assign Int Semi
-	| Data_type_double Identifier Assign Double Semi
-	| array_inicialization;
-
-
-def_var_expression
-	: Data_type_int Identifier Assign expression Semi
-	| Data_type_double Identifier Assign expression Semi
-	| 'ass' Identifier Assign expression Semi;
-
-def_var_from_function
-	: Data_type_bool Identifier Assign function_call Semi
-	| Data_type_int Identifier Assign function_call Semi
-	| Data_type_double Identifier Assign function_call Semi;
+	: Data_type_bool Identifier Assign condition_expression Semi
+    | Data_type_bool Identifier Assign function_call Semi
+	| Data_type_int Identifier Assign expression Semi
+    | Data_type_double Identifier Assign expression Semi
+    | array_inicialization;
 
 array_inicialization
     : Data_type_bool '[:' Int ':]' Identifier Semi
@@ -43,21 +34,15 @@ function_call
 
 def_var_blok									// definovane promenné jen na zaèátku funkce
 	: def_var def_var_blok
-	| def_var_from_function def_var_blok
-	| def_var_expression def_var_blok
     | array_inicialization def_var_blok
 	| ;  // empty
 
 par_in_function
-	: Identifier
-	| Identifier ',' par_in_function
-	| Bool
-	| Bool ',' par_in_function
-	| Int
-	| Int ',' par_in_function
-	| Double
-	| Double ',' par_in_function
-	| ;  // empty
+	: expression
+	| expression ',' par_in_function
+	| condition_expression
+	| condition_expression ',' par_in_function
+    | ;  // empty
  
 
  def_functions
@@ -68,11 +53,7 @@ def_one_function
 	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right Start_blok blok_function function_return End_blok;
 
 function_return
-	: Return Int Semi
-	| Return Double Semi
-	| Return Bool Semi
-	| Return Identifier Semi
-    | Return function_call Semi
+	: Return condition_expression Semi
     | Return expression Semi
 	| ;
 
@@ -115,13 +96,13 @@ else
 	| ;  // empty
 
 while
-	: 'while' Bracket_left condition Bracket_right Start_blok blok End_blok;
+	: While Bracket_left condition Bracket_right Start_blok blok End_blok;
 
 do_while
-    : 'do' Start_blok blok End_blok 'while'  Bracket_left condition Bracket_right Semi;
+    : Do Start_blok blok End_blok While Bracket_left condition Bracket_right Semi;
 
 for
-	: 'for'  Bracket_left for_condition Bracket_right Start_blok blok End_blok;
+	: For Bracket_left for_condition Bracket_right Start_blok blok End_blok;
 
 for_condition
 	: assignment Semi condition Semi expression
@@ -140,24 +121,20 @@ expression_multiply
     | expression_item;
  
 expression_item
-    : Int
+    : Add Int
+    | Sub Int
+    | Int
     | Double
+    | Add Double
+    | Sub Double
     | Identifier
     | array_index
     | function_call
     | '(' expression ')';
 
 condition_item
-	: Identifier
-	| Int
-	| Double
-	| Bool
-	| array_index
-    | function_call
-	| '(' Identifier ')'
-	| '(' expression ')'
-	| '(' Int ')'
-	| '(' Double ')'
+	: Bool
+	| expression
 	| '(' Bool ')';
 
 condition_expression
@@ -175,20 +152,12 @@ array_index
     : Identifier '[:' Int ':]';
 
 assignment_array
-    : array_index Assign function_call
-    | array_index Assign Identifier
-    | array_index Assign Bool
-    | array_index Assign Int
-    | array_index Assign Double
+    : array_index Assign condition_expression
     | array_index Assign expression;
 
 assignment
-	: Identifier Assign function_call
-	| Identifier Assign expression
-	| Identifier Assign Identifier
-	| Identifier Assign Bool
-	| Identifier Assign Int
-	| Identifier Assign Double
+	: Identifier Assign expression
+	| Identifier Assign condition_expression
 	| Identifier Assign condition;
 
 parameters
@@ -222,6 +191,9 @@ Data_type_int: ':I';
 Function_def: 'def';
 Const: 'const';
 If: 'if';
+While: 'while';
+Do: 'do';
+For: 'for';
 Else : 'else';
 Operator_condition: '==' | '!=' | '<=' | '>=' | '>' | '<' ;
 Logical_operator: '&&' | '||' ;
@@ -230,7 +202,7 @@ Main_name: 'mainSmile';
 Bool: 'true'| 'false';
 Start_blok: '{:';
 End_blok: ':}';
-Int : [+-]?[0-9]+;								// jedno èíslo
+Int : [0-9]+;								// jedno èíslo
 Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak

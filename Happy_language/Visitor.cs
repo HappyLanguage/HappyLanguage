@@ -112,11 +112,12 @@ namespace Happy_language
         {
             int c = 0;
 
-            for(int i = 0; i < instructions.Count; i++)
+            for (int i = 0; i < instructions.Count; i++)
             {
                 instructions[i].Number = i;
             }
         }
+
         public void AddWRI()
         {
             instructions.Add(new Instruction(InstructionType.WRI, 0, "0"));
@@ -150,7 +151,6 @@ namespace Happy_language
         public void ChangeJMP(int codeAddress, int index)
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMP);
-
             instructions[index].Value = codeAddress.ToString();
         }
 
@@ -195,7 +195,6 @@ namespace Happy_language
         public void ChangeJMC(int index, int codeAddress)
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMC);
-
             instructions[index].Value = codeAddress.ToString();
         }
 
@@ -208,7 +207,7 @@ namespace Happy_language
         public void DoInitialJmp(int dest)
         {
             AddJMP(dest);
-            AddINT(3);
+            AddINT(4);
         }
 
         private void changeJMPtoMain()
@@ -224,21 +223,13 @@ namespace Happy_language
 
         private VarConstItem createConst(GrammarParser.Def_constContext context)
         {
-            String name, value = "";
+            String name = context.Identifier().GetText();
             DataType dt = DataType.Int;
 
-            name = context.Identifier().GetText();
             if (context.Data_type_bool() != null)
             {
                 dt = DataType.Bool;
-                value = context.Bool().GetText();
             }
-            else if (context.Data_type_double() != null)
-            {
-                dt = DataType.Double;
-                value = context.Double().GetText();
-            }
-            else value = context.Int().GetText();  
 
             int addr = 0;
             if (inFunction)
@@ -246,20 +237,26 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, value, VarConstType.Const, dt, addr, level);
+            return new VarConstItem(name, VarConstType.Const, dt, addr, level);
         }
 
-        private String removeUnaryOperator(String value)
+        private VarConstItem createVar(GrammarParser.Def_varContext context)
         {
-            if (value[0] == '+' || value[0] == '-')
-                value = value.Substring(1);
+            String name = context.Identifier().GetText();
+            DataType dt = DataType.Int;
 
-            return value;
-        }
+            if (context.Data_type_bool() != null)
+            {
+                dt = DataType.Bool;
+            }
 
-        private Boolean isNegative(String value)
-        {
-            return value[0] == '-';
+            int addr = 0;
+            if (inFunction)
+                addr = inFunctionAddress;
+            else
+                addr = globalAddress;
+
+            return new VarConstItem(name, VarConstType.Var, dt, addr, level);
         }
 
         private VarConstItem createArray(GrammarParser.Array_inicializationContext context)
@@ -269,7 +266,6 @@ namespace Happy_language
             DataType dt = DataType.Int;
 
             if (context.Data_type_bool() != null) dt = DataType.Bool;
-            else if (context.Data_type_double() != null) dt = DataType.Double;
 
             int addr = 0;
             if (inFunction)
@@ -278,32 +274,6 @@ namespace Happy_language
                 addr = globalAddress;
 
             return new VarConstItem(name, length, VarConstType.Var, dt, addr, level); ;
-        }
-
-        private VarConstItem createVar(GrammarParser.Def_varContext context)
-        {
-            String name, value = "";
-            DataType dt = DataType.Int;
-
-            name = context.Identifier().GetText();
-            if (context.Data_type_bool() != null)
-            {
-                dt = DataType.Bool;
-                value = BoolToInt(context.Bool().GetText());
-            }
-            else if (context.Data_type_double() != null)
-            {
-                dt = DataType.Double;
-                value = context.Double().GetText();
-            }
-            else value = context.Int().GetText();
-
-            int addr = 0;
-            if (inFunction)
-                addr = inFunctionAddress;
-            else
-                addr = globalAddress;
-            return new VarConstItem(name, value, VarConstType.Var, dt, addr, level);
         }
 
         private void DoMainJmp(int dest)
@@ -339,13 +309,13 @@ namespace Happy_language
             return new FuncItem(name, returnDataType, instructionCount, parameters);
         }
 
-        private Boolean processArray(VarConstItem array)
+        private int processArray(VarConstItem array)
         {
             if (array.GetLength() < 0)
             {
                 //error
                 Console.WriteLine("Pole " + array.GetName() + " ma zapornou delku.");
-                return false;
+                return Error.arrayLengthNegative;
             }
 
             if (inFunction)
@@ -354,8 +324,8 @@ namespace Happy_language
                     localSymbolTable.AddVarConstItem(array);
                 else
                 {
-                    errors.Add("Pole " + array.GetName() + " uz existuje!\n");
                     Console.WriteLine("Pole " + array.GetName() + " uz existuje!\n");
+                    return Error.arrayAlreadyExists;
                 }
                 inFunctionAddress += array.GetLength();
             }
@@ -365,18 +335,18 @@ namespace Happy_language
                     globalSymbolTable.AddVarConstItem(array);
                 else
                 {
-                    errors.Add("Pole " + array.GetName() + " uz existuje!\n");
                     Console.WriteLine("Pole " + array.GetName() + " uz existuje!\n");
+                    return Error.arrayAlreadyExists;
                 }
                 globalAddress += array.GetLength();
             }
 
             AddINT(array.GetLength());
 
-            return true;
+            return 0;
         }
 
-        private Boolean processVarConst(VarConstItem item)
+        private int processVarConst(VarConstItem item)
         {
             if (inFunction)
             {
@@ -384,8 +354,8 @@ namespace Happy_language
                     localSymbolTable.AddVarConstItem(item);
                 else
                 {
-                    errors.Add("Promena " + item.GetName() + " uz existuje!\n");
                     Console.WriteLine("Promena " + item.GetName() + " uz existuje!\n");
+                    return Error.varConstAlreadyExists;
                 }
                 inFunctionAddress += 1;
             }
@@ -395,18 +365,13 @@ namespace Happy_language
                     globalSymbolTable.AddVarConstItem(item);
                 else
                 {
-                    errors.Add("Promena " + item.GetName() + " uz existuje!\n");
                     Console.WriteLine("Promena " + item.GetName() + " uz existuje!\n");
+                    return Error.varConstAlreadyExists;
                 }
                 globalAddress += 1;
             }
 
-            Boolean isNeg = isNegative(item.GetValue());
-            String value = removeUnaryOperator(item.GetValue());
-            AddLIT(value);
-            if (isNeg) AddOPR(Instruction.UNARY_MINUS);
-
-            return true;
+            return 0;
         }
 
         public VarConstItem GetVarConst(String varConstName)
@@ -415,14 +380,6 @@ namespace Happy_language
                 return localSymbolTable.GetVarConstItemByName(varConstName);
             else if (globalSymbolTable.ContainsVarConstItem(varConstName))
                 return globalSymbolTable.GetVarConstItemByName(varConstName);
-
-            return null;
-        }
-
-        public FuncItem GetFunction(String functionName)
-        {
-            if (globalSymbolTable.ContainsFuncItem(functionName))
-                return globalSymbolTable.GetFuncItemByName(functionName);
 
             return null;
         }
@@ -449,181 +406,163 @@ namespace Happy_language
 
         public override int VisitDef_const([NotNull] GrammarParser.Def_constContext context)
         {
-            VarConstItem newItem = createConst(context);
-            processVarConst(newItem);
+            VarConstItem newConst = createConst(context);
+            int result = processVarConst(newConst);
 
-            //base.VisitDef_const(context);
-            return 20;
+            if (result < 0)
+                return result;
+
+            if(localSymbolTable == null)
+                localSymbolTable = new SymbolTable();
+
+            if (context.condition_expression() != null)
+            {
+                result = VisitCondition_expression(context.condition_expression());
+            }
+            else if (context.function_call() != null)
+            {
+                result = VisitFunction_call(context.function_call());
+            }
+            else if (context.expression() != null)
+            {
+                result = VisitExpression(context.expression());
+            }
+
+            return result;
         }
 
         public override int VisitDef_var([NotNull] GrammarParser.Def_varContext context)
         {
+            int result = 0;
             if (context.array_inicialization() == null)
             {
-                VarConstItem newItem = createVar(context);
-                processVarConst(newItem);
+                VarConstItem newVar = createVar(context);
+                result = processVarConst(newVar);
+
+                if (result < 0)
+                    return result;
+
+                if(localSymbolTable == null)
+                    localSymbolTable = new SymbolTable();
+                if (context.condition_expression() != null)
+                {
+                    result = VisitCondition_expression(context.condition_expression());
+                }
+                else if (context.function_call() != null)
+                {
+                    result = VisitFunction_call(context.function_call());
+                }
+                else if (context.expression() != null)
+                {
+                    result = VisitExpression(context.expression());
+                }
             }
             else
             {
-                VisitArray_inicialization(context.array_inicialization());
+                result = VisitArray_inicialization(context.array_inicialization());
             }
-          
-            //base.VisitDef_var(context);
-            return 0;
+
+            return result;
         }
 
         public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
         {
             VarConstItem newArray = createArray(context);
-            processArray(newArray);
+            int result = processArray(newArray);
 
-            return 0; //base.VisitArray_inicialization(context);
+            return result; 
         }
 
-        // kdyz vlezu do smeru dolu tak level zvetsim asi a kdyz se vyleze tam zmensit
         public override int VisitDef_one_function([NotNull] GrammarParser.Def_one_functionContext context)
         {
             inFunction = true;
             localSymbolTable = new SymbolTable();
             if (!jmpToMainDone) DoMainJmp(0);
             
-
             FuncItem newItem = createFunction(context);
             if (!globalSymbolTable.ContainsFuncItem(newItem.GetName())) globalSymbolTable.AddFuncItem(newItem);
             else {
-                //Console.WriteLine("Funkce s timhle jmenem uz existuje!\n");
-                errors.Add("Funkce " + newItem.GetName() + " už existuje!\n");
+                Console.WriteLine("Funkce s timhle jmenem uz existuje!\n");
+                return Error.functionAlreadyExists;
             }
             AddINT(3 + newItem.GetParameters().Count);
             
             level += 1;
-            //inFunctionAddress = 3 + newItem.GetParameters().Count;
             inFunctionAddress = 3;
             for (int i = 0; i < newItem.GetParameters().Count; i++)
             {
 
-                VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(), "neni potreba", 
-                                                        VarConstType.Var, newItem.GetParameters()[i].getDataType(), inFunctionAddress, 0);
+                VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(), 
+                                                        VarConstType.Var, newItem.GetParameters()[i].getDataType(), inFunctionAddress, level);
                 localSymbolTable.AddVarConstItem(parItem);
                 inFunctionAddress += 1;
             }
             
-            base.VisitDef_one_function(context);
+            int result = base.VisitDef_one_function(context);
             level -= 1;
-            Console.WriteLine(localSymbolTable.VarConstToString());
 
             AddRET(0, 0);
             inFunction = false;
             localSymbolTable = null;
 
-            return 456;
+            return result;
         }
 
         public override int VisitFunction_return([NotNull] GrammarParser.Function_returnContext context)
         {
-            if(context.function_call() != null)
+            int result = 0;
+            if (context.condition_expression() == null && context.expression() == null)
             {
-                VisitFunction_call(context.function_call());
-                AddLOD(level, funcReturnAddress);
+                return result;
             }
-            else if (context.expression() != null)
+            
+            if (context.expression() != null)
             {
-                VisitExpression(context.expression());
+                result = VisitExpression(context.expression());
             }
-            else if (context.Identifier() != null)
+            else if (context.condition_expression() != null)
             {
-               // rightSideVarConst(context);
+                result = VisitCondition_expression(context.condition_expression());
             }
-            else
-            {
-                //rightSideValue(context);
-            }
-            if (context.Int() != null)
-                AddLIT(context.Int().GetText());
 
-
-            //STO na functionAdress return nebo jak se to jmenuje
             AddSTO(level, funcReturnAddress);
-            return base.VisitFunction_return(context);
 
-        }
-
-        private void rightSideValue(GrammarParser.AssignmentContext context)
-        {
-            String newValue = "";
-            if (context.Int() != null) newValue = context.Int().GetText();
-            else if (context.Bool() != null) newValue = BoolToInt(context.Bool().GetText());
-            else if (context.Double() != null) newValue = context.Double().GetText();
-
-            Boolean isNeg = isNegative(newValue);
-            String value = removeUnaryOperator(newValue);
-
-            AddLIT(value);
-            if (isNeg) AddOPR(Instruction.UNARY_MINUS);
-        }
-
-        private void rightSideVarConst(GrammarParser.AssignmentContext context)
-        {
-            String rightSideName = context.Identifier(1).GetText();
-            VarConstItem rightSideVar = null;
-            if (localSymbolTable.ContainsVarConstItem(rightSideName)) rightSideVar = localSymbolTable.GetVarConstItemByName(rightSideName);
-            else if (globalSymbolTable.ContainsVarConstItem(rightSideName)) rightSideVar = globalSymbolTable.GetVarConstItemByName(rightSideName);
-            else
-            {
-                Console.WriteLine("Promena na prave strane neexistuje");
-                // error
-            }
-
-            int varLevel = rightSideVar.GetLevel();
-            int levelToMove = Math.Abs(level - varLevel);
-            AddLOD(levelToMove, rightSideVar.GetAddress());
-        }
-
-        private void rightSideExpression(GrammarParser.AssignmentContext context)
-        {
-            String rightSide = Convert.ToString(VisitExpression(context.expression()));
-
-            //AddLIT(rightSide);
-            //if (isNegative(rightSide)) AddOPR(Instruction.UNARY_MINUS);
+            return result; 
         }
 
         public override int VisitAssignment([NotNull] GrammarParser.AssignmentContext context)
         {
-            String retValToName = context.Identifier(0).GetText();
+            int result = 0;
+            String retValToName = context.Identifier().GetText();
             if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
             else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
             else
             {
                 Console.WriteLine("Promena na levy strane neexistuje");
-                // error
+                return Error.varConstDoNotExists;
             }
-            
-            if (context.function_call() != null)
+
+            if (context.condition_expression() != null)
             {
-                VisitFunction_call(context.function_call());
-                AddLOD(level, funcReturnAddress);
+                result = VisitCondition_expression(context.condition_expression());
             }
             else if (context.expression() != null)
             {
-                VisitExpression(context.expression());
+                result = VisitExpression(context.expression());
             }
-            else if (context.Identifier(1) != null)
+            else if (context.condition() != null)
             {
-                rightSideVarConst(context);
+                result = VisitCondition(context.condition());
             }
-            else
-            {
-                rightSideValue(context);
-            }
-
+            
             int varLevel = retValTo.GetLevel();
             int varAddress = retValTo.GetAddress();
             int levelToMove = Math.Abs(level - varLevel);
             AddSTO(levelToMove, varAddress);
-
+          
             retValTo = null;
 
-            return 0;
+            return result;
         }
 
         public override int VisitMain([NotNull] GrammarParser.MainContext context)
@@ -635,20 +574,18 @@ namespace Happy_language
             localSymbolTable = new SymbolTable();
 
             changeJMPtoMain();
-            base.VisitMain(context);
+            int result = base.VisitMain(context);
             endProgram();
 
             inFunction = false;
             localSymbolTable = null;
             level -= 1;
-            return 856;
+            return result;
         }
 
         public override int VisitBlok_function([NotNull] GrammarParser.Blok_functionContext context)
         {    
-            base.VisitBlok_function(context);
-
-            return 0;
+            return base.VisitBlok_function(context);
         }
 
         public override int VisitDef_var_blok([NotNull] GrammarParser.Def_var_blokContext context)
@@ -658,11 +595,8 @@ namespace Happy_language
         
         public override int VisitBlok([NotNull] GrammarParser.BlokContext context)
         {
-            base.VisitBlok(context);
-
-            return 45;
+            return base.VisitBlok(context);
         }
-
 
         public override int VisitFunction_call([NotNull] GrammarParser.Function_callContext context)
         {  
@@ -671,17 +605,14 @@ namespace Happy_language
             if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
             else
             {
-                errors.Add("Funkce " + fName + " neexistuje!\n");
                 Console.WriteLine("Funkce " + fName + " neexistuje!");
-                // error
+                return Error.functionDoNotExists;
             }
 
-            VarConstItem destForVal = retValTo;
-            if(destForVal != null && (calledFce.GetReturnDataType() != destForVal.GetDataType()))   // overeni navratove hodnoty a dat. typu promeny
+            if(retValTo != null && (calledFce.GetReturnDataType() != retValTo.GetDataType()))
             {
-                errors.Add("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
                 Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
-                // error
+                return Error.functionReturnTypesDoNotMatch;
             }
 
             AddINT(3);
@@ -690,130 +621,89 @@ namespace Happy_language
             while (paramContext != null)
             {
                 VarConstItem par = null;
-                if (paramContext.Identifier() != null)
-                {
-                    String parName = paramContext.Identifier().GetText();
-                    if (localSymbolTable.ContainsVarConstItem(parName)) par = localSymbolTable.GetVarConstItemByName(parName); // tohle hodit do metody
-                    else if (globalSymbolTable.ContainsVarConstItem(parName)) par = globalSymbolTable.GetVarConstItemByName(parName);
-                    else
-                    {
-                        Console.WriteLine("Parametr neexistuje!");
-                        errors.Add("Parametr neexistuje!");
-                        // error
-                    }
-    
-                    int varLevel = par.GetLevel();
-                    int levelToMove = Math.Abs(level - varLevel);
-                    AddLOD(levelToMove, par.GetAddress());
-                }
-                else if(paramContext.Int() != null)
-                {
-                    par = new VarConstItem("", paramContext.Int().GetText(), VarConstType.Var, DataType.Int, 0, 0);
-                    Boolean isNeg = isNegative(paramContext.Int().GetText());
-                    String value = removeUnaryOperator(paramContext.Int().GetText());
 
-                    AddLIT(value);
-                    if (isNeg) AddOPR(Instruction.UNARY_MINUS);
-                }
-                else if(paramContext.Bool() != null)
+                if (paramContext.expression() != null)
                 {
-                    par = new VarConstItem("", paramContext.Bool().GetText(), VarConstType.Var, DataType.Bool, 0, 0);
-                    AddLIT(BoolToInt(paramContext.Bool().GetText()));
+                    VisitExpression(paramContext.expression());
+                    par = new VarConstItem("", VarConstType.Var, DataType.Int, 0, 0);
                 }
-                else if (paramContext.Double() != null)
+                else if (paramContext.condition_expression() != null)
                 {
-                    par = new VarConstItem("", paramContext.Double().GetText(), VarConstType.Var, DataType.Double, 0, 0);
-                }  
-                
-                usedParameters.Add(par);
+                    VisitCondition_expression(paramContext.condition_expression());
+                    par = new VarConstItem("", VarConstType.Var, DataType.Bool, 0, 0);
+                }
+
+                if(par != null)
+                {
+                    usedParameters.Add(par);
+                }
                 paramContext = paramContext.par_in_function();
             }
 
-            // z tabulky vythnout pozadovane parametry
             List<FunctionParameter> requestedParameters = calledFce.GetParameters();
             if(requestedParameters.Count != usedParameters.Count)
             {
                 Console.WriteLine("Spatne pocet parametrů!");
-                errors.Add("Spatne parametrů");
-                // error
+                return Error.functionWrongParametersCount;
             }
             for(int i = 0; i < requestedParameters.Count; i++)
             {
                 if(requestedParameters[i].getDataType() != usedParameters[i].GetDataType())
                 {
                     Console.WriteLine("Nespravny datovy typ parametru!");
-                    errors.Add("Nespravny datovy typ parametru");
-                    // error
-                    break;
+                    return Error.functionParameterDataTypeDoNotMatch;
                 }
             }
 
             AddINT(-1 * (3 + usedParameters.Count()));
             AddCAL(1, calledFce.GetAddress());
 
-            return 451;
+            return 0;
         }
 
         public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
         {
-            Console.WriteLine("---VISITING EXPRESSION---");
-
-            int leftSide = 0, rightSide = 0, result = 0;
+            int result = 0;
             if (context.expression() != null)
             {
-                leftSide = VisitExpression(context.expression());
+                result = VisitExpression(context.expression());
             }
             if(context.expression_multiply() != null)
             {
-                rightSide = VisitExpression_multiply(context.expression_multiply());
+                result = VisitExpression_multiply(context.expression_multiply());
             }
 
             if(context.Add() != null)
             {
-                result = leftSide + rightSide;
                 AddOPR(Instruction.ADD);
                 
             }
             else if(context.Sub() != null)
             {
-                result = leftSide - rightSide;
                 AddOPR(Instruction.SUB);
             }
-            else
-            {
-                result = rightSide;
-            }
-
-            Console.WriteLine("E: " + result);
+            
             return result;
         }
 
         public override int VisitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context)
         {
-            Console.WriteLine("---VISITING MULTIPLY---");
-
-            int leftSide = 0, rightSide = 0, result = 0;
+            int result = 0;
             if (context.expression_multiply() != null) 
             {
-                leftSide = VisitExpression_multiply(context.expression_multiply());
+                result = VisitExpression_multiply(context.expression_multiply());
+                if (result < 0)
+                    return result;
             }
-            rightSide = VisitExpression_item(context.expression_item());
+            result = VisitExpression_item(context.expression_item());
 
-            // z VisitExpression itemu mam neco na vrcholu
-            // tady se daj instrkce na zpracování 
             if (context.Mul() != null)
             {
-                result = leftSide * rightSide;
                 AddOPR(Instruction.MUL);
             }
             else if (context.Div() != null)
             {
-                result = leftSide / rightSide;
                 AddOPR(Instruction.DIV);
-            }
-            else
-            {
-                result = rightSide;
             }
 
             return result;
@@ -822,12 +712,7 @@ namespace Happy_language
         public override int VisitExpression_item([NotNull] GrammarParser.Expression_itemContext context)
         {
             int result = 0;
-            if(context.Int() != null)
-            {
-                result = Convert.ToInt32(context.Int().GetText());
-                AddLIT(context.Int().GetText());
-            }
-            else if(context.Identifier() != null)
+            if(context.Identifier() != null)
             {
                 String varConstName = context.Identifier().GetText();
                 VarConstItem varConst = null;
@@ -836,9 +721,8 @@ namespace Happy_language
                 else
                 {
                     Console.WriteLine("Promena ve vyrazu neexistuje");
-                    // error
+                    return Error.varConstDoNotExists;
                 }
-                result = Convert.ToInt32(varConst.GetValue());
 
                 int varLevel = varConst.GetLevel();
                 int levelToMove = Math.Abs(level - varLevel);
@@ -850,7 +734,7 @@ namespace Happy_language
                 if(array == null)
                 {
                     Console.WriteLine("Pole ve vyrazu neexistuje");
-                    // error
+                    return Error.arrayDoNotExists;
                 }
 
                 int index = Convert.ToInt32(context.Int().GetText());
@@ -858,12 +742,12 @@ namespace Happy_language
                 if (index < 0)
                 {
                     Console.WriteLine("Pole nejde indexovat do minusu!");
-                    // error
+                    return Error.arrayIndexNegative;
                 }
                 if (index >= array.GetLength())
                 {
                     Console.WriteLine("OutOfBounds, idex pole vyjel za length pole");
-                    // error
+                    return Error.arrayOutOfBounds;
                 }
 
                 int varLevel = array.GetLevel();
@@ -875,7 +759,7 @@ namespace Happy_language
             {
                 if (!globalSymbolTable.ContainsFuncItem(context.function_call().Identifier().GetText())) {
                     Console.WriteLine("Funkce volana ve vyrazu neexistuje!");
-                    // error
+                    return Error.functionDoNotExists;
                 }
                 
                 result = VisitFunction_call(context.function_call());
@@ -884,40 +768,17 @@ namespace Happy_language
             else if(context.expression() != null)
             {
                 result = VisitExpression(context.expression());
-            }       
-
-            return result; 
-        }
-
-        private void rightSideValue(GrammarParser.Assignment_arrayContext context)
-        {
-            String newValue = "";
-            if (context.Int() != null) newValue = context.Int().GetText();
-            else if (context.Bool() != null) newValue = BoolToInt(context.Bool().GetText());
-            else if (context.Double() != null) newValue = context.Double().GetText();
-
-            Boolean isNeg = isNegative(newValue);
-            String value = removeUnaryOperator(newValue);
-
-            AddLIT(value);
-            if (isNeg) AddOPR(Instruction.UNARY_MINUS);
-        }
-
-        private void rightSideVarConst(GrammarParser.Assignment_arrayContext context)
-        {
-            String rightSideName = context.Identifier().GetText();
-            VarConstItem rightSideVar = null;
-            if (localSymbolTable.ContainsVarConstItem(rightSideName)) rightSideVar = localSymbolTable.GetVarConstItemByName(rightSideName);
-            else if (globalSymbolTable.ContainsVarConstItem(rightSideName)) rightSideVar = globalSymbolTable.GetVarConstItemByName(rightSideName);
+            }
             else
             {
-                Console.WriteLine("Promena na prave strane neexistuje");
-                // error
+                AddLIT(context.Int().GetText());
+                if (context.Sub() != null)
+                {
+                    AddOPR(Instruction.UNARY_MINUS);
+                }
             }
 
-            int varLevel = rightSideVar.GetLevel();
-            int levelToMove = Math.Abs(level - varLevel);
-            AddLOD(levelToMove, rightSideVar.GetAddress());
+            return result; 
         }
 
         public override int VisitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context)
@@ -929,46 +790,37 @@ namespace Happy_language
             else
             {
                 Console.WriteLine("Pole na leve strane neexistuje");
-                // error
+                return Error.arrayDoNotExists;
             }
 
             int index = Convert.ToInt32(context.array_index().Int().GetText());
             if(index < 0)
             {
                 Console.WriteLine("Index nemuze bejt zapornej");
-                // error
+                return Error.arrayIndexNegative;
             }
             if (index >= leftSide.GetLength())
             {
                 Console.WriteLine("OutOfBounds, idex pole vyjel za length pole");
-                // error
+                return Error.arrayOutOfBounds;
             }
 
-            if (context.Identifier() != null)
+            int result = 0;
+            if (context.expression() != null)
             {
-                rightSideVarConst(context);
+                result = VisitExpression(context.expression());
             }
-            else if (context.expression() != null)
+            else if(context.condition_expression() != null)
             {
-                VisitExpression(context.expression());
-            }
-            else if(context.function_call() != null)
-            {
-                VisitFunction_call(context.function_call());
-                AddLOD(level, funcReturnAddress);
-            }
-            else
-            {
-                rightSideValue(context);
+                result = VisitCondition_expression(context.condition_expression());
             }
 
             int varLevel = leftSide.GetLevel();
             int levelToMove = Math.Abs(level - varLevel);
             AddSTO(levelToMove, leftSide.GetAddress() + index);
 
-            return 0; // base.VisitAssignment_array(context);
+            return result;
         }
-
 
         public override int VisitIf([NotNull] GrammarParser.IfContext context)
         {
@@ -997,6 +849,7 @@ namespace Happy_language
 
             return 11;
         }
+
 
         public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
         {

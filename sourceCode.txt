@@ -1,36 +1,13 @@
 happy_start {:
-
-:I aaa := 10;)
-:I bbb := 15;)
-:I ccc := 20;)
-
-
-def :I ahoj(: :I par :){:
+	const :I aaa := +10;)
+	:I var := 25;)
 	
-   ret 5;)
-:}
-
-def :V ahoj2(: :I par1:){:
-:}
-
-def :V ahoj3(: :I par1, :D par2 :){::}
-
-def :V ahoj4(: :I par1, :D par2, :B par3 :){::}
-
-def :I fce(::){::}
-
-mainSmile(::){:
-	:B ddd := false;)
- 	aaa := 50;)
- 	ccc := aaa;)
- 	
-	if (: ( ((a) == b) && x != true) && true && true :) {:
-		aaa := 50;)
+	def :V func(: :I par1:){:
+		ret par1 + 10;)
 	:}
 	
-	aaa := 5;)
-:}
+	mainSmile(::){:
+		func(:52:);)
 
-
-
+	:}
 :}

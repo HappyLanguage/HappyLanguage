@@ -9,7 +9,6 @@ namespace Happy_language
     class VarConstItem
     {
         private String name;
-        private String value;
         private VarConstType type;
         private DataType dataType;
         private int address;
@@ -17,10 +16,9 @@ namespace Happy_language
         private Boolean array;
         private int length;
 
-        public VarConstItem(String name, String value, VarConstType type, DataType dataType , int address, int level)
+        public VarConstItem(String name, VarConstType type, DataType dataType , int address, int level)
         {
             this.name = name;
-            this.value = value;
             this.type = type;
             this.dataType = dataType;
             this.address = address;
@@ -62,8 +60,7 @@ namespace Happy_language
                        "Lev: " + this.level + "; "
                        ;
             }
-            return "Name: " + this.name + "; " + 
-                   "Val: " + this.value + "; " + 
+            return "Name: " + this.name + "; " +  
                    "Typ: " + this.type.ToString() + "; " + 
                    "Data t: " + this.dataType.ToString() + "; " +
                    "Addr: " + this.address + "; " + 
@@ -74,16 +71,6 @@ namespace Happy_language
         public String GetName()
         {
             return this.name;
-        }
-
-        public String GetValue()
-        {
-            return this.value;
-        }
-
-        public void SetValue(String value)
-        {
-            this.value = value;
         }
 
         public VarConstType GetType()

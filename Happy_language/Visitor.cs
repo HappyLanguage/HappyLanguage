@@ -63,6 +63,7 @@ namespace Happy_language
         {
             AddJMP(0);
             PreparePrintASCIIFunction();
+            PreparePrintIntFunction();
             ChangeJMP(instructionCount, 0);
         }
 
@@ -75,6 +76,21 @@ namespace Happy_language
             List<FunctionParameter> parameters = new List<FunctionParameter>();
             parameters.Add(new FunctionParameter("value", DataType.Int));
             globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, instructionCount - 4, parameters));
+        }
+
+        public void PreparePrintIntFunction()
+        {
+            AddINT(4);
+            AddLIT("10");
+            AddOPR(Instruction.MOD);
+            AddLIT("48");
+            AddOPR(Instruction.ADD);
+            AddWRI();
+            AddINT(-4);
+            AddRET(0, 0);
+            List<FunctionParameter> parameters = new List<FunctionParameter>();
+            parameters.Add(new FunctionParameter("value", DataType.Int));
+            globalSymbolTable.AddFuncItem(new FuncItem("PrintInt", DataType.Void, instructionCount - 8, parameters));
         }
 
         public static string BoolToInt(string value)

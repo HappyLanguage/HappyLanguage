@@ -60,7 +60,33 @@ namespace Happy_language.Tests
 				Console.WriteLine(e.Message);
 			}
 
-			
+			Process compiler = new Process();
+			compiler.StartInfo.FileName = "../../../refint_pl0_ext.exe";
+			compiler.StartInfo.Arguments = path_file_ins + " -s -l";
+			compiler.StartInfo.UseShellExecute = false;
+			compiler.StartInfo.RedirectStandardOutput = true;
+
+
+
+			compiler.Start();
+
+			StreamReader reader = new StreamReader(compiler.StandardOutput.BaseStream);
+
+			if (!compiler.WaitForExit(15000))
+			{
+
+				/*StreamReader sr = compiler.StandardOutput;
+				string output = sr.ReadToEnd();*/
+				Assert.IsFalse(true, "proces má pravděpodně nekončnou smyčku");
+				compiler.Kill();
+			}
+
+
+
+
+
+			String mmm = reader.ReadToEnd();
+
 
 			//Assert.IsTrue(false, mmm);
 

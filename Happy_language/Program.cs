@@ -63,28 +63,6 @@ namespace Happy_language
                 Console.WriteLine(e.Message);
             }
 
-			Process compiler = new Process();
-			compiler.StartInfo.FileName = "../../../refint_pl0_ext.exe";
-			compiler.StartInfo.Arguments = "../../../insc.txt -s -l";
-			compiler.StartInfo.UseShellExecute = false;
-			//compiler.StartInfo.RedirectStandardOutput = true;
-
-
-
-			compiler.Start();
-			StreamReader reader = new StreamReader(compiler.StandardOutput.BaseStream);
-
-			if (!compiler.WaitForExit(10000))
-			{
-				compiler.Kill();
-			}
-
-
-
-
-
-			String mmm = reader.ReadToEnd();
-
 			Console.ReadLine();
             // skvelej napad, jednopruchod znamena dolu i nahoru, takze dolu udelam jen neco a smerem nahoru zbytek
         }

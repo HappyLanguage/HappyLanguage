@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-    class FuncItem
+	public class FuncItem
     {
         private String name;
         private DataType returnDataType;

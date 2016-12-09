@@ -8,7 +8,7 @@ using Antlr4.Runtime.Misc;
 
 namespace Happy_language
 {
-    class TreeWalkerListener : GrammarBaseListener
+	public class TreeWalkerListener : GrammarBaseListener
     {
         SymbolTable s = new SymbolTable();
 

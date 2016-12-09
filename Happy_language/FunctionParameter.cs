@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-    class FunctionParameter
+	public class FunctionParameter
     {
         private String name;
         private DataType dataType;

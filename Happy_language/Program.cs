@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using System.Diagnostics;
 
 /*
  * ANTLR
@@ -20,7 +21,7 @@ using Antlr4.Runtime.Tree;
 
 namespace Happy_language
 {
-    class Program
+	public class Program
     {
         static void Main(string[] args)
         {
@@ -55,20 +56,40 @@ namespace Happy_language
                 Console.WriteLine(visitor.GetSymbolTable().VarConstToString());
                 Console.WriteLine("-----------------------------------------");
                 PrintInstructions(visitor.GetInstructions());
-                WriteInstructions(visitor.GetInstructions());
+                WriteInstructions(visitor.GetInstructions(), "../../../insc.txt");
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
             }
 
-          
+			Process compiler = new Process();
+			compiler.StartInfo.FileName = "../../../refint_pl0_ext.exe";
+			compiler.StartInfo.Arguments = "../../../insc.txt -s -l";
+			compiler.StartInfo.UseShellExecute = false;
+			//compiler.StartInfo.RedirectStandardOutput = true;
 
-            Console.ReadLine();
+
+
+			compiler.Start();
+			StreamReader reader = new StreamReader(compiler.StandardOutput.BaseStream);
+
+			if (!compiler.WaitForExit(10000))
+			{
+				compiler.Kill();
+			}
+
+
+
+
+
+			String mmm = reader.ReadToEnd();
+
+			Console.ReadLine();
             // skvelej napad, jednopruchod znamena dolu i nahoru, takze dolu udelam jen neco a smerem nahoru zbytek
         }
 
-        private static void WriteInstructions(List<Instruction> instructions)
+        public static void WriteInstructions(List<Instruction> instructions, String name_file)
         {
 
             String text = "";
@@ -76,10 +97,10 @@ namespace Happy_language
             {
                 text += instructions[i];
             }
-            File.WriteAllText("../../../insc.txt", text);
+            File.WriteAllText(name_file, text);
         }
 
-        private static void PrintInstructions(List<Instruction> instructions)
+		public static void PrintInstructions(List<Instruction> instructions)
         {
             for (int i = 0; i < instructions.Count; i++)
             {

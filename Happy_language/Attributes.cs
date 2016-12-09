@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-    class Attributes
+	public class Attributes
     {
 
     }

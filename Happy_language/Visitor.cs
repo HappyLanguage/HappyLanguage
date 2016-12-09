@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace Happy_language
 {
     // http://elemarjr.com/en/2016/04/21/learning-antlr4-part-1-quick-overview/
-    class Visitor : GrammarBaseVisitor<int>
+    public class Visitor : GrammarBaseVisitor<int>
     {
         /// <summary>
         /// Tabulka symbolů pro globalni proměnný a konstanty

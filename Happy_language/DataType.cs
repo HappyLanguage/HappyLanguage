@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-    enum DataType
+	public enum DataType
     {
         Int,
         Double,

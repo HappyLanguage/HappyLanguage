@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-    static class Error
+	public static class Error
     {
         public static int varConstDoNotExists= -1;
         public static int varConstAlreadyExists = -2;

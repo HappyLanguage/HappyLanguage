@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-    enum VarConstType
+	public enum VarConstType
     {
         Var,
         Const

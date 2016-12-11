@@ -660,6 +660,7 @@ namespace Happy_language
         public override int VisitFunction_call([NotNull] GrammarParser.Function_callContext context)
         {  
             String fName = context.Identifier().GetText();
+
             FuncItem calledFce = null;
             if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
             else
@@ -883,18 +884,57 @@ namespace Happy_language
 
         public override int VisitIf([NotNull] GrammarParser.IfContext context)
         {
-            AddDebug("IF");
+            //AddDebug("IF");
             Visit(context.condition());
             int jmcAddress = instructionCount;
             AddJMC(0);
             Visit(context.blok());
+            int jmpAddress = instructionCount;
+            AddJMP(0);
             ChangeJMC(jmcAddress, instructionCount);
+            Visit(context.else_if());
+            ChangeJMP(instructionCount, jmpAddress);
             return 10;
+        }
+
+        public override int VisitElse_if([NotNull] GrammarParser.Else_ifContext context)
+        {
+            if (context.If() != null)
+            {
+                Visit(context.condition());
+                int jmcAddress = instructionCount;
+                AddJMC(0);
+                Visit(context.blok());
+                int jmpAddress = instructionCount;
+                AddJMP(0);
+                ChangeJMC(jmcAddress, instructionCount);
+                Visit(context.else_if());
+                ChangeJMP(instructionCount, jmpAddress);
+                return 11;
+            }
+            else
+            {
+                Visit(context.@else());
+                return 12;
+            }
+        }
+
+        public override int VisitElse([NotNull] GrammarParser.ElseContext context)
+        {
+            if(context.blok() != null)
+            {
+                Visit(context.blok());
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         public override int VisitWhile([NotNull] GrammarParser.WhileContext context)
         {
-            AddDebug("WHILE");
+            //AddDebug("WHILE");
             int conditionAddress = instructionCount;
             Visit(context.condition());
 
@@ -920,6 +960,12 @@ namespace Happy_language
             if (context.GetChild<GrammarParser.ConditionContext>(0) != null)
             {
                 Visit(context.GetChild<GrammarParser.ConditionContext>(0));
+
+                if(context.Negation() != null)
+                {
+                    AddLIT("0");
+                    AddOPR(Instruction.EQ);
+                }
             }
 
             if (context.GetChild<GrammarParser.ConditionContext>(1) != null)
@@ -953,9 +999,14 @@ namespace Happy_language
                 return 1;
             }
 
-            Visit(context.condition_item()[0]);
-            Visit(context.condition_item()[1]);
-            //TODO takhle to funguje jen pro int a boolean... double se takhle jednoduse neporovna...
+            int ret1 = Visit(context.condition_item()[0]);
+            int ret2 = Visit(context.condition_item()[1]);
+
+            if (ret1 != ret2)
+            {
+                Console.WriteLine("Cannot compare values of different data types.");
+                return Error.cmpTypeMismatch;
+            }
 
             switch(context.Operator_condition().GetText())
             {
@@ -972,8 +1023,20 @@ namespace Happy_language
 
         public override int VisitCondition_item([NotNull] GrammarParser.Condition_itemContext context)
         {
-            Console.WriteLine(context.GetText());
-            return base.VisitCondition_item(context);
+            if (context.Bool() != null)
+            {
+                AddLIT(BoolToInt(context.Bool().GetText()));
+                if (context.Negation() != null)
+                {
+                    AddLIT("0");
+                    AddOPR(Instruction.EQ);
+                }
+
+                return 1;
+            }
+
+            Visit(context.expression());
+            return 2;
         }
     }
 }

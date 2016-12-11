@@ -2,12 +2,19 @@ happy_start {:
 	const :I aaa := +10;)
 	:I var := 25;)
 	
-	def :V func(: :I par1:){:
+	def :I addTen(: :I par1:){:
 		ret par1 + 10;)
 	:}
 	
 	mainSmile(::){:
-		func(:52:);)
+		:I val := 10;)
+		
+		while (:val < 20:) {:
+			PrintInt(:val:);)
+			PrintNewLine(::);)
+			val := val + 1;)
+		:}
+		
 
 	:}
 :}

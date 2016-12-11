@@ -80,7 +80,7 @@ blok
 	| function_call Semi blok
 	| if blok
 	| while blok
-    | do_while
+    | do_while blok
 	| for blok
 	| ; // empty
 
@@ -134,8 +134,10 @@ expression_item
 
 condition_item
 	: Bool
+	| Negation Bool
 	| expression
-	| '(' Bool ')';
+	| '(' Bool ')'
+	| Negation '(' Bool ')';
 
 condition_expression
 	: condition_item Operator_condition condition_item
@@ -146,7 +148,9 @@ condition
 	| condition_expression Logical_operator condition
 	//| '!'condition TODO vymyslet jak v PL/0 udelat negaci
 	| '('condition')'
-	| '('condition')' Logical_operator condition;
+	| Negation '('condition')'
+	| '('condition')' Logical_operator condition
+	| Negation '('condition')' Logical_operator condition;
 
 array_index
     : Identifier '[:' Int ':]';
@@ -197,6 +201,7 @@ For: 'for';
 Else : 'else';
 Operator_condition: '==' | '!=' | '<=' | '>=' | '>' | '<' ;
 Logical_operator: '&&' | '||' ;
+Negation: '!';
 Start_prog: 'happy_start';					// zaèátek programu
 Main_name: 'mainSmile';							
 Bool: 'true'| 'false';

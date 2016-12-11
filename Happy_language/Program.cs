@@ -49,8 +49,8 @@ namespace Happy_language
                 Console.WriteLine("----------------Lexical analyzation OK----------------------");
 
                 Visitor visitor = new Visitor();
-		visitor.DoInitialJmp(1);
-                //visitor.PrepareLibraryFunctions();
+                visitor.PrepareLibraryFunctions();
+                visitor.DoInitialJmp();
                 int t = visitor.Visit(tree);
                 visitor.numberInstructions();
 

@@ -220,9 +220,9 @@ namespace Happy_language
             instructionCount += 1;
         }
 
-        public void DoInitialJmp(int dest)
+        public void DoInitialJmp()
         {
-            AddJMP(dest);
+            AddJMP(instructionCount + 1);
             AddINT(4);
         }
 

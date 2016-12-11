@@ -19,12 +19,7 @@ namespace Happy_language.Tests
 		[TestMethod()]
 		public void TestAplication()
 		{
-
-			
-
-			TestOutputFromFile("so.txt", "0");
-
-
+			TestOutputFromFile("../../../sourceCode3.txt", "A");
 		}
 
 		public void TestOutputFromFile(String path, String output)
@@ -47,9 +42,11 @@ namespace Happy_language.Tests
 			try
 			{
 				IParseTree tree = helloParser.start();
-			
+
+
 				Visitor visitor = new Visitor();
 				visitor.PrepareLibraryFunctions();
+				visitor.DoInitialJmp();
 				int t = visitor.Visit(tree);
 				visitor.numberInstructions();
 
@@ -66,30 +63,20 @@ namespace Happy_language.Tests
 			compiler.StartInfo.UseShellExecute = false;
 			compiler.StartInfo.RedirectStandardOutput = true;
 
-
-
 			compiler.Start();
 
 			StreamReader reader = new StreamReader(compiler.StandardOutput.BaseStream);
 
 			if (!compiler.WaitForExit(15000))
 			{
-
-				/*StreamReader sr = compiler.StandardOutput;
-				string output = sr.ReadToEnd();*/
 				Assert.IsFalse(true, "proces má pravděpodně nekončnou smyčku");
 				compiler.Kill();
 			}
 
 
+			String output_from_interpret = reader.ReadToEnd();
 
-
-
-			String mmm = reader.ReadToEnd();
-
-
-			//Assert.IsTrue(false, mmm);
-
+			Assert.AreEqual("START PL/0\r\n" + output + " END PL/0\r\n", output_from_interpret);
 		}
 	}
 }

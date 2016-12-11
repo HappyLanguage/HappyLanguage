@@ -146,7 +146,6 @@ condition_expression
 condition
 	: condition_expression
 	| condition_expression Logical_operator condition
-	//| '!'condition TODO vymyslet jak v PL/0 udelat negaci
 	| '('condition')'
 	| Negation '('condition')'
 	| '('condition')' Logical_operator condition

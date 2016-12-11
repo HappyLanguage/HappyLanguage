@@ -263,6 +263,12 @@ namespace Happy_language
             instructionCount += 1;
         }
 
+        public void AddNeg()
+        {
+            AddLIT("0");
+            AddOPR(Instruction.EQ);
+        }
+
         public void DoInitialJmp()
         {
             AddJMP(instructionCount + 1);
@@ -949,6 +955,21 @@ namespace Happy_language
             return 11;
         }
 
+        public override int VisitDo_while([NotNull] GrammarParser.Do_whileContext context)
+        {
+            
+            int firstAddress = instructionCount;
+            Visit(context.blok());
+            Visit(context.condition());
+
+            //Value must be negated to jump when not true
+            AddNeg();
+
+            AddJMC(firstAddress);
+
+            return 0;
+        }
+
 
         public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
         {
@@ -963,8 +984,7 @@ namespace Happy_language
 
                 if(context.Negation() != null)
                 {
-                    AddLIT("0");
-                    AddOPR(Instruction.EQ);
+                    AddNeg();
                 }
             }
 
@@ -1028,8 +1048,7 @@ namespace Happy_language
                 AddLIT(BoolToInt(context.Bool().GetText()));
                 if (context.Negation() != null)
                 {
-                    AddLIT("0");
-                    AddOPR(Instruction.EQ);
+                    AddNeg();
                 }
 
                 return 1;

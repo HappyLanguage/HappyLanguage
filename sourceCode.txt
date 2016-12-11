@@ -9,11 +9,11 @@ happy_start {:
 	mainSmile(::){:
 		:I val := 10;)
 		
-		while (:val < 20:) {:
-			PrintInt(:val:);)
+		 do {:
+			PrintInt(:var:);)
 			PrintNewLine(::);)
 			val := val + 1;)
-		:}
+		:} while (:val < 20:);)
 		
 
 	:}

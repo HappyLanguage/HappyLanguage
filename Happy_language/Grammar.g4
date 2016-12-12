@@ -6,69 +6,43 @@ grammar Grammar;
 start
 	: Start_prog Start_blok  def_con_var def_functions main End_blok;
 
+//============== Definice promennych ==============
 def_con_var
-    : def_const def_con_var
+    	: def_const def_con_var
 	| def_var def_con_var
-    | ;	// empty
+    	| ;	// empty
 
 def_const
 	: Const Data_type_bool Identifier Assign condition_expression Semi
-    | Const Data_type_bool Identifier Assign function_call Semi
+    	| Const Data_type_bool Identifier Assign function_call Semi
 	| Const Data_type_int Identifier Assign expression Semi
-    | Const Data_type_double Identifier Assign expression Semi;
+    	| Const Data_type_double Identifier Assign expression Semi;
 
 def_var
 	: Data_type_bool Identifier Assign condition_expression Semi
-    | Data_type_bool Identifier Assign function_call Semi
+    	| Data_type_bool Identifier Assign function_call Semi
 	| Data_type_int Identifier Assign expression Semi
-    | Data_type_double Identifier Assign expression Semi
-    | array_inicialization;
+    	| Data_type_double Identifier Assign expression Semi
+    	| array_inicialization;
 
 array_inicialization
-    : Data_type_bool '[:' Int ':]' Identifier Semi
-    | Data_type_int '[:' Int ':]' Identifier Semi
-    | Data_type_double '[:' Int ':]' Identifier Semi;
+    	: Data_type_bool '[:' Int ':]' Identifier Semi
+   	| Data_type_int '[:' Int ':]' Identifier Semi
+    	| Data_type_double '[:' Int ':]' Identifier Semi;
 
-function_call
-	: Identifier Bracket_left par_in_function Bracket_right;
+//============== Definice funkci ==============
 
-def_var_blok									// definovane promennÈ jen na zaË·tku funkce
-	: def_var def_var_blok
-    | array_inicialization def_var_blok
-	| ;  // empty
-
-par_in_function
-	: expression
-	| expression ',' par_in_function
-	| condition_expression
-	| condition_expression ',' par_in_function
-    | ;  // empty
- 
-
- def_functions
+def_functions
 	: def_one_function def_functions
 	| ;
 
 def_one_function
 	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right Start_blok blok_function function_return End_blok;
 
-function_return
-	: Return condition_expression Semi
-    | Return expression Semi
-	| ;
-
-
-function_return_data_typ
-	: data_type
-	| Data_type_void;
-
-data_type
-	: Data_type_int
-	| Data_type_bool
-	| Data_type_double;
-
-main
-	: Main_name Bracket_left Bracket_right Start_blok blok_function End_blok;
+parameters
+	: data_type Identifier
+	| data_type Identifier ',' parameters
+	| ;	//empty
 
 blok_function
 	: def_var_blok blok
@@ -76,20 +50,58 @@ blok_function
 
 blok
 	: assignment Semi blok
-    | assignment_array Semi blok
+   	| assignment_array Semi blok
 	| function_call Semi blok
 	| if blok
 	| while blok
-    | do_while blok
+    	| do_while blok
 	| for blok
 	| ; // empty
+
+def_var_blok									// definovane promenn√© jen na za√®√°tku funkce
+	: def_var def_var_blok
+    	| array_inicialization def_var_blok
+	| ;  // empty
+
+par_in_function
+	: expression
+	| expression ',' par_in_function
+	| condition_expression
+	| condition_expression ',' par_in_function
+    	| ;  // empty
+ 
+
+function_return
+	: Return condition_expression Semi
+    	| Return expression Semi
+	| ;
+	
+function_call
+	: Identifier Bracket_left par_in_function Bracket_right;
+
+function_return_data_typ
+	: data_type
+	| Data_type_void;
+
+main
+	: Main_name Bracket_left Bracket_right Start_blok blok_function End_blok;
+	
+//============== Datove typy ==============
+
+data_type
+	: Data_type_int
+	| Data_type_bool
+	| Data_type_double;
+
+
+//============== Casti bloku (if, for, while..) ==============
 
 if
 	: If Bracket_left condition Bracket_right Start_blok blok End_blok else_if;
 
 else_if
-    : Else If Bracket_left condition Bracket_right Start_blok blok End_blok else_if
-    | else;
+    	: Else If Bracket_left condition Bracket_right Start_blok blok End_blok else_if
+   	| else;
 
 else
 	: Else Start_blok blok End_blok
@@ -99,7 +111,7 @@ while
 	: While Bracket_left condition Bracket_right Start_blok blok End_blok;
 
 do_while
-    : Do Start_blok blok End_blok While Bracket_left condition Bracket_right Semi;
+    	: Do Start_blok blok End_blok While Bracket_left condition Bracket_right Semi;
 
 for
 	: For Bracket_left for_condition Bracket_right Start_blok blok End_blok;
@@ -110,27 +122,29 @@ for_condition
 	| Semi condition Semi expression
 	| Semi Semi;
 
+//============== Vyrazy a prirazeni ==============
+
 expression 
 	: expression Add expression_multiply			
-    | expression Sub expression_multiply	
+    	| expression Sub expression_multiply	
 	| expression_multiply;
 
 expression_multiply
-    : expression_multiply Mul expression_item 
-    | expression_multiply Div expression_item 
-    | expression_item;
+    	: expression_multiply Mul expression_item 
+    	| expression_multiply Div expression_item 
+    	| expression_item;
  
 expression_item
-    : Add Int
-    | Sub Int
-    | Int
-    | Double
-    | Add Double
-    | Sub Double
-    | Identifier
-    | array_index
-    | function_call
-    | '(' expression ')';
+    	: Add Int
+    	| Sub Int
+    	| Int
+    	| Double
+    	| Add Double
+    	| Sub Double
+    	| Identifier
+    	| array_index
+    	| function_call
+    	| '(' expression ')';
 
 condition_item
 	: Bool
@@ -152,21 +166,16 @@ condition
 	| Negation '('condition')' Logical_operator condition;
 
 array_index
-    : Identifier '[:' Int ':]';
+    	: Identifier '[:' Int ':]';
 
 assignment_array
-    : array_index Assign condition_expression
-    | array_index Assign expression;
+    	: array_index Assign condition_expression
+    	| array_index Assign expression;
 
 assignment
 	: Identifier Assign expression
 	| Identifier Assign condition_expression
 	| Identifier Assign condition;
-
-parameters
-	: data_type Identifier
-	| data_type Identifier ',' parameters
-	| ;	//empty
 
 
 // ========================================================
@@ -201,15 +210,15 @@ Else : 'else';
 Operator_condition: '==' | '!=' | '<=' | '>=' | '>' | '<' ;
 Logical_operator: '&&' | '||' ;
 Negation: '!';
-Start_prog: 'happy_start';					// zaË·tek programu
+Start_prog: 'happy_start';					// za√®√°tek programu
 Main_name: 'mainSmile';							
 Bool: 'true'| 'false';
 Start_blok: '{:';
 End_blok: ':}';
-Int : [0-9]+;								// jedno ËÌslo
+Int : [0-9]+;								// jedno √®√≠slo
 Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
-WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// p¯eskoËit na dalöÌ b˝lÌ znak
+WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// p√∏esko√®it na dal≈°√≠ b√Ωl√≠ znak
 
 
 

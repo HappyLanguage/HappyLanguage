@@ -1,0 +1,7 @@
+happy_start {:
+	const :I value1 := 45;)
+
+	mainSmile(::){:
+		PrintInt(:value1 :);)
+	:}
+:}

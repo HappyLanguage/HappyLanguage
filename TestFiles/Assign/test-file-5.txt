@@ -1,0 +1,12 @@
+happy_start {:
+	:I value1 := 45 - 60;)
+
+	def :V ahoj(::){:
+		value1 :=99;)
+	:}
+
+	mainSmile(::){:
+		ahoj(::);)
+		PrintInt(: value1 :);)
+	:}
+:}

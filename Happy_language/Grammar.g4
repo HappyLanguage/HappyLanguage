@@ -8,27 +8,49 @@ start
 
 //============== Definice promennych ==============
 def_con_var
-    	: def_const def_con_var
+	: def_const def_con_var
 	| def_var def_con_var
-    	| ;	// empty
+	| ;	// empty
 
 def_const
-	: Const Data_type_bool Identifier Assign condition_expression Semi
-    	| Const Data_type_bool Identifier Assign function_call Semi
-	| Const Data_type_int Identifier Assign expression Semi
-    	| Const Data_type_double Identifier Assign expression Semi;
+	: Const Data_type_bool multiple_assign Assign condition_expression Semi
+    | Const Data_type_bool multiple_assign Assign function_call Semi
+	| Const Data_type_int multiple_assign Assign expression Semi
+	| Const Data_type_double multiple_assign Assign expression Semi;
 
 def_var
-	: Data_type_bool Identifier Assign condition_expression Semi
-    	| Data_type_bool Identifier Assign function_call Semi
-	| Data_type_int Identifier Assign expression Semi
-    	| Data_type_double Identifier Assign expression Semi
-    	| array_inicialization;
+	: Data_type_bool multiple_assign Assign condition_expression Semi
+	| Data_type_bool multiple_assign Assign function_call Semi
+	| Data_type_int multiple_assign Assign expression Semi
+	| Data_type_double multiple_assign Assign expression Semi
+	| array_inicialization;
+
 
 array_inicialization
-    	: Data_type_bool '[:' Int ':]' Identifier Semi
+	: Data_type_bool '[:' Int ':]' Identifier Semi
    	| Data_type_int '[:' Int ':]' Identifier Semi
-    	| Data_type_double '[:' Int ':]' Identifier Semi;
+	| Data_type_double '[:' Int ':]' Identifier Semi
+	| Data_type_bool '[:'':]' Identifier Assign  Start_blok  bool_array_assign  End_blok Semi
+	| Data_type_int '[:'':]' Identifier Assign  Start_blok number_array_assign  End_blok Semi
+	| Data_type_double '[:'':]' Identifier Assign Start_blok number_array_assign  End_blok Semi
+	| Data_type_bool '[:'':]' Identifier Assign  String  Semi
+	| Data_type_int '[:'':]' Identifier Assign  String  Semi
+	| Data_type_double '[:'':]' Identifier Assign  String  Semi;
+
+multiple_assign
+	: Identifier ',' multiple_assign
+	| Identifier;
+	
+
+bool_array_assign
+	: condition_expression ',' bool_array_assign
+	| function_call ',' bool_array_assign
+	| condition_expression
+	| function_call ;
+
+number_array_assign
+	: expression ',' number_array_assign
+	| expression ;
 
 //============== Definice funkci ==============
 
@@ -50,17 +72,17 @@ blok_function
 
 blok
 	: assignment Semi blok
-   	| assignment_array Semi blok
+	| assignment_array Semi blok
 	| function_call Semi blok
 	| if blok
 	| while blok
-    	| do_while blok
+	| do_while blok
 	| for blok
 	| ; // empty
 
 def_var_blok									// definovane promenné jen na zaèátku funkce
 	: def_var def_var_blok
-    	| array_inicialization def_var_blok
+	| array_inicialization def_var_blok
 	| ;  // empty
 
 par_in_function
@@ -68,12 +90,12 @@ par_in_function
 	| expression ',' par_in_function
 	| condition_expression
 	| condition_expression ',' par_in_function
-    	| ;  // empty
+	| ;  // empty
  
 
 function_return
 	: Return condition_expression Semi
-    	| Return expression Semi
+	| Return expression Semi
 	| ;
 	
 function_call
@@ -100,8 +122,8 @@ if
 	: If Bracket_left condition Bracket_right Start_blok blok End_blok else_if;
 
 else_if
-    	: Else If Bracket_left condition Bracket_right Start_blok blok End_blok else_if
-   	| else;
+	: Else If Bracket_left condition Bracket_right Start_blok blok End_blok else_if
+	| else;
 
 else
 	: Else Start_blok blok End_blok
@@ -111,14 +133,14 @@ while
 	: While Bracket_left condition Bracket_right Start_blok blok End_blok;
 
 do_while
-    	: Do Start_blok blok End_blok While Bracket_left condition Bracket_right Semi;
+	: Do Start_blok blok End_blok While Bracket_left condition Bracket_right Semi;
 
 for
 	: For Bracket_left for_condition Bracket_right Start_blok blok End_blok;
 
 for_condition
-	: assignment Semi condition Semi expression
-	| assignment Semi condition Semi
+	: one_assignment Semi condition Semi expression
+	| one_assignment Semi condition Semi
 	| Semi condition Semi expression
 	| Semi Semi;
 
@@ -126,25 +148,25 @@ for_condition
 
 expression 
 	: expression Add expression_multiply			
-    	| expression Sub expression_multiply	
+	| expression Sub expression_multiply	
 	| expression_multiply;
 
 expression_multiply
-    	: expression_multiply Mul expression_item 
-    	| expression_multiply Div expression_item 
-    	| expression_item;
+	: expression_multiply Mul expression_item 
+	| expression_multiply Div expression_item
+	| expression_item;
  
 expression_item
-    	: Add Int
-    	| Sub Int
-    	| Int
-    	| Double
-    	| Add Double
-    	| Sub Double
-    	| Identifier
-    	| array_index
-    	| function_call
-    	| '(' expression ')';
+	: Add Int
+	| Sub Int
+	| Int
+	| Double
+	| Add Double
+	| Sub Double
+	| Identifier
+	| array_index
+	| function_call
+	| '(' expression ')';
 
 condition_item
 	: Bool
@@ -166,16 +188,23 @@ condition
 	| Negation '('condition')' Logical_operator condition;
 
 array_index
-    	: Identifier '[:' Int ':]';
+	: Identifier '[:' Int ':]';
 
 assignment_array
-    	: array_index Assign condition_expression
-    	| array_index Assign expression;
+	: array_index Assign condition_expression
+	| array_index Assign expression;
 
-assignment
+one_assignment
 	: Identifier Assign expression
 	| Identifier Assign condition_expression
 	| Identifier Assign condition;
+
+
+assignment
+	: multiple_assign Assign expression
+	| multiple_assign Assign condition_expression
+	| multiple_assign Assign condition;
+
 
 
 // ========================================================
@@ -218,6 +247,7 @@ End_blok: ':}';
 Int : [0-9]+;								// jedno èíslo
 Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
+String: '\'' ( '$' '\''? | ~('$' | '\'') )* '\'';
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak
 
 

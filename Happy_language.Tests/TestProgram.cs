@@ -17,9 +17,20 @@ namespace Happy_language.Tests
 	{
 
 		[TestMethod()]
-		public void TestAplication()
+		public void TestAssign()
 		{
-			TestOutputFromFile("../../../sourceCode3.txt", "A");
+			TestOutputFromFile("../../../TestFiles/Assign/test-file-1.txt", "-1374");
+			TestOutputFromFile("../../../TestFiles/Assign/test-file-2.txt", "45");
+			TestOutputFromFile("../../../TestFiles/Assign/test-file-3.txt", "100");
+			TestOutputFromFile("../../../TestFiles/Assign/test-file-4.txt", "-15");
+			TestOutputFromFile("../../../TestFiles/Assign/test-file-5.txt", "99");
+		}
+
+		[TestMethod()]
+		public void TestAssignMulti()
+		{
+			TestOutputFromFile("../../../TestFiles/AssignMulti/test-file-1.txt", "-876-876");
+			TestOutputFromFile("../../../TestFiles/AssignMulti/test-file-2.txt", "40");
 		}
 
 		public void TestOutputFromFile(String path, String output)

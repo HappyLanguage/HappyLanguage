@@ -1,0 +1,7 @@
+happy_start {:
+	:I value1 := -1374;)
+
+	mainSmile(::){:
+		PrintInt(:value1 :);)
+	:}
+:}

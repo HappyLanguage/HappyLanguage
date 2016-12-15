@@ -12,6 +12,7 @@ namespace Happy_language
     // http://elemarjr.com/en/2016/04/21/learning-antlr4-part-1-quick-overview/
     public class Visitor : GrammarBaseVisitor<int>
     {
+        #region Attributes
         /// <summary>
         /// Tabulka symbolů pro globalni proměnný a konstanty
         /// </summary>
@@ -58,6 +59,8 @@ namespace Happy_language
         /// Proměnná na levé straně přiřazení
         /// </summary>
         private VarConstItem retValTo = null;
+
+        #endregion
 
         #region Library Functions
         public void PrepareLibraryFunctions()
@@ -646,7 +649,18 @@ namespace Happy_language
                 GrammarParser.Number_array_assignContext values = context.number_array_assign();
                 while (values != null)
                 {
-                    VisitExpression(values.expression());
+                    result = VisitExpression(values.expression());
+
+                    if (result < 0)
+                    {
+                        return result;
+                    }
+                    else if (newArray.GetDataType() != (DataType) result)
+                    {
+                        Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
+                        return Error.functionReturnTypesDoNotMatch;
+                    }
+
                     values = values.number_array_assign();
                 }
             }
@@ -657,11 +671,31 @@ namespace Happy_language
                 {
                     if (values.condition_expression() != null)
                     {
-                        VisitCondition_expression(values.condition_expression());
+                        result = VisitCondition_expression(values.condition_expression());
+
+                        if (result < 0)
+                        {
+                            return result;
+                        }
+                        else if (newArray.GetDataType() != (DataType)result)
+                        {
+                            Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
+                            return Error.functionReturnTypesDoNotMatch;
+                        }
                     }
                     else if (values.function_call() != null)
                     {
-                        VisitFunction_call(values.function_call());
+                        result = VisitFunction_call(values.function_call());
+
+                        if (result < 0)
+                        {
+                            return result;
+                        }
+                        else if (newArray.GetDataType() != (DataType)result)
+                        {
+                            Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
+                            return Error.functionReturnTypesDoNotMatch;
+                        }
                         //AddLOD(level, funcReturnAddress);
                     }
                     values = values.bool_array_assign();
@@ -838,8 +872,8 @@ namespace Happy_language
 
                 if (paramContext.expression() != null)
                 {
-                    VisitExpression(paramContext.expression());
-                    par = new VarConstItem("", VarConstType.Var, DataType.Int, 0, 0);
+                    int result = VisitExpression(paramContext.expression());
+                    par = new VarConstItem("", VarConstType.Var, (DataType) result, 0, 0);
                 }
                 else if (paramContext.condition_expression() != null)
                 {
@@ -874,7 +908,7 @@ namespace Happy_language
             if (retValTo != null)
                 AddLOD(level, funcReturnAddress);
 
-            return 0;
+            return (int) calledFce.GetReturnDataType();
         }
 
         public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
@@ -943,6 +977,8 @@ namespace Happy_language
                 int varLevel = varConst.GetLevel();
                 int levelToMove = Math.Abs(level - varLevel);
                 AddLOD(levelToMove, varConst.GetAddress());
+
+                result = (int) varConst.GetDataType();
             }
             else if (context.array_index() != null)
             {
@@ -970,6 +1006,8 @@ namespace Happy_language
                 int varAddress = array.GetAddress();
                 int levelToMove = Math.Abs(level - varLevel);
                 AddLOD(levelToMove, varAddress + index);
+
+                result = (int) array.GetDataType();
             }
             else if (context.function_call() != null)
             {
@@ -980,11 +1018,22 @@ namespace Happy_language
                 }
 
                 result = VisitFunction_call(context.function_call());
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
                 //AddLOD(level, funcReturnAddress);
             }
             else if (context.expression() != null)
             {
                 result = VisitExpression(context.expression());
+
+                if (result < 0)
+                {
+                    return 0;
+                }
             }
             else
             {
@@ -993,6 +1042,8 @@ namespace Happy_language
                 {
                     AddOPR(Instruction.UNARY_MINUS);
                 }
+
+                result = (int) DataType.Int;
             }
 
             return result;
@@ -1026,10 +1077,32 @@ namespace Happy_language
             if (context.expression() != null)
             {
                 result = VisitExpression(context.expression());
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (leftSide.GetDataType() != ((DataType) result))
+                {
+                    Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
+                    return Error.functionReturnTypesDoNotMatch;
+                }
             }
             else if (context.condition_expression() != null)
             {
                 result = VisitCondition_expression(context.condition_expression());
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (leftSide.GetDataType() != ((DataType)result))
+                {
+                    Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
+                    return Error.functionReturnTypesDoNotMatch;
+                }
             }
 
             int varLevel = leftSide.GetLevel();
@@ -1172,6 +1245,15 @@ namespace Happy_language
             int ret1 = Visit(context.condition_item()[0]);
             int ret2 = Visit(context.condition_item()[1]);
 
+            if (ret1 < 0)
+            {
+                return ret1;
+            }
+            else if (ret2 < 0)
+            {
+                return ret2;
+            }
+
             if (ret1 != ret2)
             {
                 Console.WriteLine("Cannot compare values of different data types.");
@@ -1188,7 +1270,7 @@ namespace Happy_language
                 case ">=": AddOPR(Instruction.GEQ); break;
             }
 
-            return 2;
+            return (int) DataType.Bool;
         }
 
         public override int VisitCondition_item([NotNull] GrammarParser.Condition_itemContext context)
@@ -1201,11 +1283,10 @@ namespace Happy_language
                     AddNeg();
                 }
 
-                return 1;
+                return (int) DataType.Bool;
             }
 
-            Visit(context.expression());
-            return 2;
+            return Visit(context.expression());
         }
     }
     #endregion

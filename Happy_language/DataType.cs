@@ -8,9 +8,9 @@ namespace Happy_language
 {
 	public enum DataType
     {
-        Int,
-        Double,
-        Bool,
-        Void
+        Int = 1,
+        Double = 2,
+        Bool = 3,
+        Void = 0
     }
 }

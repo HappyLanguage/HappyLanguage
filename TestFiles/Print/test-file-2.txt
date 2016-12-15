@@ -1,0 +1,46 @@
+happy_start {:
+	:I value1 := -1374;)
+	:I value2 := 125687;)
+	:I value3 := 0;)
+	:I value4 := -789487;)
+	:I value5 :=  2;)
+	:I value6 := -5;)
+	:I value7 := 112;)
+
+	def :V PrintNumbers(::){:
+		PrintInt(:value1:);)
+		PrintNewLine(::);)
+		PrintInt(:value2:);)
+		PrintNewLine(::);)
+		PrintInt(:value3:);)
+		PrintNewLine(::);)
+		PrintInt(:value4:);)
+		PrintNewLine(::);)
+		PrintInt(:value5:);)
+		PrintNewLine(::);)
+		PrintInt(:value6:);)
+		PrintNewLine(::);)
+		PrintInt(:value7:);)
+		PrintNewLine(::);)
+	:}
+	
+	def :V PrintHello(::){:
+		:I H := 72;)
+		:I e := 101;)
+		:I l := 108;)
+		:I o := 111;)
+		:I excMark := 33;)
+		PrintASCII(:H:);)
+		PrintASCII(:e:);)
+		PrintASCII(:l:);)
+		PrintASCII(:l:);)
+		PrintASCII(:o:);)
+		PrintASCII(:excMark:);)
+	:}
+
+	mainSmile(::){:
+		PrintHello(::);)
+		PrintNewLine(::);)
+		PrintNumbers(::);)
+	:}
+:}

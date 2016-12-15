@@ -15,25 +15,84 @@ namespace Happy_language.Tests
 	[TestClass()]
 	public class TestProgram
 	{
+        public static String SPACE = "\r\r\n";
 
-		[TestMethod()]
-		public void TestAssign()
-		{
-			TestOutputFromFile("../../../TestFiles/Assign/test-file-1.txt", "-1374");
-			TestOutputFromFile("../../../TestFiles/Assign/test-file-2.txt", "45");
-			TestOutputFromFile("../../../TestFiles/Assign/test-file-3.txt", "100");
-			TestOutputFromFile("../../../TestFiles/Assign/test-file-4.txt", "-15");
-			TestOutputFromFile("../../../TestFiles/Assign/test-file-5.txt", "99");
-		}
+        [TestMethod()]
+        public void TestAssign1()
+        {
+            TestOutputFromFile("../../../TestFiles/Assign/test-file-1.txt", "-1374");
+        }
 
-		[TestMethod()]
-		public void TestAssignMulti()
-		{
-			TestOutputFromFile("../../../TestFiles/AssignMulti/test-file-1.txt", "-876-876");
-			TestOutputFromFile("../../../TestFiles/AssignMulti/test-file-2.txt", "40");
-		}
+        [TestMethod()]
+        public void TestAssign2()
+        {
+            TestOutputFromFile("../../../TestFiles/Assign/test-file-2.txt", "45");
+        }
 
-		public void TestOutputFromFile(String path, String output)
+        [TestMethod()]
+        public void TestAssign3()
+        {
+            TestOutputFromFile("../../../TestFiles/Assign/test-file-3.txt", "100");
+        }
+
+        [TestMethod()]
+        public void TestAssign4()
+        {
+            TestOutputFromFile("../../../TestFiles/Assign/test-file-4.txt", "-15");
+        }
+
+        [TestMethod()]
+        public void TestAssign5()
+        {
+            TestOutputFromFile("../../../TestFiles/Assign/test-file-5.txt", "99");
+        }
+
+        [TestMethod()]
+        public void TestAssignMulti1()
+        {
+            TestOutputFromFile("../../../TestFiles/AssignMulti/test-file-1.txt", "-876-876");
+        }
+
+        [TestMethod()]
+        public void TestAssignMulti2()
+        {
+            TestOutputFromFile("../../../TestFiles/AssignMulti/test-file-2.txt", "40");
+        }
+
+        [TestMethod()]
+        public void TestPrint1()
+        {
+            TestOutputFromFile("../../../TestFiles/Print/test-file-1.txt", "true" + SPACE + "false");
+        }
+
+        [TestMethod()]
+        public void TestPrint2()
+        {
+            TestOutputFromFile("../../../TestFiles/Print/test-file-2.txt",
+                "Hello!" + SPACE + "-1374" + SPACE + "125687" + SPACE + "0" + SPACE +
+                "-789487" + SPACE + "2" + SPACE + "-5" + SPACE + "112" + SPACE
+                );
+        }
+
+        [TestMethod()]
+        public void TestPrint3()
+        {
+            TestOutputFromFile("../../../TestFiles/Print/test-file-3.txt", "true");
+        }
+
+        [TestMethod()]
+        public void TestReturn1()
+        {
+            TestOutputFromFile("../../../TestFiles/Return/test-file-1.txt", "40");
+        }
+
+        [TestMethod()]
+        public void TestReturn2()
+        {
+            TestOutputFromFile("../../../TestFiles/Return/test-file-2.txt", "125");
+        }
+
+        public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);
 

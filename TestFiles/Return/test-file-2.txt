@@ -1,0 +1,10 @@
+happy_start {:
+	def :I func(::){:
+		ret 125;)
+	:}
+
+	mainSmile(::){:
+		:I a := func(::);)
+		PrintInt(:a:);)
+	:}
+:}

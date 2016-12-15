@@ -1,0 +1,7 @@
+happy_start {:
+	mainSmile(::){:
+		PrintBool(:true:);)
+		PrintNewLine(::);)
+		PrintBool(:false:);)
+	:}
+:}

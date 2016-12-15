@@ -1,0 +1,14 @@
+happy_start {:
+	const :I a, b, c, d := 10;)
+	:I sum := 0;)
+
+	def :I sumGlobal(::){:
+		sum := a+b+c+d;)
+		ret sum;)	
+	:}
+	
+
+	mainSmile(::){:
+		PrintInt(: sumGlobal(::):);)
+	:}
+:}

@@ -59,6 +59,7 @@ namespace Happy_language
         /// </summary>
         private VarConstItem retValTo = null;
 
+        #region Library Functions
         public void PrepareLibraryFunctions()
         {
             AddJMP(0);
@@ -169,7 +170,7 @@ namespace Happy_language
             AddWRI();
             AddINT(-1);
             AddJMP(instructionCount - 8);
-            
+
             AddINT(-4);
 
             AddRET(0, 0);
@@ -177,6 +178,8 @@ namespace Happy_language
             parameters.Add(new FunctionParameter("value", DataType.Int));
             globalSymbolTable.AddFuncItem(new FuncItem("PrintInt", DataType.Void, instructionCount - 31, parameters));
         }
+
+        #endregion
 
         public static string BoolToInt(string value)
         {
@@ -219,6 +222,7 @@ namespace Happy_language
             }
         }
 
+        #region Instruction handling
         public void AddWRI()
         {
             instructions.Add(new Instruction(InstructionType.WRI, 0, "0"));
@@ -327,88 +331,90 @@ namespace Happy_language
         {
             AddRET(0, 0);
         }
+        #endregion
 
-		private VarConstItem createConst(GrammarParser.Def_constContext context, String name)
-		{
-			DataType dt = DataType.Int;
+        #region Memory handling
+        private VarConstItem createConst(GrammarParser.Def_constContext context, String name)
+        {
+            DataType dt = DataType.Int;
 
-			if (context.Data_type_bool() != null)
-			{
-				dt = DataType.Bool;
-			}
+            if (context.Data_type_bool() != null)
+            {
+                dt = DataType.Bool;
+            }
 
-			int addr = 0;
-			if (inFunction)
-				addr = inFunctionAddress;
-			else
-				addr = globalAddress;
+            int addr = 0;
+            if (inFunction)
+                addr = inFunctionAddress;
+            else
+                addr = globalAddress;
 
-			return new VarConstItem(name, VarConstType.Const, dt, addr, level);
-		}
+            return new VarConstItem(name, VarConstType.Const, dt, addr, level);
+        }
 
-		private VarConstItem createVar(GrammarParser.Def_varContext context, String name)
-		{
-			DataType dt = DataType.Int;
+        private VarConstItem createVar(GrammarParser.Def_varContext context, String name)
+        {
+            DataType dt = DataType.Int;
 
-			if (context.Data_type_bool() != null)
-			{
-				dt = DataType.Bool;
-			}
+            if (context.Data_type_bool() != null)
+            {
+                dt = DataType.Bool;
+            }
 
-			int addr = 0;
-			if (inFunction)
-				addr = inFunctionAddress;
-			else
-				addr = globalAddress;
+            int addr = 0;
+            if (inFunction)
+                addr = inFunctionAddress;
+            else
+                addr = globalAddress;
 
-			return new VarConstItem(name, VarConstType.Var, dt, addr, level);
-		}
+            return new VarConstItem(name, VarConstType.Var, dt, addr, level);
+        }
 
-		private VarConstItem createArray(GrammarParser.Array_inicializationContext context)
-		{
-			String name = context.Identifier().GetText();
-			DataType dt = DataType.Int;
+        private VarConstItem createArray(GrammarParser.Array_inicializationContext context)
+        {
+            String name = context.Identifier().GetText();
+            DataType dt = DataType.Int;
 
-			int length = 0;
-			if (context.Int() != null)
-			{
-				length = Convert.ToInt32(context.Int().GetText());
-			}
-			else if (context.String() != null)
-			{
-				length = context.String().GetText().Length;
-			}
-			else if (context.number_array_assign() != null)
-			{
-				GrammarParser.Number_array_assignContext values = context.number_array_assign();
-				while (values != null)
-				{
-					length += 1;
-					values = values.number_array_assign();
-				}
-			}
-			else if (context.bool_array_assign() != null)
-			{
-				GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
-				while (values != null)
-				{
-					length += 1;
-					values = values.bool_array_assign();
-				}
-			}
+            int length = 0;
+            if (context.Int() != null)
+            {
+                length = Convert.ToInt32(context.Int().GetText());
+            }
+            else if (context.String() != null)
+            {
+                length = context.String().GetText().Length;
+            }
+            else if (context.number_array_assign() != null)
+            {
+                GrammarParser.Number_array_assignContext values = context.number_array_assign();
+                while (values != null)
+                {
+                    length += 1;
+                    values = values.number_array_assign();
+                }
+            }
+            else if (context.bool_array_assign() != null)
+            {
+                GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
+                while (values != null)
+                {
+                    length += 1;
+                    values = values.bool_array_assign();
+                }
+            }
 
-			if (context.Data_type_bool() != null) dt = DataType.Bool;
+            if (context.Data_type_bool() != null) dt = DataType.Bool;
 
-			int addr = 0;
-			if (inFunction)
-				addr = inFunctionAddress;
-			else
-				addr = globalAddress;
+            int addr = 0;
+            if (inFunction)
+                addr = inFunctionAddress;
+            else
+                addr = globalAddress;
 
-			return new VarConstItem(name, length, VarConstType.Var, dt, addr, level); ;
-		}
+            return new VarConstItem(name, length, VarConstType.Var, dt, addr, level); ;
+        }
 
-		private void DoMainJmp(int dest)
+        private void DoMainJmp(int dest)
         {
             AddCAL(0, dest);
             jmpToMainIndex = instructionCount - 1;
@@ -420,7 +426,7 @@ namespace Happy_language
         private FuncItem createFunction(GrammarParser.Def_one_functionContext context)
         {
             String name = context.Identifier().GetText(); ;
-            DataType returnDataType = DataType.Int;     
+            DataType returnDataType = DataType.Int;
             List<FunctionParameter> parameters = new List<FunctionParameter>();
 
             if (context.function_return_data_typ().Data_type_void() != null) returnDataType = DataType.Void;
@@ -516,697 +522,691 @@ namespace Happy_language
             return null;
         }
 
-		public Boolean isExpressionFunctionCall(GrammarParser.ExpressionContext context)
-		{
-			return true;
-		}
-
-		/* 
-         * ======================================================================================================
-         * ======================================================================================================
-         * ===                                                                                                ===
-         * ===                                      VISITORS                                                  ===
-         * ===                                                                                                ===
-         * ======================================================================================================
-         * ======================================================================================================
-        */
-
-	
-
-	public override int VisitStart([NotNull] GrammarParser.StartContext context)
-	{
-		return base.VisitStart(context);
-	}
-
-	public override int VisitDef_con_var([NotNull] GrammarParser.Def_con_varContext context)
-	{
-		return base.VisitDef_con_var(context);
-	}
-
-		public override int VisitDef_const([NotNull] GrammarParser.Def_constContext context)
-		{
-			int result = 0;
-			GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
-			while (leftSides != null)
-			{
-				VarConstItem newConst = createConst(context, leftSides.Identifier().GetText());
-				result = processVarConst(newConst);
-
-				if (result < 0)
-					return result;
-
-				if (localSymbolTable == null)
-					localSymbolTable = new SymbolTable();
-
-				if (context.condition_expression() != null)
-				{
-					result = VisitCondition_expression(context.condition_expression());
-				}
-				else if (context.function_call() != null)
-				{
-					result = VisitFunction_call(context.function_call());
-					//AddLOD(level, funcReturnAddress);
-				}
-				else if (context.expression() != null)
-				{
-					result = VisitExpression(context.expression());
-				}
-
-				if (result < 0)
-					return result;
-
-				leftSides = leftSides.multiple_assign();
-			}
-
-			return result;
-		}
-
-		public override int VisitDef_var([NotNull] GrammarParser.Def_varContext context)
-		{
-			int result = 0;
-			if (context.array_inicialization() == null)
-			{
-				GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
-				while (leftSides != null)
-				{
-					VarConstItem newVar = createVar(context, leftSides.Identifier().GetText());
-					result = processVarConst(newVar);
-
-					if (result < 0)
-						return result;
-
-					if (localSymbolTable == null)
-						localSymbolTable = new SymbolTable();
-					if (context.condition_expression() != null)
-					{
-						result = VisitCondition_expression(context.condition_expression());
-					}
-					else if (context.function_call() != null)
-					{
-						result = VisitFunction_call(context.function_call());
-						//AddLOD(level, inFunctionAddress);
-					}
-					else if (context.expression() != null)
-					{
-						result = VisitExpression(context.expression());
-
-					}
-
-					if (result < 0)
-						return result;
-
-					leftSides = leftSides.multiple_assign();
-				}
-			}
-			else
-			{
-				result = VisitArray_inicialization(context.array_inicialization());
-			}
-
-			return result;
-		}
-
-		public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
-		{
-			VarConstItem newArray = createArray(context);
-			int result = processArray(newArray);
-
-			if (result < 0)
-				return result;
-
-			if (context.Int() != null)
-			{
-				for (int i = 0; i < newArray.GetLength(); i++)
-					AddLIT("0");
-			}
-			else if (context.String() != null)
-			{
-				String content = context.String().GetText();
-				for (int i = 0; i < newArray.GetLength(); i++)
-					AddLIT(Convert.ToString(Convert.ToInt32(content[i])));
-			}
-			else if (context.number_array_assign() != null)
-			{
-				GrammarParser.Number_array_assignContext values = context.number_array_assign();
-				while (values != null)
-				{
-					VisitExpression(values.expression());
-					values = values.number_array_assign();
-				}
-			}
-			else if (context.bool_array_assign() != null)
-			{
-				GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
-				while (values != null)
-				{
-					if (values.condition_expression() != null)
-					{
-						VisitCondition_expression(values.condition_expression());
-					}
-					else if (values.function_call() != null)
-					{
-						VisitFunction_call(values.function_call());
-						//AddLOD(level, funcReturnAddress);
-					}
-					values = values.bool_array_assign();
-				}
-			}
-
-			return result;
-	}
-
-	public override int VisitDef_one_function([NotNull] GrammarParser.Def_one_functionContext context)
-	{
-		inFunction = true;
-		localSymbolTable = new SymbolTable();
-		if (!jmpToMainDone) DoMainJmp(0);
-
-		FuncItem newItem = createFunction(context);
-		if (!globalSymbolTable.ContainsFuncItem(newItem.GetName())) globalSymbolTable.AddFuncItem(newItem);
-		else {
-			Console.WriteLine("Funkce s timhle jmenem uz existuje!\n");
-			return Error.functionAlreadyExists;
-		}
-		AddINT(3 + newItem.GetParameters().Count);
-
-		level += 1;
-		inFunctionAddress = 3;
-		for (int i = 0; i < newItem.GetParameters().Count; i++)
-		{
-
-			VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(), 
-													VarConstType.Var, newItem.GetParameters()[i].getDataType(), inFunctionAddress, level);
-			localSymbolTable.AddVarConstItem(parItem);
-			inFunctionAddress += 1;
-		}
-
-		int result = base.VisitDef_one_function(context);
-		level -= 1;
-
-		AddRET(0, 0);
-		inFunction = false;
-		localSymbolTable = null;
-
-		return result;
-	}
-
-	public override int VisitFunction_return([NotNull] GrammarParser.Function_returnContext context)
-	{
-		int result = 0;
-		if (context.condition_expression() == null && context.expression() == null)
-		{
-			return result;
-		}
-
-		if (context.expression() != null)
-		{
-			result = VisitExpression(context.expression());
-		}
-		else if (context.condition_expression() != null)
-		{
-			result = VisitCondition_expression(context.condition_expression());
-		}
-
-		AddSTO(level, funcReturnAddress);
-
-		return result; 
-	}
-
-		public override int VisitAssignment([NotNull] GrammarParser.AssignmentContext context)
-		{
-			int result = 0;
-			GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
-			while (leftSides != null)
-			{
-				String retValToName = leftSides.Identifier().GetText();
-				if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
-				else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
-				else
-				{
-					Console.WriteLine("Promena na levy strane neexistuje");
-					return Error.varConstDoNotExists;
-				}
-				if (retValTo.GetType() == VarConstType.Const)
-				{
-					return Error.assignmentToConstant;
-				}
-
-				if (context.condition_expression() != null)
-				{
-					result = VisitCondition_expression(context.condition_expression());
-				}
-				else if (context.expression() != null)
-				{
-					result = VisitExpression(context.expression());
-				}
-				else if (context.condition() != null)
-				{
-					result = VisitCondition(context.condition());
-				}
-
-				int varLevel = retValTo.GetLevel();
-				int varAddress = retValTo.GetAddress();
-				int levelToMove = Math.Abs(level - varLevel);
-				AddSTO(levelToMove, varAddress);
-
-				retValTo = null;
-
-				if (result < 0)
-					return result;
-
-				leftSides = leftSides.multiple_assign();
-			}
-
-			return result;
-		}
-
-		public override int VisitMain([NotNull] GrammarParser.MainContext context)
-	{
-		if (!jmpToMainDone) DoMainJmp(0);
-		inFunction = true;
-		inFunctionAddress = 3;
-		level += 1;
-		localSymbolTable = new SymbolTable();
-
-		changeJMPtoMain();
-		int result = base.VisitMain(context);
-		endProgram();
-
-		inFunction = false;
-		localSymbolTable = null;
-		level -= 1;
-		return result;
-	}
-
-	public override int VisitBlok_function([NotNull] GrammarParser.Blok_functionContext context)
-	{    
-		return base.VisitBlok_function(context);
-	}
-
-	public override int VisitDef_var_blok([NotNull] GrammarParser.Def_var_blokContext context)
-	{
-		return base.VisitDef_var_blok(context);
-	}
-
-	public override int VisitBlok([NotNull] GrammarParser.BlokContext context)
-	{
-		return base.VisitBlok(context);
-	}
-
-	public override int VisitFunction_call([NotNull] GrammarParser.Function_callContext context)
-	{  
-		String fName = context.Identifier().GetText();
-
-		FuncItem calledFce = null;
-		if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
-		else
-		{
-			Console.WriteLine("Funkce " + fName + " neexistuje!");
-			return Error.functionDoNotExists;
-		}
-
-		if(retValTo != null && (calledFce.GetReturnDataType() != retValTo.GetDataType()))
-		{
-			Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
-			return Error.functionReturnTypesDoNotMatch;
-		}
-
-		AddINT(3);
-		List<VarConstItem> usedParameters = new List<VarConstItem>();
-		GrammarParser.Par_in_functionContext paramContext = context.par_in_function();
-		while (paramContext != null)
-		{
-			VarConstItem par = null;
-
-			if (paramContext.expression() != null)
-			{
-				VisitExpression(paramContext.expression());
-				par = new VarConstItem("", VarConstType.Var, DataType.Int, 0, 0);
-			}
-			else if (paramContext.condition_expression() != null)
-			{
-				VisitCondition_expression(paramContext.condition_expression());
-				par = new VarConstItem("", VarConstType.Var, DataType.Bool, 0, 0);
-			}
-
-			if(par != null)
-			{
-				usedParameters.Add(par);
-			}
-			paramContext = paramContext.par_in_function();
-		}
-
-		List<FunctionParameter> requestedParameters = calledFce.GetParameters();
-		if(requestedParameters.Count != usedParameters.Count)
-		{
-			Console.WriteLine("Spatne pocet parametrů!");
-			return Error.functionWrongParametersCount;
-		}
-		for(int i = 0; i < requestedParameters.Count; i++)
-		{
-			if(requestedParameters[i].getDataType() != usedParameters[i].GetDataType())
-			{
-				Console.WriteLine("Nespravny datovy typ parametru!");
-				return Error.functionParameterDataTypeDoNotMatch;
-			}
-		}
-
-		AddINT(-1 * (3 + usedParameters.Count()));
-		AddCAL(1, calledFce.GetAddress());
-		if(retValTo != null)
-			AddLOD(level, funcReturnAddress);
-
-			return 0;
-	}
-
-	public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
-	{
-		int result = 0;
-		if (context.expression() != null)
-		{
-			result = VisitExpression(context.expression());
-		}
-		if(context.expression_multiply() != null)
-		{
-			result = VisitExpression_multiply(context.expression_multiply());
-		}
-
-		if(context.Add() != null)
-		{
-			AddOPR(Instruction.ADD);
-
-		}
-		else if(context.Sub() != null)
-		{
-			AddOPR(Instruction.SUB);
-		}
-
-		return result;
-	}
-
-	public override int VisitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context)
-	{
-		int result = 0;
-		if (context.expression_multiply() != null) 
-		{
-			result = VisitExpression_multiply(context.expression_multiply());
-			if (result < 0)
-				return result;
-		}
-		result = VisitExpression_item(context.expression_item());
-
-		if (context.Mul() != null)
-		{
-			AddOPR(Instruction.MUL);
-		}
-		else if (context.Div() != null)
-		{
-			AddOPR(Instruction.DIV);
-		}
-
-		return result;
-	}
-
-	public override int VisitExpression_item([NotNull] GrammarParser.Expression_itemContext context)
-	{
-		int result = 0;
-		if(context.Identifier() != null)
-		{
-			String varConstName = context.Identifier().GetText();
-			VarConstItem varConst = null;
-			if (localSymbolTable.ContainsVarConstItem(varConstName)) varConst = localSymbolTable.GetVarConstItemByName(varConstName);
-			else if (globalSymbolTable.ContainsVarConstItem(varConstName)) varConst = globalSymbolTable.GetVarConstItemByName(varConstName);
-			else
-			{
-				Console.WriteLine("Promena ve vyrazu neexistuje");
-				return Error.varConstDoNotExists;
-			}
-
-			int varLevel = varConst.GetLevel();
-			int levelToMove = Math.Abs(level - varLevel);
-			AddLOD(levelToMove, varConst.GetAddress());
-		}
-		else if(context.array_index() != null)
-		{
-			VarConstItem array = GetVarConst(context.Identifier().GetText());
-			if(array == null)
-			{
-				Console.WriteLine("Pole ve vyrazu neexistuje");
-				return Error.arrayDoNotExists;
-			}
-
-			int index = Convert.ToInt32(context.Int().GetText());
-
-			if (index < 0)
-			{
-				Console.WriteLine("Pole nejde indexovat do minusu!");
-				return Error.arrayIndexNegative;
-			}
-			if (index >= array.GetLength())
-			{
-				Console.WriteLine("OutOfBounds, idex pole vyjel za length pole");
-				return Error.arrayOutOfBounds;
-			}
-
-			int varLevel = array.GetLevel();
-			int varAddress = array.GetAddress();
-			int levelToMove = Math.Abs(level - varLevel);
-			AddLOD(levelToMove, varAddress + index);
-		}
-		else if(context.function_call() != null)
-		{
-			if (!globalSymbolTable.ContainsFuncItem(context.function_call().Identifier().GetText())) {
-				Console.WriteLine("Funkce volana ve vyrazu neexistuje!");
-				return Error.functionDoNotExists;
-			}
-
-			result = VisitFunction_call(context.function_call());
-			//AddLOD(level, funcReturnAddress);
-		}
-		else if(context.expression() != null)
-		{
-			result = VisitExpression(context.expression());
-		}
-		else
-		{
-			AddLIT(context.Int().GetText());
-			if (context.Sub() != null)
-			{
-				AddOPR(Instruction.UNARY_MINUS);
-			}
-		}
-
-		return result; 
-	}
-
-	public override int VisitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context)
-	{
-		String arrayName = context.array_index().Identifier().GetText();
-		VarConstItem leftSide = null;
-		if (localSymbolTable.ContainsVarConstItem(arrayName)) leftSide = localSymbolTable.GetVarConstItemByName(arrayName);
-		else if (globalSymbolTable.ContainsVarConstItem(arrayName)) leftSide = globalSymbolTable.GetVarConstItemByName(arrayName);
-		else
-		{
-			Console.WriteLine("Pole na leve strane neexistuje");
-			return Error.arrayDoNotExists;
-		}
-
-		int index = Convert.ToInt32(context.array_index().Int().GetText());
-		if(index < 0)
-		{
-			Console.WriteLine("Index nemuze bejt zapornej");
-			return Error.arrayIndexNegative;
-		}
-		if (index >= leftSide.GetLength())
-		{
-			Console.WriteLine("OutOfBounds, idex pole vyjel za length pole");
-			return Error.arrayOutOfBounds;
-		}
-
-		int result = 0;
-		if (context.expression() != null)
-		{
-			result = VisitExpression(context.expression());
-		}
-		else if(context.condition_expression() != null)
-		{
-			result = VisitCondition_expression(context.condition_expression());
-		}
-
-		int varLevel = leftSide.GetLevel();
-		int levelToMove = Math.Abs(level - varLevel);
-		AddSTO(levelToMove, leftSide.GetAddress() + index);
-			return result;
-	}
-
-	public override int VisitIf([NotNull] GrammarParser.IfContext context)
-	{
-		//AddDebug("IF");
-		Visit(context.condition());
-		int jmcAddress = instructionCount;
-		AddJMC(0);
-		Visit(context.blok());
-		int jmpAddress = instructionCount;
-		AddJMP(0);
-		ChangeJMC(jmcAddress, instructionCount);
-		Visit(context.else_if());
-		ChangeJMP(instructionCount, jmpAddress);
-		return 10;
-	}
-
-	public override int VisitElse_if([NotNull] GrammarParser.Else_ifContext context)
-	{
-		if (context.If() != null)
-		{
-			Visit(context.condition());
-			int jmcAddress = instructionCount;
-			AddJMC(0);
-			Visit(context.blok());
-			int jmpAddress = instructionCount;
-			AddJMP(0);
-			ChangeJMC(jmcAddress, instructionCount);
-			Visit(context.else_if());
-			ChangeJMP(instructionCount, jmpAddress);
-			return 11;
-		}
-		else
-		{
-			Visit(context.@else());
-			return 12;
-		}
-	}
-
-	public override int VisitElse([NotNull] GrammarParser.ElseContext context)
-	{
-		if(context.blok() != null)
-		{
-			Visit(context.blok());
-			return 0;
-		}
-		else
-		{
-			return 1;
-		}
-	}
-
-	public override int VisitWhile([NotNull] GrammarParser.WhileContext context)
-	{
-		//AddDebug("WHILE");
-		int conditionAddress = instructionCount;
-		Visit(context.condition());
-
-		int jmcAddress = instructionCount;
-		AddJMC(0);
-
-		Visit(context.blok());
-		AddJMP(conditionAddress);
-
-		ChangeJMC(jmcAddress, instructionCount);
-
-		return 11;
-	}
-
-	public override int VisitDo_while([NotNull] GrammarParser.Do_whileContext context)
-	{
-
-		int firstAddress = instructionCount;
-		Visit(context.blok());
-		Visit(context.condition());
-
-		//Value must be negated to jump when not true
-		AddNeg();
-
-		AddJMC(firstAddress);
-
-		return 0;
-	}
-
-
-	public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
-	{
-		if (context.condition_expression() != null)
-		{
-			Visit(context.condition_expression());
-		}
-
-		if (context.GetChild<GrammarParser.ConditionContext>(0) != null)
-		{
-			Visit(context.GetChild<GrammarParser.ConditionContext>(0));
-
-			if(context.Negation() != null)
-			{
-				AddNeg();
-			}
-		}
-
-		if (context.GetChild<GrammarParser.ConditionContext>(1) != null)
-		{
-			Visit(context.GetChild<GrammarParser.ConditionContext>(1));
-		}
-
-		ITerminalNode logicalOperator = context.Logical_operator();
-		if (logicalOperator != null)
-		{
-			if (logicalOperator.GetText() == "||")
-			{
-				AddOPR(Instruction.ADD);
-				AddLIT("1");
-				AddOPR(Instruction.GEQ);
-			}
-			else
-			{
-				AddOPR(Instruction.MUL);
-			}
-		}
-
-		return 0;
-	}
-
-	public override int VisitCondition_expression([NotNull] GrammarParser.Condition_expressionContext context)
-	{
-		if (context.Bool() != null)
-		{
-			AddLIT(BoolToInt(context.Bool().GetText()));
-			return 1;
-		}
-
-		int ret1 = Visit(context.condition_item()[0]);
-		int ret2 = Visit(context.condition_item()[1]);
-
-		if (ret1 != ret2)
-		{
-			Console.WriteLine("Cannot compare values of different data types.");
-			return Error.cmpTypeMismatch;
-		}
-
-		switch(context.Operator_condition().GetText())
-		{
-			case "==": AddOPR(Instruction.EQ); break;
-			case "!=": AddOPR(Instruction.NEQ); break;
-			case "<": AddOPR(Instruction.LESS); break;
-			case "<=": AddOPR(Instruction.LEQ); break;
-			case ">": AddOPR(Instruction.GREATER); break;
-			case ">=": AddOPR(Instruction.GEQ); break;
-		}
-
-		return 2;
-	}
-
-	public override int VisitCondition_item([NotNull] GrammarParser.Condition_itemContext context)
-	{
-		if (context.Bool() != null)
-		{
-			AddLIT(BoolToInt(context.Bool().GetText()));
-			if (context.Negation() != null)
-			{
-				AddNeg();
-			}
-
-			return 1;
-		}
-
-		Visit(context.expression());
-		return 2;
-	}
-	}
+        public Boolean isExpressionFunctionCall(GrammarParser.ExpressionContext context)
+        {
+            return true;
+        }
+        #endregion
+
+        #region Visitors
+        public override int VisitStart([NotNull] GrammarParser.StartContext context)
+        {
+            return base.VisitStart(context);
+        }
+
+        public override int VisitDef_con_var([NotNull] GrammarParser.Def_con_varContext context)
+        {
+            return base.VisitDef_con_var(context);
+        }
+
+        public override int VisitDef_const([NotNull] GrammarParser.Def_constContext context)
+        {
+            int result = 0;
+            GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
+            while (leftSides != null)
+            {
+                VarConstItem newConst = createConst(context, leftSides.Identifier().GetText());
+                result = processVarConst(newConst);
+
+                if (result < 0)
+                    return result;
+
+                if (localSymbolTable == null)
+                    localSymbolTable = new SymbolTable();
+
+                if (context.condition_expression() != null)
+                {
+                    result = VisitCondition_expression(context.condition_expression());
+                }
+                else if (context.function_call() != null)
+                {
+                    result = VisitFunction_call(context.function_call());
+                    //AddLOD(level, funcReturnAddress);
+                }
+                else if (context.expression() != null)
+                {
+                    result = VisitExpression(context.expression());
+                }
+
+                if (result < 0)
+                    return result;
+
+                leftSides = leftSides.multiple_assign();
+            }
+
+            return result;
+        }
+
+        public override int VisitDef_var([NotNull] GrammarParser.Def_varContext context)
+        {
+            int result = 0;
+            if (context.array_inicialization() == null)
+            {
+                GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
+                while (leftSides != null)
+                {
+                    VarConstItem newVar = createVar(context, leftSides.Identifier().GetText());
+                    result = processVarConst(newVar);
+
+                    if (result < 0)
+                        return result;
+
+                    if (localSymbolTable == null)
+                        localSymbolTable = new SymbolTable();
+                    if (context.condition_expression() != null)
+                    {
+                        result = VisitCondition_expression(context.condition_expression());
+                    }
+                    else if (context.function_call() != null)
+                    {
+                        result = VisitFunction_call(context.function_call());
+                        //AddLOD(level, inFunctionAddress);
+                    }
+                    else if (context.expression() != null)
+                    {
+                        result = VisitExpression(context.expression());
+
+                    }
+
+                    if (result < 0)
+                        return result;
+
+                    leftSides = leftSides.multiple_assign();
+                }
+            }
+            else
+            {
+                result = VisitArray_inicialization(context.array_inicialization());
+            }
+
+            return result;
+        }
+
+        public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
+        {
+            VarConstItem newArray = createArray(context);
+            int result = processArray(newArray);
+
+            if (result < 0)
+                return result;
+
+            if (context.Int() != null)
+            {
+                for (int i = 0; i < newArray.GetLength(); i++)
+                    AddLIT("0");
+            }
+            else if (context.String() != null)
+            {
+                String content = context.String().GetText();
+                for (int i = 0; i < newArray.GetLength(); i++)
+                    AddLIT(Convert.ToString(Convert.ToInt32(content[i])));
+            }
+            else if (context.number_array_assign() != null)
+            {
+                GrammarParser.Number_array_assignContext values = context.number_array_assign();
+                while (values != null)
+                {
+                    VisitExpression(values.expression());
+                    values = values.number_array_assign();
+                }
+            }
+            else if (context.bool_array_assign() != null)
+            {
+                GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
+                while (values != null)
+                {
+                    if (values.condition_expression() != null)
+                    {
+                        VisitCondition_expression(values.condition_expression());
+                    }
+                    else if (values.function_call() != null)
+                    {
+                        VisitFunction_call(values.function_call());
+                        //AddLOD(level, funcReturnAddress);
+                    }
+                    values = values.bool_array_assign();
+                }
+            }
+
+            return result;
+        }
+
+        public override int VisitDef_one_function([NotNull] GrammarParser.Def_one_functionContext context)
+        {
+            inFunction = true;
+            localSymbolTable = new SymbolTable();
+            if (!jmpToMainDone) DoMainJmp(0);
+
+            FuncItem newItem = createFunction(context);
+            if (!globalSymbolTable.ContainsFuncItem(newItem.GetName())) globalSymbolTable.AddFuncItem(newItem);
+            else
+            {
+                Console.WriteLine("Funkce s timhle jmenem uz existuje!\n");
+                return Error.functionAlreadyExists;
+            }
+            AddINT(3 + newItem.GetParameters().Count);
+
+            level += 1;
+            inFunctionAddress = 3;
+            for (int i = 0; i < newItem.GetParameters().Count; i++)
+            {
+
+                VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(),
+                                                        VarConstType.Var, newItem.GetParameters()[i].getDataType(), inFunctionAddress, level);
+                localSymbolTable.AddVarConstItem(parItem);
+                inFunctionAddress += 1;
+            }
+
+            int result = base.VisitDef_one_function(context);
+            level -= 1;
+
+            AddRET(0, 0);
+            inFunction = false;
+            localSymbolTable = null;
+
+            return result;
+        }
+
+        public override int VisitFunction_return([NotNull] GrammarParser.Function_returnContext context)
+        {
+            int result = 0;
+            if (context.condition_expression() == null && context.expression() == null)
+            {
+                return result;
+            }
+
+            if (context.expression() != null)
+            {
+                result = VisitExpression(context.expression());
+            }
+            else if (context.condition_expression() != null)
+            {
+                result = VisitCondition_expression(context.condition_expression());
+            }
+
+            AddSTO(level, funcReturnAddress);
+
+            return result;
+        }
+
+        public override int VisitAssignment([NotNull] GrammarParser.AssignmentContext context)
+        {
+            int result = 0;
+            GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
+            while (leftSides != null)
+            {
+                String retValToName = leftSides.Identifier().GetText();
+                if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
+                else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
+                else
+                {
+                    Console.WriteLine("Promena na levy strane neexistuje");
+                    return Error.varConstDoNotExists;
+                }
+                if (retValTo.GetType() == VarConstType.Const)
+                {
+                    Console.WriteLine("Nelze prirazovat do konstanty");
+                    return Error.assignmentToConstant;
+                }
+
+                if (context.condition_expression() != null)
+                {
+                    result = VisitCondition_expression(context.condition_expression());
+                }
+                else if (context.expression() != null)
+                {
+                    result = VisitExpression(context.expression());
+                }
+                else if (context.condition() != null)
+                {
+                    result = VisitCondition(context.condition());
+                }
+
+                int varLevel = retValTo.GetLevel();
+                int varAddress = retValTo.GetAddress();
+                int levelToMove = Math.Abs(level - varLevel);
+                AddSTO(levelToMove, varAddress);
+
+                retValTo = null;
+
+                if (result < 0)
+                    return result;
+
+                leftSides = leftSides.multiple_assign();
+            }
+
+            return result;
+        }
+
+        public override int VisitMain([NotNull] GrammarParser.MainContext context)
+        {
+            if (!jmpToMainDone) DoMainJmp(0);
+            inFunction = true;
+            inFunctionAddress = 3;
+            level += 1;
+            localSymbolTable = new SymbolTable();
+
+            changeJMPtoMain();
+            int result = base.VisitMain(context);
+            endProgram();
+
+            inFunction = false;
+            localSymbolTable = null;
+            level -= 1;
+            return result;
+        }
+
+        public override int VisitBlok_function([NotNull] GrammarParser.Blok_functionContext context)
+        {
+            return base.VisitBlok_function(context);
+        }
+
+        public override int VisitDef_var_blok([NotNull] GrammarParser.Def_var_blokContext context)
+        {
+            return base.VisitDef_var_blok(context);
+        }
+
+        public override int VisitBlok([NotNull] GrammarParser.BlokContext context)
+        {
+            return base.VisitBlok(context);
+        }
+
+        public override int VisitFunction_call([NotNull] GrammarParser.Function_callContext context)
+        {
+            String fName = context.Identifier().GetText();
+
+            FuncItem calledFce = null;
+            if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
+            else
+            {
+                Console.WriteLine("Funkce " + fName + " neexistuje!");
+                return Error.functionDoNotExists;
+            }
+
+            if (retValTo != null && (calledFce.GetReturnDataType() != retValTo.GetDataType()))
+            {
+                Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
+                return Error.functionReturnTypesDoNotMatch;
+            }
+
+            AddINT(3);
+            List<VarConstItem> usedParameters = new List<VarConstItem>();
+            GrammarParser.Par_in_functionContext paramContext = context.par_in_function();
+            while (paramContext != null)
+            {
+                VarConstItem par = null;
+
+                if (paramContext.expression() != null)
+                {
+                    VisitExpression(paramContext.expression());
+                    par = new VarConstItem("", VarConstType.Var, DataType.Int, 0, 0);
+                }
+                else if (paramContext.condition_expression() != null)
+                {
+                    VisitCondition_expression(paramContext.condition_expression());
+                    par = new VarConstItem("", VarConstType.Var, DataType.Bool, 0, 0);
+                }
+
+                if (par != null)
+                {
+                    usedParameters.Add(par);
+                }
+                paramContext = paramContext.par_in_function();
+            }
+
+            List<FunctionParameter> requestedParameters = calledFce.GetParameters();
+            if (requestedParameters.Count != usedParameters.Count)
+            {
+                Console.WriteLine("Spatne pocet parametrů!");
+                return Error.functionWrongParametersCount;
+            }
+            for (int i = 0; i < requestedParameters.Count; i++)
+            {
+                if (requestedParameters[i].getDataType() != usedParameters[i].GetDataType())
+                {
+                    Console.WriteLine("Nespravny datovy typ parametru!");
+                    return Error.functionParameterDataTypeDoNotMatch;
+                }
+            }
+
+            AddINT(-1 * (3 + usedParameters.Count()));
+            AddCAL(1, calledFce.GetAddress());
+            if (retValTo != null)
+                AddLOD(level, funcReturnAddress);
+
+            return 0;
+        }
+
+        public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
+        {
+            int result = 0;
+            if (context.expression() != null)
+            {
+                result = VisitExpression(context.expression());
+            }
+            if (context.expression_multiply() != null)
+            {
+                result = VisitExpression_multiply(context.expression_multiply());
+            }
+
+            if (context.Add() != null)
+            {
+                AddOPR(Instruction.ADD);
+
+            }
+            else if (context.Sub() != null)
+            {
+                AddOPR(Instruction.SUB);
+            }
+
+            return result;
+        }
+
+        public override int VisitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context)
+        {
+            int result = 0;
+            if (context.expression_multiply() != null)
+            {
+                result = VisitExpression_multiply(context.expression_multiply());
+                if (result < 0)
+                    return result;
+            }
+            result = VisitExpression_item(context.expression_item());
+
+            if (context.Mul() != null)
+            {
+                AddOPR(Instruction.MUL);
+            }
+            else if (context.Div() != null)
+            {
+                AddOPR(Instruction.DIV);
+            }
+
+            return result;
+        }
+
+        public override int VisitExpression_item([NotNull] GrammarParser.Expression_itemContext context)
+        {
+            int result = 0;
+            if (context.Identifier() != null)
+            {
+                String varConstName = context.Identifier().GetText();
+                VarConstItem varConst = null;
+                if (localSymbolTable.ContainsVarConstItem(varConstName)) varConst = localSymbolTable.GetVarConstItemByName(varConstName);
+                else if (globalSymbolTable.ContainsVarConstItem(varConstName)) varConst = globalSymbolTable.GetVarConstItemByName(varConstName);
+                else
+                {
+                    Console.WriteLine("Promena ve vyrazu neexistuje");
+                    return Error.varConstDoNotExists;
+                }
+
+                int varLevel = varConst.GetLevel();
+                int levelToMove = Math.Abs(level - varLevel);
+                AddLOD(levelToMove, varConst.GetAddress());
+            }
+            else if (context.array_index() != null)
+            {
+                VarConstItem array = GetVarConst(context.Identifier().GetText());
+                if (array == null)
+                {
+                    Console.WriteLine("Pole ve vyrazu neexistuje");
+                    return Error.arrayDoNotExists;
+                }
+
+                int index = Convert.ToInt32(context.Int().GetText());
+
+                if (index < 0)
+                {
+                    Console.WriteLine("Pole nejde indexovat do minusu!");
+                    return Error.arrayIndexNegative;
+                }
+                if (index >= array.GetLength())
+                {
+                    Console.WriteLine("OutOfBounds, index pole vyjel za length pole");
+                    return Error.arrayOutOfBounds;
+                }
+
+                int varLevel = array.GetLevel();
+                int varAddress = array.GetAddress();
+                int levelToMove = Math.Abs(level - varLevel);
+                AddLOD(levelToMove, varAddress + index);
+            }
+            else if (context.function_call() != null)
+            {
+                if (!globalSymbolTable.ContainsFuncItem(context.function_call().Identifier().GetText()))
+                {
+                    Console.WriteLine("Funkce volana ve vyrazu neexistuje!");
+                    return Error.functionDoNotExists;
+                }
+
+                result = VisitFunction_call(context.function_call());
+                //AddLOD(level, funcReturnAddress);
+            }
+            else if (context.expression() != null)
+            {
+                result = VisitExpression(context.expression());
+            }
+            else
+            {
+                AddLIT(context.Int().GetText());
+                if (context.Sub() != null)
+                {
+                    AddOPR(Instruction.UNARY_MINUS);
+                }
+            }
+
+            return result;
+        }
+
+        public override int VisitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context)
+        {
+            String arrayName = context.array_index().Identifier().GetText();
+            VarConstItem leftSide = null;
+            if (localSymbolTable.ContainsVarConstItem(arrayName)) leftSide = localSymbolTable.GetVarConstItemByName(arrayName);
+            else if (globalSymbolTable.ContainsVarConstItem(arrayName)) leftSide = globalSymbolTable.GetVarConstItemByName(arrayName);
+            else
+            {
+                Console.WriteLine("Pole na leve strane neexistuje");
+                return Error.arrayDoNotExists;
+            }
+
+            int index = Convert.ToInt32(context.array_index().Int().GetText());
+            if (index < 0)
+            {
+                Console.WriteLine("Index nemuze bejt zapornej");
+                return Error.arrayIndexNegative;
+            }
+            if (index >= leftSide.GetLength())
+            {
+                Console.WriteLine("OutOfBounds, idex pole vyjel za length pole");
+                return Error.arrayOutOfBounds;
+            }
+
+            int result = 0;
+            if (context.expression() != null)
+            {
+                result = VisitExpression(context.expression());
+            }
+            else if (context.condition_expression() != null)
+            {
+                result = VisitCondition_expression(context.condition_expression());
+            }
+
+            int varLevel = leftSide.GetLevel();
+            int levelToMove = Math.Abs(level - varLevel);
+            AddSTO(levelToMove, leftSide.GetAddress() + index);
+            return result;
+        }
+
+        public override int VisitIf([NotNull] GrammarParser.IfContext context)
+        {
+            //AddDebug("IF");
+            Visit(context.condition());
+            int jmcAddress = instructionCount;
+            AddJMC(0);
+            Visit(context.blok());
+            int jmpAddress = instructionCount;
+            AddJMP(0);
+            ChangeJMC(jmcAddress, instructionCount);
+            Visit(context.else_if());
+            ChangeJMP(instructionCount, jmpAddress);
+            return 10;
+        }
+
+        public override int VisitElse_if([NotNull] GrammarParser.Else_ifContext context)
+        {
+            if (context.If() != null)
+            {
+                Visit(context.condition());
+                int jmcAddress = instructionCount;
+                AddJMC(0);
+                Visit(context.blok());
+                int jmpAddress = instructionCount;
+                AddJMP(0);
+                ChangeJMC(jmcAddress, instructionCount);
+                Visit(context.else_if());
+                ChangeJMP(instructionCount, jmpAddress);
+                return 11;
+            }
+            else
+            {
+                Visit(context.@else());
+                return 12;
+            }
+        }
+
+        public override int VisitElse([NotNull] GrammarParser.ElseContext context)
+        {
+            if (context.blok() != null)
+            {
+                Visit(context.blok());
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        public override int VisitWhile([NotNull] GrammarParser.WhileContext context)
+        {
+            //AddDebug("WHILE");
+            int conditionAddress = instructionCount;
+            Visit(context.condition());
+
+            int jmcAddress = instructionCount;
+            AddJMC(0);
+
+            Visit(context.blok());
+            AddJMP(conditionAddress);
+
+            ChangeJMC(jmcAddress, instructionCount);
+
+            return 11;
+        }
+
+        public override int VisitDo_while([NotNull] GrammarParser.Do_whileContext context)
+        {
+
+            int firstAddress = instructionCount;
+            Visit(context.blok());
+            Visit(context.condition());
+
+            //Value must be negated to jump when not true
+            AddNeg();
+
+            AddJMC(firstAddress);
+
+            return 0;
+        }
+
+
+        public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
+        {
+            if (context.condition_expression() != null)
+            {
+                Visit(context.condition_expression());
+            }
+
+            if (context.GetChild<GrammarParser.ConditionContext>(0) != null)
+            {
+                Visit(context.GetChild<GrammarParser.ConditionContext>(0));
+
+                if (context.Negation() != null)
+                {
+                    AddNeg();
+                }
+            }
+
+            if (context.GetChild<GrammarParser.ConditionContext>(1) != null)
+            {
+                Visit(context.GetChild<GrammarParser.ConditionContext>(1));
+            }
+
+            ITerminalNode logicalOperator = context.Logical_operator();
+            if (logicalOperator != null)
+            {
+                if (logicalOperator.GetText() == "||")
+                {
+                    AddOPR(Instruction.ADD);
+                    AddLIT("1");
+                    AddOPR(Instruction.GEQ);
+                }
+                else
+                {
+                    AddOPR(Instruction.MUL);
+                }
+            }
+
+            return 0;
+        }
+
+        public override int VisitCondition_expression([NotNull] GrammarParser.Condition_expressionContext context)
+        {
+            if (context.Bool() != null)
+            {
+                AddLIT(BoolToInt(context.Bool().GetText()));
+                return 1;
+            }
+
+            int ret1 = Visit(context.condition_item()[0]);
+            int ret2 = Visit(context.condition_item()[1]);
+
+            if (ret1 != ret2)
+            {
+                Console.WriteLine("Cannot compare values of different data types.");
+                return Error.cmpTypeMismatch;
+            }
+
+            switch (context.Operator_condition().GetText())
+            {
+                case "==": AddOPR(Instruction.EQ); break;
+                case "!=": AddOPR(Instruction.NEQ); break;
+                case "<": AddOPR(Instruction.LESS); break;
+                case "<=": AddOPR(Instruction.LEQ); break;
+                case ">": AddOPR(Instruction.GREATER); break;
+                case ">=": AddOPR(Instruction.GEQ); break;
+            }
+
+            return 2;
+        }
+
+        public override int VisitCondition_item([NotNull] GrammarParser.Condition_itemContext context)
+        {
+            if (context.Bool() != null)
+            {
+                AddLIT(BoolToInt(context.Bool().GetText()));
+                if (context.Negation() != null)
+                {
+                    AddNeg();
+                }
+
+                return 1;
+            }
+
+            Visit(context.expression());
+            return 2;
+        }
+    }
+    #endregion
 }

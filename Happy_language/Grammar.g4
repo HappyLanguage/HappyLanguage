@@ -139,10 +139,13 @@ for
 	: For Bracket_left for_condition Bracket_right Start_blok blok End_blok;
 
 for_condition
-	: one_assignment Semi condition Semi expression
-	| one_assignment Semi condition Semi
-	| Semi condition Semi expression
-	| Semi Semi;
+	: one_assignment Semi condition Semi increment
+	| Semi condition Semi increment
+	| Semi Semi increment;
+
+increment
+	: one_assignment
+	|;//empty
 
 //============== Vyrazy a prirazeni ==============
 

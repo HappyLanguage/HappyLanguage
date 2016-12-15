@@ -812,6 +812,49 @@ namespace Happy_language
             return result;
         }
 
+        public override int VisitOne_assignment([NotNull] GrammarParser.One_assignmentContext context)
+        {
+
+            int result = 0;
+            String retValToName = context.Identifier().GetText();
+            if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
+            else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
+            else
+            {
+                Console.WriteLine("Promena na levy strane neexistuje");
+                return Error.varConstDoNotExists;
+            }
+            if (retValTo.GetType() == VarConstType.Const)
+            {
+                Console.WriteLine("Nelze prirazovat do konstanty");
+                return Error.assignmentToConstant;
+            }
+
+            if (context.condition_expression() != null)
+            {
+                result = VisitCondition_expression(context.condition_expression());
+            }
+            else if (context.expression() != null)
+            {
+                result = VisitExpression(context.expression());
+            }
+            else if (context.condition() != null)
+            {
+                result = VisitCondition(context.condition());
+            }
+
+            int varLevel = retValTo.GetLevel();
+            int varAddress = retValTo.GetAddress();
+            int levelToMove = Math.Abs(level - varLevel);
+            AddSTO(levelToMove, varAddress);
+
+            retValTo = null;
+
+            return result;
+
+
+        }
+
         public override int VisitMain([NotNull] GrammarParser.MainContext context)
         {
             if (!jmpToMainDone) DoMainJmp(0);
@@ -1193,6 +1236,45 @@ namespace Happy_language
             return 0;
         }
 
+        public override int VisitFor([NotNull] GrammarParser.ForContext context)
+        {
+            GrammarParser.For_conditionContext forCondition = context.for_condition();
+
+            if (forCondition.one_assignment() != null)
+            {
+                Visit(forCondition.one_assignment());
+            }
+
+            int conditionAddress = instructionCount;
+            int jmcAddress = 0;
+            
+            if (forCondition.condition() != null)
+            {
+                Visit(forCondition.condition());
+                jmcAddress = instructionCount;
+                AddJMC(0);
+            }
+
+            Visit(context.blok());
+
+            Visit(forCondition.increment());
+
+            AddJMP(conditionAddress);
+
+            ChangeJMC(jmcAddress, instructionCount);
+
+            return 0;
+        }
+
+        public override int VisitIncrement([NotNull] GrammarParser.IncrementContext context)
+        {
+            if (context.one_assignment() != null)
+            {
+                return Visit(context.one_assignment());
+            }
+
+            return 0;
+        }
 
         public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
         {
@@ -1201,9 +1283,10 @@ namespace Happy_language
                 Visit(context.condition_expression());
             }
 
-            if (context.GetChild<GrammarParser.ConditionContext>(0) != null)
+            GrammarParser.ConditionContext condition1 = context.GetChild<GrammarParser.ConditionContext>(0);
+            if (condition1 != null)
             {
-                Visit(context.GetChild<GrammarParser.ConditionContext>(0));
+                Visit(condition1);
 
                 if (context.Negation() != null)
                 {
@@ -1211,9 +1294,10 @@ namespace Happy_language
                 }
             }
 
-            if (context.GetChild<GrammarParser.ConditionContext>(1) != null)
+            GrammarParser.ConditionContext condition2 = context.GetChild<GrammarParser.ConditionContext>(1);
+            if (condition2 != null)
             {
-                Visit(context.GetChild<GrammarParser.ConditionContext>(1));
+                Visit(condition2);
             }
 
             ITerminalNode logicalOperator = context.Logical_operator();

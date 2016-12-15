@@ -7,13 +7,12 @@ happy_start {:
 	:}
 	
 	mainSmile(::){:
-		:I val := 10;)
+		:I val := 1;)
 		
-		 do {:
-			PrintInt(:var:);)
+		for (:val := 0;) val < 10;) val := val + 1:) {:
+			PrintInt(:val:);)
 			PrintNewLine(::);)
-			val := val + 1;)
-		:} while (:val < 20:);)
+		:}
 		
 
 	:}

@@ -1,0 +1,22 @@
+happy_start {:
+	def :V func(::I count:){:
+		:B cond := false;)
+		while (:count > 0:){:
+			count := count - 1;)
+			cond := count > 0;)
+			if (:cond == true:) {:
+				PrintBool(:cond:);)
+				PrintNewLine(::);)
+				PrintInt(:count:);)
+				PrintNewLine(::);)
+			:} else {:
+				PrintBool(:cond:);)
+			:}
+		:}
+	:}	
+
+	mainSmile(::){:
+		:I count := 5;)
+		func(:count:);)
+	:}
+:}

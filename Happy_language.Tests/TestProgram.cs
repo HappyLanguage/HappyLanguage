@@ -15,7 +15,7 @@ namespace Happy_language.Tests
 	[TestClass()]
 	public class TestProgram
 	{
-        public static String SPACE = "\r\r\n";
+        public static String NEW_LINE = "\r\r\n";
 
         [TestMethod()]
         public void TestAssign1()
@@ -62,15 +62,15 @@ namespace Happy_language.Tests
         [TestMethod()]
         public void TestPrint1()
         {
-            TestOutputFromFile("../../../TestFiles/Print/test-file-1.txt", "true" + SPACE + "false");
+            TestOutputFromFile("../../../TestFiles/Print/test-file-1.txt", "true" + NEW_LINE + "false");
         }
 
         [TestMethod()]
         public void TestPrint2()
         {
             TestOutputFromFile("../../../TestFiles/Print/test-file-2.txt",
-                "Hello!" + SPACE + "-1374" + SPACE + "125687" + SPACE + "0" + SPACE +
-                "-789487" + SPACE + "2" + SPACE + "-5" + SPACE + "112" + SPACE
+                "Hello!" + NEW_LINE + "-1374" + NEW_LINE + "125687" + NEW_LINE + "0" + NEW_LINE +
+                "-789487" + NEW_LINE + "2" + NEW_LINE + "-5" + NEW_LINE + "112" + NEW_LINE
                 );
         }
 
@@ -78,6 +78,20 @@ namespace Happy_language.Tests
         public void TestPrint3()
         {
             TestOutputFromFile("../../../TestFiles/Print/test-file-3.txt", "true");
+        }
+
+        [TestMethod()]
+        public void TestPrint4()
+        {
+            TestOutputFromFile("../../../TestFiles/Print/test-file-4.txt", "false" + NEW_LINE + "true");
+        }
+
+        [TestMethod()]
+        public void TestPrint5()
+        {
+            TestOutputFromFile("../../../TestFiles/Print/test-file-5.txt",
+                "true" + NEW_LINE + "4" + NEW_LINE + "true" + NEW_LINE + "3" + NEW_LINE + "true" + NEW_LINE +
+                "2" + NEW_LINE + "true" + NEW_LINE + "1" + NEW_LINE + "false");
         }
 
         [TestMethod()]

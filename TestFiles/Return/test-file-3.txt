@@ -1,0 +1,17 @@
+happy_start {:
+	def :I sqr(::I val:){:
+		ret val * val;)
+	:}
+
+	def :B func(::I val:){:
+		ret val > 5;)
+	:}
+
+	mainSmile(::){:
+		PrintInt(:sqr(:10:):);)
+		PrintNewLine(::);)
+		PrintBool(:func(:sqr(:2:):):);)
+		PrintNewLine(::);)
+		PrintBool(:func(:sqr(:4:):):);)
+	:}
+:}

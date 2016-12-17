@@ -106,6 +106,13 @@ namespace Happy_language.Tests
             TestOutputFromFile("../../../TestFiles/Return/test-file-2.txt", "125");
         }
 
+        [TestMethod()]
+        public void TestReturn3()
+        {
+            TestOutputFromFile("../../../TestFiles/Return/test-file-3.txt",
+                "100" + NEW_LINE + "false" + NEW_LINE + "true");
+        }
+
         public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);

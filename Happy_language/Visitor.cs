@@ -554,6 +554,7 @@ namespace Happy_language
                 if (result < 0)
                     return result;
 
+                retValTo = newConst;
                 if (localSymbolTable == null)
                     localSymbolTable = new SymbolTable();
 
@@ -570,7 +571,7 @@ namespace Happy_language
                 {
                     result = VisitExpression(context.expression());
                 }
-
+                retValTo = null;
                 if (result < 0)
                     return result;
 
@@ -589,11 +590,12 @@ namespace Happy_language
                 while (leftSides != null)
                 {
                     VarConstItem newVar = createVar(context, leftSides.Identifier().GetText());
-                    result = processVarConst(newVar);
+                    result = processVarConst(newVar);              
 
                     if (result < 0)
                         return result;
 
+                    retValTo = newVar;
                     if (localSymbolTable == null)
                         localSymbolTable = new SymbolTable();
                     if (context.condition_expression() != null)
@@ -610,7 +612,7 @@ namespace Happy_language
                         result = VisitExpression(context.expression());
 
                     }
-
+                    retValTo = null;
                     if (result < 0)
                         return result;
 
@@ -724,7 +726,6 @@ namespace Happy_language
             inFunctionAddress = 3;
             for (int i = 0; i < newItem.GetParameters().Count; i++)
             {
-
                 VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(),
                                                         VarConstType.Var, newItem.GetParameters()[i].getDataType(), inFunctionAddress, level);
                 localSymbolTable.AddVarConstItem(parItem);
@@ -851,8 +852,6 @@ namespace Happy_language
             retValTo = null;
 
             return result;
-
-
         }
 
         public override int VisitMain([NotNull] GrammarParser.MainContext context)

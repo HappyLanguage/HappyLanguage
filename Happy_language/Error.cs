@@ -16,12 +16,14 @@ namespace Happy_language
         public static int arrayAlreadyExists = -6;
         public static int arrayLengthNegative = -7;
         public static int arrayOutOfBounds = -8;
-        public static int functionReturnTypesDoNotMatch = -9;
+        //public static int functionReturnTypesDoNotMatch = -9;
         public static int functionWrongParametersCount = -10;
         public static int functionParameterDataTypeDoNotMatch = -11;
         public static int arrayIndexNegative = -12;
         public static int cmpTypeMismatch = -13;
-		public static int assignmentToConstant = -14;
+        public static int assignmentMismatch = -14;
+		public static int assignmentToConstant = -15;
+        public static int operatorTypeMismatch = -16;
 
 	}
 }

@@ -58,7 +58,7 @@ namespace Happy_language
         /// <summary>
         /// Proměnná na levé straně přiřazení
         /// </summary>
-        private VarConstItem retValTo = null;
+        //private VarConstItem retValTo = null;
 
         #endregion
 
@@ -554,24 +554,51 @@ namespace Happy_language
                 if (result < 0)
                     return result;
 
-                retValTo = newConst;
+                //retValTo = newConst;
                 if (localSymbolTable == null)
                     localSymbolTable = new SymbolTable();
 
                 if (context.condition_expression() != null)
                 {
                     result = VisitCondition_expression(context.condition_expression());
+
+                    if (result < 0)
+                        return result;
+
+                    if (newConst.GetDataType() != (DataType) result)
+                    {
+                        Console.WriteLine("Type mismatch.");
+                        return Error.assignmentMismatch;
+                    }
                 }
                 else if (context.function_call() != null)
                 {
                     result = VisitFunction_call(context.function_call());
+
+                    if (result < 0)
+                        return result;
+
+                    if (newConst.GetDataType() != (DataType)result)
+                    {
+                        Console.WriteLine("Type mismatch.");
+                        return Error.assignmentMismatch;
+                    }
                     //AddLOD(level, funcReturnAddress);
                 }
                 else if (context.expression() != null)
                 {
                     result = VisitExpression(context.expression());
+
+                    if (result < 0)
+                        return result;
+
+                    if (newConst.GetDataType() != (DataType)result)
+                    {
+                        Console.WriteLine("Type mismatch.");
+                        return Error.assignmentMismatch;
+                    }
                 }
-                retValTo = null;
+                //retValTo = null;
                 if (result < 0)
                     return result;
 
@@ -595,24 +622,51 @@ namespace Happy_language
                     if (result < 0)
                         return result;
 
-                    retValTo = newVar;
+                    //retValTo = newVar;
                     if (localSymbolTable == null)
                         localSymbolTable = new SymbolTable();
                     if (context.condition_expression() != null)
                     {
                         result = VisitCondition_expression(context.condition_expression());
+
+                        if (result < 0)
+                            return result;
+
+                        if (newVar.GetDataType() != (DataType)result)
+                        {
+                            Console.WriteLine("Type mismatch.");
+                            return Error.assignmentMismatch;
+                        }
                     }
                     else if (context.function_call() != null)
                     {
                         result = VisitFunction_call(context.function_call());
+
+                        if (result < 0)
+                            return result;
+
+                        if (newVar.GetDataType() != (DataType)result)
+                        {
+                            Console.WriteLine("Type mismatch.");
+                            return Error.assignmentMismatch;
+                        }
                         //AddLOD(level, inFunctionAddress);
                     }
                     else if (context.expression() != null)
                     {
                         result = VisitExpression(context.expression());
 
+                        if (result < 0)
+                            return result;
+
+                        if (newVar.GetDataType() != (DataType)result)
+                        {
+                            Console.WriteLine("Type mismatch.");
+                            return Error.assignmentMismatch;
+                        }
+
                     }
-                    retValTo = null;
+                    //retValTo = null;
                     if (result < 0)
                         return result;
 
@@ -660,7 +714,7 @@ namespace Happy_language
                     else if (newArray.GetDataType() != (DataType) result)
                     {
                         Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
-                        return Error.functionReturnTypesDoNotMatch;
+                        return Error.assignmentMismatch;
                     }
 
                     values = values.number_array_assign();
@@ -682,7 +736,7 @@ namespace Happy_language
                         else if (newArray.GetDataType() != (DataType)result)
                         {
                             Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
-                            return Error.functionReturnTypesDoNotMatch;
+                            return Error.assignmentMismatch;
                         }
                     }
                     else if (values.function_call() != null)
@@ -696,7 +750,7 @@ namespace Happy_language
                         else if (newArray.GetDataType() != (DataType)result)
                         {
                             Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
-                            return Error.functionReturnTypesDoNotMatch;
+                            return Error.assignmentMismatch;
                         }
                         //AddLOD(level, funcReturnAddress);
                     }
@@ -771,13 +825,16 @@ namespace Happy_language
             while (leftSides != null)
             {
                 String retValToName = leftSides.Identifier().GetText();
+                VarConstItem retValTo = null;
+
                 if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
                 else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
                 else
                 {
-                    Console.WriteLine("Promena na levy strane neexistuje");
+                    Console.WriteLine("Promena na leve strane neexistuje");
                     return Error.varConstDoNotExists;
                 }
+
                 if (retValTo.GetType() == VarConstType.Const)
                 {
                     Console.WriteLine("Nelze prirazovat do konstanty");
@@ -787,22 +844,47 @@ namespace Happy_language
                 if (context.condition_expression() != null)
                 {
                     result = VisitCondition_expression(context.condition_expression());
+
+                    if (result < 0)
+                        return result;
+
+                    if (retValTo.GetDataType() != (DataType)result)
+                    {
+                        Console.WriteLine("Type mismatch.");
+                        return Error.assignmentMismatch;
+                    }
                 }
                 else if (context.expression() != null)
                 {
                     result = VisitExpression(context.expression());
+
+                    if (result < 0)
+                        return result;
+
+                    if (retValTo.GetDataType() != (DataType)result)
+                    {
+                        Console.WriteLine("Type mismatch.");
+                        return Error.assignmentMismatch;
+                    }
                 }
                 else if (context.condition() != null)
                 {
                     result = VisitCondition(context.condition());
+
+                    if (result < 0)
+                        return result;
+
+                    if (retValTo.GetDataType() != (DataType)result)
+                    {
+                        Console.WriteLine("Type mismatch.");
+                        return Error.assignmentMismatch;
+                    }
                 }
 
                 int varLevel = retValTo.GetLevel();
                 int varAddress = retValTo.GetAddress();
                 int levelToMove = Math.Abs(level - varLevel);
                 AddSTO(levelToMove, varAddress);
-
-                retValTo = null;
 
                 if (result < 0)
                     return result;
@@ -815,16 +897,18 @@ namespace Happy_language
 
         public override int VisitOne_assignment([NotNull] GrammarParser.One_assignmentContext context)
         {
-
             int result = 0;
             String retValToName = context.Identifier().GetText();
+            VarConstItem retValTo = null;
+
             if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
             else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
             else
             {
-                Console.WriteLine("Promena na levy strane neexistuje");
+                Console.WriteLine("Promena na leve strane neexistuje");
                 return Error.varConstDoNotExists;
             }
+
             if (retValTo.GetType() == VarConstType.Const)
             {
                 Console.WriteLine("Nelze prirazovat do konstanty");
@@ -834,14 +918,41 @@ namespace Happy_language
             if (context.condition_expression() != null)
             {
                 result = VisitCondition_expression(context.condition_expression());
+
+                if (result < 0)
+                    return result;
+
+                if (retValTo.GetDataType() != (DataType)result)
+                {
+                    Console.WriteLine("Type mismatch.");
+                    return Error.assignmentMismatch;
+                }
             }
             else if (context.expression() != null)
             {
                 result = VisitExpression(context.expression());
+
+                if (result < 0)
+                    return result;
+
+                if (retValTo.GetDataType() != (DataType)result)
+                {
+                    Console.WriteLine("Type mismatch.");
+                    return Error.assignmentMismatch;
+                }
             }
             else if (context.condition() != null)
             {
                 result = VisitCondition(context.condition());
+
+                if (result < 0)
+                    return result;
+
+                if (retValTo.GetDataType() != (DataType)result)
+                {
+                    Console.WriteLine("Type mismatch.");
+                    return Error.assignmentMismatch;
+                }
             }
 
             int varLevel = retValTo.GetLevel();
@@ -899,11 +1010,11 @@ namespace Happy_language
                 return Error.functionDoNotExists;
             }
 
-            if (retValTo != null && (calledFce.GetReturnDataType() != retValTo.GetDataType()))
-            {
-                Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
-                return Error.functionReturnTypesDoNotMatch;
-            }
+            //if (retValTo != null && (calledFce.GetReturnDataType() != retValTo.GetDataType()))
+            //{
+            //    Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
+            //    return Error.functionReturnTypesDoNotMatch;
+            //}
 
             AddINT(3);
             List<VarConstItem> usedParameters = new List<VarConstItem>();
@@ -947,7 +1058,8 @@ namespace Happy_language
 
             AddINT(-1 * (3 + usedParameters.Count()));
             AddCAL(1, calledFce.GetAddress());
-            if (retValTo != null)
+
+            if (calledFce.GetReturnDataType() != DataType.Void)
                 AddLOD(level, funcReturnAddress);
 
             return (int) calledFce.GetReturnDataType();
@@ -955,50 +1067,108 @@ namespace Happy_language
 
         public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
         {
-            int result = 0;
+            int ret1 = 0, ret2 = 0;
             if (context.expression() != null)
             {
-                result = VisitExpression(context.expression());
+                ret1 = VisitExpression(context.expression());
+
+                if (ret1 < 0)
+                    return ret1;
             }
             if (context.expression_multiply() != null)
             {
-                result = VisitExpression_multiply(context.expression_multiply());
+                ret2 = VisitExpression_multiply(context.expression_multiply());
+
+                if (ret1 < 0)
+                    return ret2;
             }
 
             if (context.Add() != null)
             {
+                if (ret1 != ret2)
+                {
+                    Console.WriteLine("Expression - Add: Type mismatch");
+                    return Error.assignmentMismatch;
+                }
+
+                if ((DataType) ret1 == DataType.Bool)
+                {
+                    Console.WriteLine("Cannot use operation '+' on :B");
+                    return Error.operatorTypeMismatch;
+                }
+
                 AddOPR(Instruction.ADD);
 
             }
             else if (context.Sub() != null)
             {
+                if (ret1 != ret2)
+                {
+                    Console.WriteLine("Expression - Sub: Type mismatch");
+                    return Error.assignmentMismatch;
+                }
+
+                if ((DataType)ret1 == DataType.Bool)
+                {
+                    Console.WriteLine("Cannot use operation '-' on :B");
+                    return Error.operatorTypeMismatch;
+                }
+
                 AddOPR(Instruction.SUB);
             }
 
-            return result;
+            return ret2;
         }
 
         public override int VisitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context)
         {
-            int result = 0;
+            int ret1 = 0, ret2 = 0;
             if (context.expression_multiply() != null)
             {
-                result = VisitExpression_multiply(context.expression_multiply());
-                if (result < 0)
-                    return result;
+                ret1 = VisitExpression_multiply(context.expression_multiply());
+                if (ret1 < 0)
+                    return ret1;
             }
-            result = VisitExpression_item(context.expression_item());
+
+            ret2 = VisitExpression_item(context.expression_item());
+
+            if (ret2 < 0)
+                return ret2;
 
             if (context.Mul() != null)
             {
+                if (ret1 != ret2)
+                {
+                    Console.WriteLine("Expression - Mul: Type mismatch");
+                    return Error.assignmentMismatch;
+                }
+
+                if ((DataType)ret1 == DataType.Bool)
+                {
+                    Console.WriteLine("Cannot use operation '*' on :B");
+                    return Error.operatorTypeMismatch;
+                }
+
                 AddOPR(Instruction.MUL);
             }
             else if (context.Div() != null)
             {
+                if (ret1 != ret2)
+                {
+                    Console.WriteLine("Expression - Div: Type mismatch");
+                    return Error.assignmentMismatch;
+                }
+
+                if ((DataType)ret1 == DataType.Bool)
+                {
+                    Console.WriteLine("Cannot use operation '/' on :B");
+                    return Error.operatorTypeMismatch;
+                }
+
                 AddOPR(Instruction.DIV);
             }
 
-            return result;
+            return ret2;
         }
 
         public override int VisitExpression_item([NotNull] GrammarParser.Expression_itemContext context)
@@ -1074,7 +1244,7 @@ namespace Happy_language
 
                 if (result < 0)
                 {
-                    return 0;
+                    return result;
                 }
             }
             else
@@ -1128,7 +1298,7 @@ namespace Happy_language
                 if (leftSide.GetDataType() != ((DataType) result))
                 {
                     Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
-                    return Error.functionReturnTypesDoNotMatch;
+                    return Error.assignmentMismatch;
                 }
             }
             else if (context.condition_expression() != null)
@@ -1143,7 +1313,7 @@ namespace Happy_language
                 if (leftSide.GetDataType() != ((DataType)result))
                 {
                     Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
-                    return Error.functionReturnTypesDoNotMatch;
+                    return Error.assignmentMismatch;
                 }
             }
 
@@ -1322,7 +1492,7 @@ namespace Happy_language
             if (context.Bool() != null)
             {
                 AddLIT(BoolToInt(context.Bool().GetText()));
-                return 1;
+                return (int) DataType.Bool;
             }
 
             int ret1 = Visit(context.condition_item()[0]);

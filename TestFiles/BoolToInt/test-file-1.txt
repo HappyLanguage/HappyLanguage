@@ -1,0 +1,8 @@
+happy_start {:
+	mainSmile(::){:
+		:I a := BoolToInt(:true:);)
+		:I b := BoolToInt(:false:);)
+		PrintInt(:a:);)
+		PrintInt(:b:);)
+	:}
+:}

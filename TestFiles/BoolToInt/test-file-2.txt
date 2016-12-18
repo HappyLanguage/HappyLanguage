@@ -1,0 +1,21 @@
+happy_start {:
+	def :B func(::B a, :B b:){:
+		ret a == b;)
+	:}
+
+	def :V func2(::){:
+		:B a := false;)
+		:B b := true;)
+		PrintInt(:BoolToInt(:func(:true, true:):):);) :**1
+		PrintInt(:BoolToInt(:func(:a, b:):):);) :**0
+		PrintInt(:BoolToInt(:func(:b, b:) == true:):);) :**1
+		PrintInt(:BoolToInt(:func(:b, b:) == false:):);) :**0
+		PrintInt(:5 + BoolToInt(:func(:b, b:) == true:):);) :**6
+		PrintInt(:BoolToInt(:func(:b, b:) == true:) + 3:);) :**4
+		PrintInt(:7 + BoolToInt(:func(:b, b:) == false:) - 5:);) :**2
+	:}
+
+	mainSmile(::){:
+		func2(::);)
+	:}
+:}

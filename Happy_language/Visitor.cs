@@ -70,7 +70,20 @@ namespace Happy_language
             PreparePrintIntFunction();
             PreparePrintNewLineFunction();
             PreparePrintBoolFunction();
+            PrepareBoolToIntFunction();
             ChangeJMP(instructionCount, 0);
+        }
+
+        public void PrepareBoolToIntFunction()
+        {
+            AddINT(4);
+            AddSTO(1, funcReturnAddress);
+            AddINT(-3);
+            AddRET(0, 0);
+
+            List<FunctionParameter> parameters = new List<FunctionParameter>();
+            parameters.Add(new FunctionParameter("value", DataType.Bool));
+            globalSymbolTable.AddFuncItem(new FuncItem("BoolToInt", DataType.Int, instructionCount - 4, parameters));
         }
 
         public void PreparePrintNewLineFunction()

@@ -1,0 +1,13 @@
+happy_start {:
+	def :I func(::I count:){:
+		:I val := 0;)
+		for (:val := -count;) val <= count;) val := val + 1:) {:
+			PrintInt(:val:);)
+		:}
+		ret 0;)
+	:}
+	
+	mainSmile(::){:
+		func(:4:);)
+	:}
+:}

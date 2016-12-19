@@ -160,16 +160,22 @@ expression_multiply
 	| expression_item;
  
 expression_item
-	: Add Int
-	| Sub Int
-	| Int
+	: Int
 	| Double
+	| Identifier
+	| function_call
+	| array_index
+	| '(' expression ')'		
+	| Add Int	//unární plus mínus 
+	| Sub Int
 	| Add Double
 	| Sub Double
-	| Identifier
-	| array_index
-	| function_call
-	| '(' expression ')';
+	| Sub Identifier
+	| Add Identifier
+	| Sub array_index
+	| Add array_index
+	| Add function_call
+	| Sub function_call;
 
 condition_item
 	: Bool

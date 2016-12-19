@@ -1294,7 +1294,12 @@ namespace Happy_language
                 int levelToMove = Math.Abs(level - varLevel);
                 AddLOD(levelToMove, varConst.GetAddress());
 
-                result = (int) varConst.GetDataType();
+				if (context.Sub() != null)
+				{
+					AddOPR(Instruction.UNARY_MINUS);
+				}
+
+				result = (int) varConst.GetDataType();
             }
             else if (context.array_index() != null)
             {
@@ -1335,7 +1340,12 @@ namespace Happy_language
 
                 result = VisitFunction_call(context.function_call());
 
-                if (result < 0)
+				if (context.Sub() != null)
+				{
+					AddOPR(Instruction.UNARY_MINUS);
+				}
+
+				if (result < 0)
                 {
                     return result;
                 }
@@ -1354,12 +1364,12 @@ namespace Happy_language
             else
             {
                 AddLIT(context.Int().GetText());
-                if (context.Sub() != null)
-                {
-                    AddOPR(Instruction.UNARY_MINUS);
-                }
+				if (context.Sub() != null)
+				{
+					AddOPR(Instruction.UNARY_MINUS);
+				}
 
-                result = (int) DataType.Int;
+				result = (int) DataType.Int;
             }
 
             return result;

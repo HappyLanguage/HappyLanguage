@@ -1,0 +1,9 @@
+happy_start {:
+	
+	:I a := -5;)
+	:I b := -a;)
+
+	mainSmile(::){:
+		PrintInt(:a:);)
+	:}
+:}

@@ -161,7 +161,52 @@ namespace Happy_language.Tests
                 "123" + NEW_LINE + "92" + NEW_LINE + "55");
         }
 
-        public void TestOutputFromFile(String path, String output)
+		[TestMethod()]
+		public void TestUnaryOperator1()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-1.txt", "-5");
+		}
+
+		[TestMethod()]
+		public void TestUnaryOperator2()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-2.txt", "-6");
+		}
+
+		[TestMethod()]
+		public void TestUnaryOperator3()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-3.txt", "11");
+		}
+
+
+		[TestMethod()]
+		public void TestUnaryOperator4()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-4.txt", "1");
+		}
+
+
+		[TestMethod()]
+		public void TestUnaryOperator5()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-5.txt", "14");
+		}
+
+
+		[TestMethod()]
+		public void TestUnaryOperator6()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-6.txt", "-4-3-2-101234");
+		}
+
+		[TestMethod()]
+		public void TestUnaryOperator7()
+		{
+			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-7.txt", "-1");
+		}
+
+		public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);
 

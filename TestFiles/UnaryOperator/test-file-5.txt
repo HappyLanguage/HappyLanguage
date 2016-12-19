@@ -1,0 +1,15 @@
+happy_start {:
+	
+	:I a := -5;)
+
+	def :I ahoj(::){:
+		:I pom := 6;) 
+		ret pom;)	
+	:}
+	
+
+	mainSmile(::){:
+		:I aaa := 20+-ahoj(::);)
+		PrintInt(:aaa:);)
+	:}
+:}

@@ -1,0 +1,13 @@
+happy_start {:
+
+	:I b := 3;)
+
+	def :I func(::){:
+		ret 2;)
+	:}
+	
+	mainSmile(::){:
+		:I a := -func(::)-(-b++func(::));) :// -2-(-3+2) = -2+1 = -1 
+		PrintInt(:a:);)
+	:}
+:}

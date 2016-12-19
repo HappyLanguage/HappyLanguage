@@ -14,21 +14,21 @@ happy_start {:
 		:B eBool := IntToBool(:-4564878:);)
 		:B fBool := IntToBool(:0:);)
 		:B gBool := IntToBool(:a + b + c - func(:a, 45:):);)
-		PrintBool(:aBool:);) :**true
+		PrintBool(:aBool:);) ://true
 		PrintNewLine(::);)
-		PrintBool(:bBool:);) :**false
+		PrintBool(:bBool:);) ://false
 		PrintNewLine(::);)
-		PrintBool(:cBool:);) :**true
+		PrintBool(:cBool:);) ://true
 		PrintNewLine(::);)
-		PrintBool(:dBool:);) :**true
+		PrintBool(:dBool:);) ://true
 		PrintNewLine(::);)
-		PrintBool(:eBool:);) :**true
+		PrintBool(:eBool:);) ://true
 		PrintNewLine(::);)
-		PrintBool(:fBool:);) :**false
+		PrintBool(:fBool:);) ://false
 		PrintNewLine(::);)
-		PrintBool(:gBool:);) :**true
+		PrintBool(:gBool:);) ://true
 		PrintNewLine(::);)
-		PrintBool(:IntToBool(:func(:a, 43:) - 100:):);) :**false
+		PrintBool(:IntToBool(:func(:a, 43:) - 100:):);) ://false
 	:}
 
 	def :V func3(::){:

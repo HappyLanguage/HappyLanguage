@@ -223,7 +223,7 @@ Mul: '*';
 Div: '/';
 Return: 'ret';
 Comment: ':*' .*? '*:' -> skip;
-Line_comment: ':**' ~[\r\n]* -> skip;
+Line_comment: '://' ~[\r\n]* -> skip;
 Semi: ';)';
 Assign: ':=';
 Bracket_left: '(:';

@@ -153,6 +153,14 @@ namespace Happy_language.Tests
                 "72" + NEW_LINE + "10" + NEW_LINE + "55" + NEW_LINE + "55");
         }
 
+        [TestMethod()]
+        public void TestAbs1()
+        {
+            TestOutputFromFile("../../../TestFiles/Abs/test-file-1.txt",
+                "159" + NEW_LINE + "0" + NEW_LINE + "951" + NEW_LINE + "56" + NEW_LINE +
+                "123" + NEW_LINE + "92" + NEW_LINE + "55");
+        }
+
         public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);

@@ -125,6 +125,20 @@ namespace Happy_language.Tests
             TestOutputFromFile("../../../TestFiles/BoolToInt/test-file-2.txt", "1010642");
         }
 
+        [TestMethod()]
+        public void TestIntToBool1()
+        {
+            TestOutputFromFile("../../../TestFiles/IntToBool/test-file-1.txt",
+                "true" + NEW_LINE + "false" + NEW_LINE + "true" + NEW_LINE + "true" +
+                NEW_LINE + "true" + NEW_LINE + "false" + NEW_LINE + "true" + NEW_LINE + "false");
+        }
+
+        [TestMethod()]
+        public void TestIntToBool2()
+        {
+            TestOutputFromFile("../../../TestFiles/IntToBool/test-file-2.txt", "-4-3-2-11234");
+        }
+
         public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);

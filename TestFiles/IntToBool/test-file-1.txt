@@ -1,0 +1,41 @@
+happy_start {:
+	def :I func(::I a, :I b:){:
+		ret a + b;)
+	:}
+
+	def :V func2(::){:
+		:I a := 57;)
+		:I b := 0;)
+		:I c := -753487;)
+		:B aBool := IntToBool(:a:);)
+		:B bBool := IntToBool(:b:);)
+		:B cBool := IntToBool(:c:);)
+		:B dBool := IntToBool(:65456798:);)
+		:B eBool := IntToBool(:-4564878:);)
+		:B fBool := IntToBool(:0:);)
+		:B gBool := IntToBool(:a + b + c - func(:a, 45:):);)
+		PrintBool(:aBool:);) :**true
+		PrintNewLine(::);)
+		PrintBool(:bBool:);) :**false
+		PrintNewLine(::);)
+		PrintBool(:cBool:);) :**true
+		PrintNewLine(::);)
+		PrintBool(:dBool:);) :**true
+		PrintNewLine(::);)
+		PrintBool(:eBool:);) :**true
+		PrintNewLine(::);)
+		PrintBool(:fBool:);) :**false
+		PrintNewLine(::);)
+		PrintBool(:gBool:);) :**true
+		PrintNewLine(::);)
+		PrintBool(:IntToBool(:func(:a, 43:) - 100:):);) :**false
+	:}
+
+	def :V func3(::){:
+		func2(::);)
+	:}
+
+	mainSmile(::){:
+		func3(::);)
+	:}
+:}

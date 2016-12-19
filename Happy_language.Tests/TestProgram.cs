@@ -142,8 +142,15 @@ namespace Happy_language.Tests
         [TestMethod()]
         public void TestMin1()
         {
-            TestOutputFromFile("../../../TestFiles/Min/test-file-1.txt", 
+            TestOutputFromFile("../../../TestFiles/Min/test-file-1.txt",
                 "56" + NEW_LINE + "-123" + NEW_LINE + "-92" + NEW_LINE + "55");
+        }
+
+        [TestMethod()]
+        public void TestMax1()
+        {
+            TestOutputFromFile("../../../TestFiles/Max/test-file-1.txt",
+                "72" + NEW_LINE + "10" + NEW_LINE + "55" + NEW_LINE + "55");
         }
 
         public void TestOutputFromFile(String path, String output)

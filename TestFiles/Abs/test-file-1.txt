@@ -1,0 +1,33 @@
+happy_start {:
+	const :I x := 55;)
+	const :I y := -92;)
+
+	def :I func(::I val1, :I val2:){:
+		ret Abs(:Min(:val2, val1:):);)
+	:}
+	
+	def :V f(::){:
+		:I abs1 := Abs(:-159:);)
+		:I abs2 := Abs(:0:);)
+		:I abs3 := Abs(:951:);)
+		:I a := Min(:56, 72:);)
+		:I b := Min(:10, -123:);)
+		PrintInt(:abs1:);)
+		PrintNewLine(::);)
+		PrintInt(:abs2:);)
+		PrintNewLine(::);)
+		PrintInt(:abs3:);)
+		PrintNewLine(::);)
+		PrintInt(:Abs(:a:):);)
+		PrintNewLine(::);)
+		PrintInt(:Abs(:b:):);)
+		PrintNewLine(::);)
+		PrintInt(:func(:x, y:):);)
+		PrintNewLine(::);)
+		PrintInt(:func(:x, x:):);)
+	:}
+
+	mainSmile(::){:
+		f(::);)
+	:}
+:}

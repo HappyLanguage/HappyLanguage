@@ -139,6 +139,20 @@ namespace Happy_language.Tests
             TestOutputFromFile("../../../TestFiles/IntToBool/test-file-2.txt", "-4-3-2-11234");
         }
 
+        [TestMethod()]
+        public void TestMin1()
+        {
+            TestOutputFromFile("../../../TestFiles/Min/test-file-1.txt",
+                "56" + NEW_LINE + "-123" + NEW_LINE + "-92" + NEW_LINE + "55");
+        }
+
+        [TestMethod()]
+        public void TestMax1()
+        {
+            TestOutputFromFile("../../../TestFiles/Max/test-file-1.txt",
+                "72" + NEW_LINE + "10" + NEW_LINE + "55" + NEW_LINE + "55");
+        }
+
         public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);

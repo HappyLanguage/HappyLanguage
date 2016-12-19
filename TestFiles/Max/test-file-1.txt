@@ -1,0 +1,20 @@
+happy_start {:
+	const :I x := 55;)
+	const :I y := -92;)
+
+	def :V func(::I val1, :I val2:){:
+		PrintInt(:Max(:val2, val1:):);)
+	:}
+
+	mainSmile(::){:
+		:I a := Max(:56, 72:);)
+		:I b := Max(:10, -123:);)
+		PrintInt(:a:);)
+		PrintNewLine(::);)
+		PrintInt(:b:);)
+		PrintNewLine(::);)
+		func(:x, y:);)
+		PrintNewLine(::);)
+		func(:x, x:);)
+	:}
+:}

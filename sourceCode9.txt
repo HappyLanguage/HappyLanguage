@@ -1,0 +1,15 @@
+happy_start {:
+	def :I func(::I count:){:
+		:I val := 0;)
+		for (:val := 0 - count;) val <= count;) val := val + 1:) {:
+			if (:true == IntToBool(:val:):) {:
+				PrintInt(:val:);)
+			:}
+		:}
+		ret 0;)
+	:}
+	
+	mainSmile(::){:
+		func(:4:);)
+	:}
+:}

@@ -72,7 +72,31 @@ namespace Happy_language
             PreparePrintBoolFunction();
             PrepareBoolToIntFunction();
             PrepareIntToBoolFunction();
+            PrepareMinFunction();
             ChangeJMP(instructionCount, 0);
+        }
+
+        public void PrepareMinFunction()
+        {
+            AddINT(5);
+            AddLIT("0");
+            AddLOD(0, 3);
+            AddLOD(0, 4);
+            AddOPR(Instruction.LESS);
+            AddJMC(instructionCount + 4);
+            AddLOD(0, 3);
+            AddSTO(0, 5);
+            AddJMP(instructionCount + 3);
+            AddLOD(0, 4);
+            AddSTO(0, 5);
+            AddLOD(0, 5);
+            AddSTO(1, funcReturnAddress);
+            AddRET(0, 0);
+
+            List<FunctionParameter> parameters = new List<FunctionParameter>();
+            parameters.Add(new FunctionParameter("a", DataType.Int));
+            parameters.Add(new FunctionParameter("b", DataType.Int));
+            globalSymbolTable.AddFuncItem(new FuncItem("Min", DataType.Int, instructionCount - 14, parameters));
         }
 
         public void PrepareIntToBoolFunction()

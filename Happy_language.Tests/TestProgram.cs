@@ -206,6 +206,42 @@ namespace Happy_language.Tests
 			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-7.txt", "-1");
 		}
 
+		[TestMethod()]
+		public void TestTernaryOperator1()
+		{
+			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-1.txt", "-5");
+		}
+
+		[TestMethod()]
+		public void TestTernaryOperator2()
+		{
+			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-2.txt", "-5");
+		}
+
+		[TestMethod()]
+		public void TestTernaryOperator3()
+		{
+			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-3.txt", "12");
+		}
+
+		[TestMethod()]
+		public void TestTernaryOperator4()
+		{
+			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-4.txt", "-99");
+		}
+
+		[TestMethod()]
+		public void TestTernaryOperator5()
+		{
+			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-5.txt", "55");
+		}
+
+		[TestMethod()]
+		public void TestTernaryOperator6()
+		{
+			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-6.txt", "-8811-10");
+		}
+
 		public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);

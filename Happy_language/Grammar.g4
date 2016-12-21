@@ -16,6 +16,7 @@ def_const
 	: Const Data_type_bool multiple_assign Assign condition_expression Semi
     | Const Data_type_bool multiple_assign Assign function_call Semi
 	| Const Data_type_int multiple_assign Assign expression Semi
+	| Const Data_type_int multiple_assign Assign ternary_operator Semi
 	| Const Data_type_double multiple_assign Assign expression Semi;
 
 def_var
@@ -23,6 +24,7 @@ def_var
 	| Data_type_bool multiple_assign Assign function_call Semi
 	| Data_type_int multiple_assign Assign expression Semi
 	| Data_type_double multiple_assign Assign expression Semi
+	| Data_type_int multiple_assign Assign ternary_operator Semi
 	| array_inicialization;
 
 
@@ -96,6 +98,7 @@ par_in_function
 function_return
 	: Return condition_expression Semi
 	| Return expression Semi
+	| Return ternary_operator Semi
 	| ;
 	
 function_call
@@ -199,20 +202,27 @@ condition
 array_index
 	: Identifier '[:' Int ':]';
 
+
+ternary_operator
+	: condition '?' expression ':' expression;
+
 assignment_array
 	: array_index Assign condition_expression
-	| array_index Assign expression;
+	| array_index Assign expression
+	| array_index Assign ternary_operator;
 
 one_assignment
 	: Identifier Assign expression
 	| Identifier Assign condition_expression
-	| Identifier Assign condition;
+	| Identifier Assign condition
+	| Identifier Assign ternary_operator;
 
 
 assignment
 	: multiple_assign Assign expression
 	| multiple_assign Assign condition_expression
-	| multiple_assign Assign condition;
+	| multiple_assign Assign condition
+	| multiple_assign Assign ternary_operator;
 
 
 

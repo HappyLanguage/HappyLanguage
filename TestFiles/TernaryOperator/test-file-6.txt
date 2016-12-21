@@ -1,0 +1,15 @@
+happy_start {:
+
+	:I b := 5 < 3 ? 12 : -10;)
+	const :I a := b > 0 ? -400 : +11;)
+
+	def :I ahoj(::){:
+		ret a == 11 ? -88 : +33;)	
+	:}
+
+	mainSmile(::){:
+		PrintInt(:ahoj(::):);)
+		PrintInt(:a:);)
+		PrintInt(:b:);)
+	:}
+:}

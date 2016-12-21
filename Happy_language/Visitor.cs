@@ -67,7 +67,7 @@ namespace Happy_language
         {
             AddJMP(0);
             PreparePrintASCIIFunction();
-            PreparePrintIntFunction();
+			PreparePrintIntFunction();
             PreparePrintNewLineFunction();
             PreparePrintBoolFunction();
             PrepareBoolToIntFunction();
@@ -689,21 +689,34 @@ namespace Happy_language
                     }
                     //AddLOD(level, funcReturnAddress);
                 }
-                else if (context.expression() != null)
-                {
-                    result = VisitExpression(context.expression());
+				else if (context.expression() != null)
+				{
+					result = VisitExpression(context.expression());
 
-                    if (result < 0)
-                        return result;
+					if (result < 0)
+						return result;
 
-                    if (newConst.GetDataType() != (DataType)result)
-                    {
-                        Console.WriteLine("Type mismatch.");
-                        return Error.assignmentMismatch;
-                    }
-                }
-                //retValTo = null;
-                if (result < 0)
+					if (newConst.GetDataType() != (DataType)result)
+					{
+						Console.WriteLine("Type mismatch.");
+						return Error.assignmentMismatch;
+					}
+				}
+				else if (context.ternary_operator() != null)
+				{
+					result = VisitTernary_operator(context.ternary_operator());
+
+					if (result < 0)
+						return result;
+
+					if (newConst.GetDataType() != (DataType)result)
+					{
+						Console.WriteLine("Type mismatch.");
+						return Error.assignmentMismatch;
+					}
+				}
+				//retValTo = null;
+				if (result < 0)
                     return result;
 
                 leftSides = leftSides.multiple_assign();
@@ -758,20 +771,33 @@ namespace Happy_language
                     }
                     else if (context.expression() != null)
                     {
-                        result = VisitExpression(context.expression());
+						result = VisitExpression(context.expression());
 
-                        if (result < 0)
-                            return result;
+						if (result < 0)
+							return result;
 
-                        if (newVar.GetDataType() != (DataType)result)
-                        {
-                            Console.WriteLine("Type mismatch.");
-                            return Error.assignmentMismatch;
-                        }
+						if (newVar.GetDataType() != (DataType)result)
+						{
+							Console.WriteLine("Type mismatch.");
+							return Error.assignmentMismatch;
+						}
 
-                    }
-                    //retValTo = null;
-                    if (result < 0)
+					}
+					else if (context.ternary_operator() != null)
+					{
+						result = VisitTernary_operator(context.ternary_operator());
+
+						if (result < 0)
+							return result;
+
+						if (newVar.GetDataType() != (DataType)result)
+						{
+							Console.WriteLine("Type mismatch.");
+							return Error.assignmentMismatch;
+						}
+					}
+					//retValTo = null;
+					if (result < 0)
                         return result;
 
                     leftSides = leftSides.multiple_assign();
@@ -785,7 +811,35 @@ namespace Happy_language
             return result;
         }
 
-        public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
+		public override int VisitTernary_operator([NotNull] GrammarParser.Ternary_operatorContext context) {
+
+			int result = 0;
+
+			Visit(context.condition());
+			int jmcAddress = instructionCount;
+			AddJMC(0);
+
+			int ret1 = Visit(context.expression()[0]);
+			int jmpAddress = instructionCount;
+			AddJMP(0);
+			ChangeJMC(jmcAddress, instructionCount);
+			int ret2 = Visit(context.expression()[1]);
+			ChangeJMP(instructionCount, jmpAddress);
+
+			if (ret1 < 0)
+			{
+				return ret1;
+			}
+			else if (ret2 < 0)
+			{
+				return ret2;
+			}
+
+			return result;
+		}
+
+
+		public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
         {
             VarConstItem newArray = createArray(context);
             int result = processArray(newArray);
@@ -826,8 +880,8 @@ namespace Happy_language
             }
             else if (context.bool_array_assign() != null)
             {
-                GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
-                while (values != null)
+				GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
+				while (values != null)
                 {
                     if (values.condition_expression() != null)
                     {
@@ -903,21 +957,25 @@ namespace Happy_language
         public override int VisitFunction_return([NotNull] GrammarParser.Function_returnContext context)
         {
             int result = 0;
-            if (context.condition_expression() == null && context.expression() == null)
+			if (context.condition_expression() == null && context.expression() == null && context.ternary_operator() == null)
             {
-                return result;
+				return result;
             }
 
             if (context.expression() != null)
             {
                 result = VisitExpression(context.expression());
             }
-            else if (context.condition_expression() != null)
-            {
-                result = VisitCondition_expression(context.condition_expression());
-            }
+			else if (context.condition_expression() != null)
+			{
+				result = VisitCondition_expression(context.condition_expression());
+			}
+			else if (context.ternary_operator() != null)
+			{
+				result = VisitTernary_operator(context.ternary_operator());
+			}
 
-            AddSTO(level, funcReturnAddress);
+			AddSTO(level, funcReturnAddress);
 
             return result;
         }
@@ -935,8 +993,8 @@ namespace Happy_language
                 else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
                 else
                 {
-                    Console.WriteLine("Promena na leve strane neexistuje");
-                    return Error.varConstDoNotExists;
+					Console.WriteLine("Promena na leve strane neexistuje");
+					return Error.varConstDoNotExists;
                 }
 
                 if (retValTo.GetType() == VarConstType.Const)
@@ -983,9 +1041,22 @@ namespace Happy_language
                         Console.WriteLine("Type mismatch.");
                         return Error.assignmentMismatch;
                     }
-                }
+				}
+				else if (context.ternary_operator() != null)
+				{
+					result = VisitTernary_operator(context.ternary_operator());
 
-                int varLevel = retValTo.GetLevel();
+					if (result < 0)
+						return result;
+
+					if (retValTo.GetDataType() != (DataType)result)
+					{
+						Console.WriteLine("Type mismatch.");
+						return Error.assignmentMismatch;
+					}
+				}
+
+				int varLevel = retValTo.GetLevel();
                 int varAddress = retValTo.GetAddress();
                 int levelToMove = Math.Abs(level - varLevel);
                 AddSTO(levelToMove, varAddress);
@@ -1001,8 +1072,8 @@ namespace Happy_language
 
         public override int VisitOne_assignment([NotNull] GrammarParser.One_assignmentContext context)
         {
-            int result = 0;
-            String retValToName = context.Identifier().GetText();
+			int result = 0;
+			String retValToName = context.Identifier().GetText();
             VarConstItem retValTo = null;
 
             if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
@@ -1032,20 +1103,34 @@ namespace Happy_language
                     return Error.assignmentMismatch;
                 }
             }
-            else if (context.expression() != null)
-            {
-                result = VisitExpression(context.expression());
+			else if (context.expression() != null)
+			{
+				result = VisitExpression(context.expression());
 
-                if (result < 0)
-                    return result;
+				if (result < 0)
+					return result;
 
-                if (retValTo.GetDataType() != (DataType)result)
-                {
-                    Console.WriteLine("Type mismatch.");
-                    return Error.assignmentMismatch;
-                }
-            }
-            else if (context.condition() != null)
+				if (retValTo.GetDataType() != (DataType)result)
+				{
+					Console.WriteLine("Type mismatch.");
+					return Error.assignmentMismatch;
+				}
+			}
+
+			else if (context.ternary_operator() != null)
+			{
+				result = VisitTernary_operator(context.ternary_operator());
+
+				if (result < 0)
+					return result;
+
+				if (retValTo.GetDataType() != (DataType)result)
+				{
+					Console.WriteLine("Type mismatch.");
+					return Error.assignmentMismatch;
+				}
+			}
+			else if (context.condition() != null)
             {
                 result = VisitCondition(context.condition());
 
@@ -1429,9 +1514,22 @@ namespace Happy_language
                     Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
                     return Error.assignmentMismatch;
                 }
-            }
+			}
+			else if (context.ternary_operator() != null)
+			{
+				result = VisitTernary_operator(context.ternary_operator());
 
-            int varLevel = leftSide.GetLevel();
+				if (result < 0)
+					return result;
+
+				if (leftSide.GetDataType() != (DataType)result)
+				{
+					Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
+					return Error.assignmentMismatch;
+				}
+			}
+
+			int varLevel = leftSide.GetLevel();
             int levelToMove = Math.Abs(level - varLevel);
             AddSTO(levelToMove, leftSide.GetAddress() + index);
             return result;
@@ -1456,17 +1554,17 @@ namespace Happy_language
         {
             if (context.If() != null)
             {
-                Visit(context.condition());
-                int jmcAddress = instructionCount;
-                AddJMC(0);
-                Visit(context.blok());
-                int jmpAddress = instructionCount;
-                AddJMP(0);
-                ChangeJMC(jmcAddress, instructionCount);
-                Visit(context.else_if());
-                ChangeJMP(instructionCount, jmpAddress);
-                return 11;
-            }
+				Visit(context.condition());
+				int jmcAddress = instructionCount;
+				AddJMC(0);
+				Visit(context.blok());
+				int jmpAddress = instructionCount;
+				AddJMP(0);
+				ChangeJMC(jmcAddress, instructionCount);
+				Visit(context.else_if());
+				ChangeJMP(instructionCount, jmpAddress);
+				return 11;
+			}
             else
             {
                 Visit(context.@else());
@@ -1491,9 +1589,9 @@ namespace Happy_language
         {
             //AddDebug("WHILE");
             int conditionAddress = instructionCount;
-            Visit(context.condition());
+			Visit(context.condition());
 
-            int jmcAddress = instructionCount;
+			int jmcAddress = instructionCount;
             AddJMC(0);
 
             Visit(context.blok());
@@ -1609,19 +1707,19 @@ namespace Happy_language
                 return (int) DataType.Bool;
             }
 
-            int ret1 = Visit(context.condition_item()[0]);
-            int ret2 = Visit(context.condition_item()[1]);
+			int ret1 = Visit(context.condition_item()[0]);
+			int ret2 = Visit(context.condition_item()[1]);
 
-            if (ret1 < 0)
-            {
-                return ret1;
-            }
-            else if (ret2 < 0)
-            {
-                return ret2;
-            }
+			if (ret1 < 0)
+			{
+				return ret1;
+			}
+			else if (ret2 < 0)
+			{
+				return ret2;
+			}
 
-            if (ret1 != ret2)
+			if (ret1 != ret2)
             {
                 Console.WriteLine("Cannot compare values of different data types.");
                 return Error.cmpTypeMismatch;

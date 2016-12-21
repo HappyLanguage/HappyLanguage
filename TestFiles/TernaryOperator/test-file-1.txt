@@ -1,0 +1,10 @@
+happy_start {:
+
+	mainSmile(::){:
+		:I val := 2 < 5 ? 5 : 10;)
+		:I val2 := 2 > 5 ? 5 : 10;)
+		:I pom := val - val2;)		
+
+		PrintInt(: pom :);)   :// -5
+	:}
+:}

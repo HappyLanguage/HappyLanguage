@@ -1,0 +1,14 @@
+happy_start {:
+	
+	def :I ahoj(::){:
+		:B a := true;)
+		:I pom1 := a == true || false ? 22-66 : 6*6 ;) :// == -44
+		:I pom2 := a == true && false ? 22-66 : 6*6 ;) :// == -36
+
+		ret pom1 > pom2 ? -88 : +55;)	
+	:}
+
+	mainSmile(::){:
+		PrintInt(:ahoj(::):);)
+	:}
+:}

@@ -1,0 +1,10 @@
+happy_start {:
+	
+	def :I ahoj(::){:
+		ret false ? 12 : 9*-11;)	
+	:}
+
+	mainSmile(::){:
+		PrintInt(:ahoj(::):);)
+	:}
+:}

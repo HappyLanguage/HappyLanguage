@@ -12,6 +12,11 @@ namespace Happy_language
     // http://elemarjr.com/en/2016/04/21/learning-antlr4-part-1-quick-overview/
     public class Visitor : GrammarBaseVisitor<int>
     {
+        public Visitor(ErrorHandler handler) : base()
+        {
+            this.handler = handler;    
+        }
+
         #region Attributes
         /// <summary>
         /// Tabulka symbolů pro globalni proměnný a konstanty
@@ -29,6 +34,11 @@ namespace Happy_language
         /// Seznam vygenerovaných instrukcí
         /// </summary>
         private List<Instruction> instructions = new List<Instruction>();
+
+        /// <summary>
+        /// Class for reporting compile errors
+        /// </summary>
+        private ErrorHandler handler;
 
         private Boolean jmpToMainDone = false;
 
@@ -456,7 +466,7 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, VarConstType.Const, dt, addr, level);
+            return new VarConstItem(name, VarConstType.Const, dt, context.start.Line, addr, level);
         }
 
         private VarConstItem createVar(GrammarParser.Def_varContext context, String name)
@@ -474,7 +484,7 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, VarConstType.Var, dt, addr, level);
+            return new VarConstItem(name, VarConstType.Var, dt, context.start.Line, addr, level);
         }
 
         private VarConstItem createArray(GrammarParser.Array_inicializationContext context)
@@ -518,7 +528,7 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, length, VarConstType.Var, dt, addr, level); ;
+            return new VarConstItem(name, length, VarConstType.Var, dt, context.start.Line, addr, level); ;
         }
 
         private void DoMainJmp(int dest)
@@ -559,7 +569,7 @@ namespace Happy_language
             if (array.GetLength() < 0)
             {
                 //error
-                Console.WriteLine("Pole " + array.GetName() + " ma zapornou delku.");
+                handler.reportVisitorError(array.GetDeclarationLine(), ErrorCode.arrayLengthNegative, "Array has negative length");
                 return Error.arrayLengthNegative;
             }
 
@@ -569,7 +579,11 @@ namespace Happy_language
                     localSymbolTable.AddVarConstItem(array);
                 else
                 {
-                    Console.WriteLine("Pole " + array.GetName() + " uz existuje!\n");
+                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(array.GetName());
+
+                    handler.reportVisitorError(array.GetDeclarationLine(), ErrorCode.arrayAlreadyExists,
+                        "Variable with name '" + array.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
+
                     return Error.arrayAlreadyExists;
                 }
                 inFunctionAddress += array.GetLength();
@@ -580,7 +594,11 @@ namespace Happy_language
                     globalSymbolTable.AddVarConstItem(array);
                 else
                 {
-                    Console.WriteLine("Pole " + array.GetName() + " uz existuje!\n");
+                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(array.GetName());
+
+                    handler.reportVisitorError(array.GetDeclarationLine(), ErrorCode.arrayAlreadyExists,
+                        "Variable with name '" + array.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
+
                     return Error.arrayAlreadyExists;
                 }
                 globalAddress += array.GetLength();
@@ -599,7 +617,13 @@ namespace Happy_language
                     localSymbolTable.AddVarConstItem(item);
                 else
                 {
-                    Console.WriteLine("Promena " + item.GetName() + " uz existuje!\n");
+                    //Console.WriteLine("Promena " + item.GetName() + " uz existuje!\n");
+
+                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(item.GetName());
+
+                    handler.reportVisitorError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
+                        "Variable with name '" + item.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
+
                     return Error.varConstAlreadyExists;
                 }
                 inFunctionAddress += 1;
@@ -610,7 +634,11 @@ namespace Happy_language
                     globalSymbolTable.AddVarConstItem(item);
                 else
                 {
-                    Console.WriteLine("Promena " + item.GetName() + " uz existuje!\n");
+                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(item.GetName());
+
+                    handler.reportVisitorError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
+                        "Variable with name '" + item.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
+
                     return Error.varConstAlreadyExists;
                 }
                 globalAddress += 1;
@@ -671,7 +699,10 @@ namespace Happy_language
 
                     if (newConst.GetDataType() != (DataType) result)
                     {
-                        Console.WriteLine("Type mismatch.");
+                        //Console.WriteLine("Type mismatch.");
+                        handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
+
                         return Error.assignmentMismatch;
                     }
                 }
@@ -684,7 +715,10 @@ namespace Happy_language
 
                     if (newConst.GetDataType() != (DataType)result)
                     {
-                        Console.WriteLine("Type mismatch.");
+                        //Console.WriteLine("Type mismatch.");
+                        handler.reportVisitorError(context.start.Line, context.function_call().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
+
                         return Error.assignmentMismatch;
                     }
                     //AddLOD(level, funcReturnAddress);
@@ -698,9 +732,11 @@ namespace Happy_language
 
 					if (newConst.GetDataType() != (DataType)result)
 					{
-						Console.WriteLine("Type mismatch.");
-						return Error.assignmentMismatch;
-					}
+                        handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
+
+                        return Error.assignmentMismatch;
+                    }
 				}
 				else if (context.ternary_operator() != null)
 				{
@@ -711,9 +747,11 @@ namespace Happy_language
 
 					if (newConst.GetDataType() != (DataType)result)
 					{
-						Console.WriteLine("Type mismatch.");
-						return Error.assignmentMismatch;
-					}
+                        handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
+                             "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
+
+                        return Error.assignmentMismatch;
+                    }
 				}
 				//retValTo = null;
 				if (result < 0)
@@ -751,7 +789,9 @@ namespace Happy_language
 
                         if (newVar.GetDataType() != (DataType)result)
                         {
-                            Console.WriteLine("Type mismatch.");
+                            handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
+
                             return Error.assignmentMismatch;
                         }
                     }
@@ -764,7 +804,9 @@ namespace Happy_language
 
                         if (newVar.GetDataType() != (DataType)result)
                         {
-                            Console.WriteLine("Type mismatch.");
+                            handler.reportVisitorError(context.start.Line, context.function_call().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
+
                             return Error.assignmentMismatch;
                         }
                         //AddLOD(level, inFunctionAddress);
@@ -778,9 +820,11 @@ namespace Happy_language
 
 						if (newVar.GetDataType() != (DataType)result)
 						{
-							Console.WriteLine("Type mismatch.");
-							return Error.assignmentMismatch;
-						}
+                            handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
+
+                            return Error.assignmentMismatch;
+                        }
 
 					}
 					else if (context.ternary_operator() != null)
@@ -792,9 +836,11 @@ namespace Happy_language
 
 						if (newVar.GetDataType() != (DataType)result)
 						{
-							Console.WriteLine("Type mismatch.");
-							return Error.assignmentMismatch;
-						}
+                            handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
+
+                            return Error.assignmentMismatch;
+                        }
 					}
 					//retValTo = null;
 					if (result < 0)
@@ -811,10 +857,8 @@ namespace Happy_language
             return result;
         }
 
-		public override int VisitTernary_operator([NotNull] GrammarParser.Ternary_operatorContext context) {
-
-			int result = 0;
-
+		public override int VisitTernary_operator([NotNull] GrammarParser.Ternary_operatorContext context)
+        {
 			Visit(context.condition());
 			int jmcAddress = instructionCount;
 			AddJMC(0);
@@ -826,16 +870,26 @@ namespace Happy_language
 			int ret2 = Visit(context.expression()[1]);
 			ChangeJMP(instructionCount, jmpAddress);
 
-			if (ret1 < 0)
-			{
-				return ret1;
-			}
-			else if (ret2 < 0)
-			{
-				return ret2;
-			}
+            if (ret1 < 0)
+            {
+                return ret1;
+            }
 
-			return result;
+
+            if (ret2 < 0)
+            {
+                return ret2;
+            }
+
+            if (ret1 != ret2)
+            {
+                handler.reportVisitorError(context.start.Line, context.start.Column, ErrorCode.subExpressionMismatch,
+                    "Subexpressions of ternary operator must have same data type");
+
+                return Error.cmpTypeMismatch;
+            }
+
+			return ret1;
 		}
 
 
@@ -871,7 +925,9 @@ namespace Happy_language
                     }
                     else if (newArray.GetDataType() != (DataType) result)
                     {
-                        Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
+                        handler.reportVisitorError(values.start.Line, values.expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
+
                         return Error.assignmentMismatch;
                     }
 
@@ -893,7 +949,9 @@ namespace Happy_language
                         }
                         else if (newArray.GetDataType() != (DataType)result)
                         {
-                            Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
+                            handler.reportVisitorError(values.start.Line, values.condition_expression().start.Column, ErrorCode.assignmentMismatch,
+                                "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
+
                             return Error.assignmentMismatch;
                         }
                     }
@@ -907,10 +965,11 @@ namespace Happy_language
                         }
                         else if (newArray.GetDataType() != (DataType)result)
                         {
-                            Console.WriteLine("Do tohodle nemuzes prirazovat tenhle typ.");
+                            handler.reportVisitorError(values.start.Line, values.function_call().start.Column, ErrorCode.assignmentMismatch,
+                                "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
+
                             return Error.assignmentMismatch;
                         }
-                        //AddLOD(level, funcReturnAddress);
                     }
                     values = values.bool_array_assign();
                 }
@@ -939,7 +998,7 @@ namespace Happy_language
             for (int i = 0; i < newItem.GetParameters().Count; i++)
             {
                 VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(),
-                                                        VarConstType.Var, newItem.GetParameters()[i].getDataType(), inFunctionAddress, level);
+                                                        VarConstType.Var, newItem.GetParameters()[i].getDataType(), context.start.Line, inFunctionAddress, level);
                 localSymbolTable.AddVarConstItem(parItem);
                 inFunctionAddress += 1;
             }
@@ -993,13 +1052,13 @@ namespace Happy_language
                 else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
                 else
                 {
-					Console.WriteLine("Promena na leve strane neexistuje");
-					return Error.varConstDoNotExists;
+                    handler.reportVisitorError(context.start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable with name '" + retValToName + "'");
+					return Error.varConstDoesNotExist;
                 }
 
                 if (retValTo.GetType() == VarConstType.Const)
                 {
-                    Console.WriteLine("Nelze prirazovat do konstanty");
+                    handler.reportVisitorError(context.start.Line, ErrorCode.assignmentToConstant, "Cannot assign to a constant");
                     return Error.assignmentToConstant;
                 }
 
@@ -1012,7 +1071,9 @@ namespace Happy_language
 
                     if (retValTo.GetDataType() != (DataType)result)
                     {
-                        Console.WriteLine("Type mismatch.");
+                        handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
                         return Error.assignmentMismatch;
                     }
                 }
@@ -1025,7 +1086,9 @@ namespace Happy_language
 
                     if (retValTo.GetDataType() != (DataType)result)
                     {
-                        Console.WriteLine("Type mismatch.");
+                        handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
                         return Error.assignmentMismatch;
                     }
                 }
@@ -1038,7 +1101,9 @@ namespace Happy_language
 
                     if (retValTo.GetDataType() != (DataType)result)
                     {
-                        Console.WriteLine("Type mismatch.");
+                        handler.reportVisitorError(context.start.Line, context.condition().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
                         return Error.assignmentMismatch;
                     }
 				}
@@ -1051,9 +1116,11 @@ namespace Happy_language
 
 					if (retValTo.GetDataType() != (DataType)result)
 					{
-						Console.WriteLine("Type mismatch.");
-						return Error.assignmentMismatch;
-					}
+                        handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
+                        return Error.assignmentMismatch;
+                    }
 				}
 
 				int varLevel = retValTo.GetLevel();
@@ -1080,13 +1147,13 @@ namespace Happy_language
             else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
             else
             {
-                Console.WriteLine("Promena na leve strane neexistuje");
-                return Error.varConstDoNotExists;
+                handler.reportVisitorError(context.start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable with name '" + retValToName + "'");
+                return Error.varConstDoesNotExist;
             }
 
             if (retValTo.GetType() == VarConstType.Const)
             {
-                Console.WriteLine("Nelze prirazovat do konstanty");
+                handler.reportVisitorError(context.start.Line, ErrorCode.assignmentToConstant, "Cannot assign to a constant");
                 return Error.assignmentToConstant;
             }
 
@@ -1099,7 +1166,9 @@ namespace Happy_language
 
                 if (retValTo.GetDataType() != (DataType)result)
                 {
-                    Console.WriteLine("Type mismatch.");
+                    handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
                     return Error.assignmentMismatch;
                 }
             }
@@ -1112,9 +1181,11 @@ namespace Happy_language
 
 				if (retValTo.GetDataType() != (DataType)result)
 				{
-					Console.WriteLine("Type mismatch.");
-					return Error.assignmentMismatch;
-				}
+                    handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
+                    return Error.assignmentMismatch;
+                }
 			}
 
 			else if (context.ternary_operator() != null)
@@ -1126,9 +1197,11 @@ namespace Happy_language
 
 				if (retValTo.GetDataType() != (DataType)result)
 				{
-					Console.WriteLine("Type mismatch.");
-					return Error.assignmentMismatch;
-				}
+                    handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
+                    return Error.assignmentMismatch;
+                }
 			}
 			else if (context.condition() != null)
             {
@@ -1139,7 +1212,9 @@ namespace Happy_language
 
                 if (retValTo.GetDataType() != (DataType)result)
                 {
-                    Console.WriteLine("Type mismatch.");
+                    handler.reportVisitorError(context.start.Line, context.condition().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
+
                     return Error.assignmentMismatch;
                 }
             }
@@ -1195,15 +1270,9 @@ namespace Happy_language
             if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
             else
             {
-                Console.WriteLine("Funkce " + fName + " neexistuje!");
-                return Error.functionDoNotExists;
+                handler.reportVisitorError(context.start.Line, ErrorCode.functionDoesNotExist, "Uknown function with name '" + fName + "'");
+                return Error.functionDoesNotExist;
             }
-
-            //if (retValTo != null && (calledFce.GetReturnDataType() != retValTo.GetDataType()))
-            //{
-            //    Console.WriteLine("Navratovy typ funkce se neshoduje s datovym typem promene!\n");
-            //    return Error.functionReturnTypesDoNotMatch;
-            //}
 
             AddINT(3);
             List<VarConstItem> usedParameters = new List<VarConstItem>();
@@ -1215,12 +1284,12 @@ namespace Happy_language
                 if (paramContext.expression() != null)
                 {
                     int result = VisitExpression(paramContext.expression());
-                    par = new VarConstItem("", VarConstType.Var, (DataType) result, 0, 0);
+                    par = new VarConstItem("", VarConstType.Var, (DataType) result, context.start.Line, 0, 0);
                 }
                 else if (paramContext.condition_expression() != null)
                 {
                     VisitCondition_expression(paramContext.condition_expression());
-                    par = new VarConstItem("", VarConstType.Var, DataType.Bool, 0, 0);
+                    par = new VarConstItem("", VarConstType.Var, DataType.Bool, context.start.Line, 0, 0);
                 }
 
                 if (par != null)
@@ -1233,15 +1302,19 @@ namespace Happy_language
             List<FunctionParameter> requestedParameters = calledFce.GetParameters();
             if (requestedParameters.Count != usedParameters.Count)
             {
-                Console.WriteLine("Spatne pocet parametrů!");
+                handler.reportVisitorError(context.Start.Line, context.par_in_function().Stop.Column, ErrorCode.functionWrongParametersCount,
+                    "Wrong parameter count, expected: " + requestedParameters.Count);
+
                 return Error.functionWrongParametersCount;
             }
             for (int i = 0; i < requestedParameters.Count; i++)
             {
                 if (requestedParameters[i].getDataType() != usedParameters[i].GetDataType())
                 {
-                    Console.WriteLine("Nespravny datovy typ parametru!");
-                    return Error.functionParameterDataTypeDoNotMatch;
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.functionParameterDataTypeMismatch,
+                        "Type mismatch in parameter number " + (i + 1));
+
+                    return Error.functionParameterDataTypeMismatch;
                 }
             }
 
@@ -1276,13 +1349,15 @@ namespace Happy_language
             {
                 if (ret1 != ret2)
                 {
-                    Console.WriteLine("Expression - Add: Type mismatch");
+                    //Console.WriteLine("Expression - Add: Type mismatch");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '+' operation on conflicting data types");
                     return Error.assignmentMismatch;
                 }
 
                 if ((DataType) ret1 == DataType.Bool)
                 {
-                    Console.WriteLine("Cannot use operation '+' on :B");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '+' operation on Bool type");
+
                     return Error.operatorTypeMismatch;
                 }
 
@@ -1293,13 +1368,14 @@ namespace Happy_language
             {
                 if (ret1 != ret2)
                 {
-                    Console.WriteLine("Expression - Sub: Type mismatch");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '-' operation on conflicting data types");
                     return Error.assignmentMismatch;
                 }
 
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    Console.WriteLine("Cannot use operation '-' on :B");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '-' operation on Bool type");
+
                     return Error.operatorTypeMismatch;
                 }
 
@@ -1328,13 +1404,14 @@ namespace Happy_language
             {
                 if (ret1 != ret2)
                 {
-                    Console.WriteLine("Expression - Mul: Type mismatch");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '*' operation on conflicting data types");
                     return Error.assignmentMismatch;
                 }
 
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    Console.WriteLine("Cannot use operation '*' on :B");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '*' operation on Bool type");
+
                     return Error.operatorTypeMismatch;
                 }
 
@@ -1344,13 +1421,14 @@ namespace Happy_language
             {
                 if (ret1 != ret2)
                 {
-                    Console.WriteLine("Expression - Div: Type mismatch");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '/' operation on conflicting data types");
                     return Error.assignmentMismatch;
                 }
 
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    Console.WriteLine("Cannot use operation '/' on :B");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '/' operation on Bool type");
+
                     return Error.operatorTypeMismatch;
                 }
 
@@ -1371,8 +1449,10 @@ namespace Happy_language
                 else if (globalSymbolTable.ContainsVarConstItem(varConstName)) varConst = globalSymbolTable.GetVarConstItemByName(varConstName);
                 else
                 {
-                    Console.WriteLine("Promena ve vyrazu neexistuje");
-                    return Error.varConstDoNotExists;
+                    //Console.WriteLine("Promena ve vyrazu neexistuje");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable '" + varConstName + "'");
+
+                    return Error.varConstDoesNotExist;
                 }
 
                 int varLevel = varConst.GetLevel();
@@ -1391,20 +1471,23 @@ namespace Happy_language
                 VarConstItem array = GetVarConst(context.Identifier().GetText());
                 if (array == null)
                 {
-                    Console.WriteLine("Pole ve vyrazu neexistuje");
-                    return Error.arrayDoNotExists;
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + context.Identifier().GetText() + "'");
+
+                    return Error.arrayDoesNotExist;
                 }
 
                 int index = Convert.ToInt32(context.Int().GetText());
 
                 if (index < 0)
                 {
-                    Console.WriteLine("Pole nejde indexovat do minusu!");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
+
                     return Error.arrayIndexNegative;
                 }
                 if (index >= array.GetLength())
                 {
-                    Console.WriteLine("OutOfBounds, index pole vyjel za length pole");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
+
                     return Error.arrayOutOfBounds;
                 }
 
@@ -1417,12 +1500,6 @@ namespace Happy_language
             }
             else if (context.function_call() != null)
             {
-                if (!globalSymbolTable.ContainsFuncItem(context.function_call().Identifier().GetText()))
-                {
-                    Console.WriteLine("Funkce volana ve vyrazu neexistuje!");
-                    return Error.functionDoNotExists;
-                }
-
                 result = VisitFunction_call(context.function_call());
 
 				if (context.Sub() != null)
@@ -1468,19 +1545,23 @@ namespace Happy_language
             else if (globalSymbolTable.ContainsVarConstItem(arrayName)) leftSide = globalSymbolTable.GetVarConstItemByName(arrayName);
             else
             {
-                Console.WriteLine("Pole na leve strane neexistuje");
-                return Error.arrayDoNotExists;
+                handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + arrayName + "'");
+
+                return Error.arrayDoesNotExist;
             }
 
             int index = Convert.ToInt32(context.array_index().Int().GetText());
             if (index < 0)
             {
-                Console.WriteLine("Index nemuze bejt zapornej");
+                handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
+
                 return Error.arrayIndexNegative;
             }
+
             if (index >= leftSide.GetLength())
             {
-                Console.WriteLine("OutOfBounds, idex pole vyjel za length pole");
+                handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
+
                 return Error.arrayOutOfBounds;
             }
 
@@ -1496,7 +1577,9 @@ namespace Happy_language
 
                 if (leftSide.GetDataType() != ((DataType) result))
                 {
-                    Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
+                    handler.reportVisitorError(context.Start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
+
                     return Error.assignmentMismatch;
                 }
             }
@@ -1511,7 +1594,9 @@ namespace Happy_language
 
                 if (leftSide.GetDataType() != ((DataType)result))
                 {
-                    Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
+                    handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
+                                "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
+
                     return Error.assignmentMismatch;
                 }
 			}
@@ -1524,9 +1609,11 @@ namespace Happy_language
 
 				if (leftSide.GetDataType() != (DataType)result)
 				{
-					Console.WriteLine("Nemuzes priradit tenhle typ do tohodle pole");
-					return Error.assignmentMismatch;
-				}
+                    handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
+                                "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
+
+                    return Error.assignmentMismatch;
+                }
 			}
 
 			int varLevel = leftSide.GetLevel();
@@ -1537,7 +1624,6 @@ namespace Happy_language
 
         public override int VisitIf([NotNull] GrammarParser.IfContext context)
         {
-            //AddDebug("IF");
             Visit(context.condition());
             int jmcAddress = instructionCount;
             AddJMC(0);
@@ -1587,7 +1673,6 @@ namespace Happy_language
 
         public override int VisitWhile([NotNull] GrammarParser.WhileContext context)
         {
-            //AddDebug("WHILE");
             int conditionAddress = instructionCount;
 			Visit(context.condition());
 
@@ -1721,7 +1806,8 @@ namespace Happy_language
 
 			if (ret1 != ret2)
             {
-                Console.WriteLine("Cannot compare values of different data types.");
+                handler.reportVisitorError(context.Start.Line, ErrorCode.cmpTypeMismatch, "Cannot compare values of different data types");
+
                 return Error.cmpTypeMismatch;
             }
 

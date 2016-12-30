@@ -15,22 +15,25 @@ namespace Happy_language
         private int level;
         private Boolean array;
         private int length;
+        private int declarationLine;
 
-        public VarConstItem(String name, VarConstType type, DataType dataType , int address, int level)
+        public VarConstItem(String name, VarConstType type, DataType dataType, int declarationLine, int address, int level)
         {
             this.name = name;
             this.type = type;
             this.dataType = dataType;
+            this.declarationLine = declarationLine;
             this.address = address;
             this.level = level;
             this.array = false;
         }
 
-        public VarConstItem(String name, int length, VarConstType type, DataType dataType, int address, int level)
+        public VarConstItem(String name, int length, VarConstType type, DataType dataType, int declarationLine, int address, int level)
         {
             this.name = name;
             this.type = type;
             this.dataType = dataType;
+            this.declarationLine = declarationLine;
             this.address = address;
             this.level = level;
 
@@ -48,7 +51,7 @@ namespace Happy_language
             return this.array;
         }
 
-        public String ToString()
+        public override String ToString()
         {
             if (this.array)
             {
@@ -91,6 +94,11 @@ namespace Happy_language
         public int GetLevel()
         {
             return this.level;
+        }
+
+        public int GetDeclarationLine()
+        {
+            return declarationLine;
         }
     }
 }

@@ -11,12 +11,18 @@ namespace Happy_language
 
     public class GrammarErrorListener:BaseErrorListener, IAntlrErrorListener<int>
     {
-        //BaseErrorListener implementation
+        private ErrorHandler handler;
+
+        public GrammarErrorListener(ErrorHandler handler)
+        {
+            this.handler = handler;
+        }
 
         public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             //throw new ArgumentException("Syntax error on line: " + line + " (" + msg + ")", msg, e);
-            throw new ArgumentException("Syntax error on line: " + line + ":"+ charPositionInLine + " '" + offendingSymbol.Text + "'");
+            handler.reportGrammarError(line, charPositionInLine, "Unexpected symbol '" + offendingSymbol.Text + "'");
+            //throw new ArgumentException("Syntax error on line: " + line + ":"+ charPositionInLine + " '" + offendingSymbol.Text + "'");
         }
 
         //IAntlrErrorListener<int> implementation;
@@ -24,7 +30,8 @@ namespace Happy_language
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             //throw new ArgumentException("Syntax error on line: " + line + " (" + msg + ")", msg, e);
-            throw new ArgumentException("Syntax error on line: " + line + ":" + charPositionInLine + " '" + offendingSymbol + "'");
+            handler.reportGrammarError(line, charPositionInLine, "Unexpected symbol");
+            //throw new ArgumentException("Syntax error on line: " + line + ":" + charPositionInLine + " '" + offendingSymbol + "'");
         }
 
 

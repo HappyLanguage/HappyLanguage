@@ -30,28 +30,41 @@ namespace Happy_language
 
             AntlrInputStream inputStream = new AntlrInputStream(pom);
             GrammarLexer lexer = new GrammarLexer(inputStream);
+            ErrorHandler handler = new ErrorHandler();
             lexer.RemoveErrorListeners();
-            lexer.AddErrorListener(new GrammarErrorListener());
+            lexer.AddErrorListener(new GrammarErrorListener(handler));
             CommonTokenStream c = new CommonTokenStream(lexer);   
             GrammarParser helloParser = new GrammarParser(c);
-            //IParseTree tree = helloParser.start();
-            // ParseTreeWalker walker = new ParseTreeWalker();
-            //walker.Walk(new TreeWalkerListener(), tree);
             helloParser.RemoveErrorListeners();
-            helloParser.AddErrorListener(new GrammarErrorListener());
+            helloParser.AddErrorListener(new GrammarErrorListener(handler));
      
 
-            Console.WriteLine("START");
+            //Console.WriteLine("START");
 
             try
             {
                 IParseTree tree = helloParser.start();
-                Console.WriteLine("----------------Lexical analyzation OK----------------------");
+                pom.Close();
 
-                Visitor visitor = new Visitor();
+                if (handler.errorsOccured())
+                {
+                    handler.printErrors();
+                    Console.ReadLine();
+                    return;
+                }
+
+                Visitor visitor = new Visitor(handler);
                 visitor.PrepareLibraryFunctions();
                 visitor.DoInitialJmp();
                 int t = visitor.Visit(tree);
+
+                if (handler.errorsOccured())
+                {
+                    handler.printErrors();
+                    Console.ReadLine();
+                    return;
+                }
+
                 visitor.numberInstructions();
 
                 Console.WriteLine(visitor.GetSymbolTable().VarConstToString());
@@ -65,7 +78,6 @@ namespace Happy_language
             }
 
 			Console.ReadLine();
-            // skvelej napad, jednopruchod znamena dolu i nahoru, takze dolu udelam jen neco a smerem nahoru zbytek
         }
 
         public static void WriteInstructions(List<Instruction> instructions, String name_file)

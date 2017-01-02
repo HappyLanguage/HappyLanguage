@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="Attributes.cs" />
     <Compile Include="DataType.cs" />
-    <Compile Include="Error.cs" />
     <Compile Include="ErrorHandler.cs" />
     <Compile Include="GrammarErrorListener.cs" />
     <Compile Include="FuncItem.cs" />

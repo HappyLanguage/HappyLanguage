@@ -346,6 +346,18 @@ namespace Happy_language
             instructionCount += 1;
         }
 
+        public void AddPST()
+        {
+            instructions.Add(new Instruction(InstructionType.PST, 0, "0"));
+            instructionCount += 1;
+        }
+
+        public void AddPLD()
+        {
+            instructions.Add(new Instruction(InstructionType.PLD, 0, "0"));
+            instructionCount += 1;
+        }
+
         public void AddLIT(String value)
         {
             instructions.Add(new Instruction(InstructionType.LIT, 0, value));
@@ -418,12 +430,6 @@ namespace Happy_language
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMC);
             instructions[index].Value = codeAddress.ToString();
-        }
-
-        public void AddDebug(string msg)
-        {
-            instructions.Add(new Instruction(InstructionType.DEBUG, 0, msg));
-            instructionCount += 1;
         }
 
         public void AddNeg()
@@ -1468,33 +1474,68 @@ namespace Happy_language
             }
             else if (context.array_index() != null)
             {
-                VarConstItem array = GetVarConst(context.Identifier().GetText());
+
+
+                VarConstItem array = GetVarConst(context.array_index().Identifier().GetText());
                 if (array == null)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + context.Identifier().GetText() + "'");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + context.array_index().Identifier().GetText() + "'");
 
                     return Error.arrayDoesNotExist;
                 }
 
-                int index = Convert.ToInt32(context.Int().GetText());
-
-                if (index < 0)
-                {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
-
-                    return Error.arrayIndexNegative;
-                }
-                if (index >= array.GetLength())
-                {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
-
-                    return Error.arrayOutOfBounds;
-                }
+                GrammarParser.IndexContext indexContext = context.array_index().index();
 
                 int varLevel = array.GetLevel();
                 int varAddress = array.GetAddress();
                 int levelToMove = Math.Abs(level - varLevel);
-                AddLOD(levelToMove, varAddress + index);
+
+                if (indexContext.Int() != null)
+                {
+                    int index = Convert.ToInt32(indexContext.Int().GetText());
+
+                    if (index < 0)
+                    {
+                        handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
+
+                        return Error.arrayIndexNegative;
+                    }
+                    if (index >= array.GetLength())
+                    {
+                        handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
+
+                        return Error.arrayOutOfBounds;
+                    }
+
+                    AddLOD(levelToMove, varAddress + index);
+                }
+                else if (indexContext.expression() != null)
+                {
+                    AddLIT(levelToMove.ToString());
+
+                    AddLIT(varAddress.ToString());
+
+                    result = VisitExpression(indexContext.expression());
+
+                    if (result < 0)
+                    {
+                        return result;
+                    }
+
+                    if (DataType.Int != ((DataType)result))
+                    {
+                        handler.reportVisitorError(context.Start.Line, indexContext.expression().start.Column, ErrorCode.indexTypeMismatch,
+                                "Index must be of type Int");
+
+                        return Error.indexTypeMismatch;
+                    }
+
+
+                    AddOPR(Instruction.ADD);
+                    AddPLD();
+                }
+
+
 
                 result = (int) array.GetDataType();
             }
@@ -1550,21 +1591,6 @@ namespace Happy_language
                 return Error.arrayDoesNotExist;
             }
 
-            int index = Convert.ToInt32(context.array_index().Int().GetText());
-            if (index < 0)
-            {
-                handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
-
-                return Error.arrayIndexNegative;
-            }
-
-            if (index >= leftSide.GetLength())
-            {
-                handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
-
-                return Error.arrayOutOfBounds;
-            }
-
             int result = 0;
             if (context.expression() != null)
             {
@@ -1616,9 +1642,58 @@ namespace Happy_language
                 }
 			}
 
-			int varLevel = leftSide.GetLevel();
+            GrammarParser.IndexContext indexContext = context.array_index().index();
+
+            int varLevel = leftSide.GetLevel();
             int levelToMove = Math.Abs(level - varLevel);
-            AddSTO(levelToMove, leftSide.GetAddress() + index);
+
+            if (indexContext.Int() != null)
+            {
+                int index = Convert.ToInt32(indexContext.Int().GetText());
+                if (index < 0)
+                {
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
+
+                    return Error.arrayIndexNegative;
+                }
+
+                if (index >= leftSide.GetLength())
+                {
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
+
+                    return Error.arrayOutOfBounds;
+                }
+
+                AddSTO(levelToMove, leftSide.GetAddress() + index);
+            }
+            else if (indexContext.expression() != null)
+            {
+                AddLIT(levelToMove.ToString());
+
+                AddLIT(leftSide.GetAddress().ToString());
+
+                result = VisitExpression(indexContext.expression());
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (DataType.Int != ((DataType)result))
+                {
+                    handler.reportVisitorError(context.Start.Line, indexContext.expression().start.Column, ErrorCode.indexTypeMismatch,
+                            "Index must be of type Int");
+
+                    return Error.indexTypeMismatch;
+                }
+
+                AddOPR(Instruction.ADD);
+                AddPST();
+            }
+
+            
+
+            
             return result;
         }
 

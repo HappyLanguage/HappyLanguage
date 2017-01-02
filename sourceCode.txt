@@ -1,19 +1,23 @@
 happy_start {:
-	const :I aaa := +10;)
-	:I var := 25;)
-	
-	def :I addTen(: :I par1:){:
-		ret par1 + 10;)
-	:}
+	:I [:20:] a;)
 	
 	mainSmile(::){:
-		:I val := 1;)
+		:I i := 0;)
 		
-		for (:val := 0;) val < 10;) val := val + 1:) {:
-			PrintInt(:val:);)
-			PrintNewLine(::);)
+		a[:0:] := 0;)
+		a[:1:] := 1;)
+		
+		for (:i := 2;) i < 20;) i := i + 1:) {:
+			a[:i:] := a[:i - 1:] + a[:i - 2:];)
 		:}
 		
-
+		
+		for (:i := 0;) i < 20;) i := i + 1:) {:
+			PrintInt(:i:);)
+			PrintASCII(:58:);)
+			PrintASCII(:32:);)
+			PrintInt(:a[:i:]:);)
+			PrintNewLine(::);)
+		:}
 	:}
 :}

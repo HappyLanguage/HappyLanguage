@@ -200,7 +200,12 @@ condition
 	| Negation '('condition')' Logical_operator condition;
 
 array_index
-	: Identifier '[:' Int ':]';
+	: Identifier '[:' index ':]';
+
+index
+	: Int
+	| expression
+	/*| ternary_operator*/;
 
 
 ternary_operator

@@ -18,7 +18,8 @@ namespace Happy_language
         LOD,
         JMC,
         WRI,
-        DEBUG // DEBUG instrukce na poznaceni kde sme v kodu
+        PST,
+        PLD
     }
 
     public class Instruction

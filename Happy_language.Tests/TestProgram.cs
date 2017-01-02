@@ -242,33 +242,88 @@ namespace Happy_language.Tests
 			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-6.txt", "-8811-10");
 		}
 
+        public void TestGrammarError(String path, ErrorCode expectedError)
+        {
+            StreamReader pom = new System.IO.StreamReader(path);
+
+            ErrorHandler handler = new ErrorHandler();
+
+
+            AntlrInputStream inputStream = new AntlrInputStream(pom);
+            GrammarLexer lexer = new GrammarLexer(inputStream);
+            lexer.RemoveErrorListeners();
+            lexer.AddErrorListener(new GrammarErrorListener(handler));
+            CommonTokenStream c = new CommonTokenStream(lexer);
+            GrammarParser helloParser = new GrammarParser(c);
+
+            helloParser.RemoveErrorListeners();
+            helloParser.AddErrorListener(new GrammarErrorListener(handler));
+
+            String path_file_ins = "insc1.txt";
+
+            try
+            {
+                IParseTree tree = helloParser.start();
+                pom.Close();
+
+                if (handler.errorsOccured())
+                {
+                    List<Error> grammarErrors = handler.GrammarErrors;
+
+                    Assert.AreEqual(1, grammarErrors.Count, "More errors occured than expected");
+                    Assert.AreEqual(ErrorCode.grammarError, grammarErrors[0].ErrorCode, "Invalid error type.");
+                }
+                else
+                {
+                    Assert.Fail("No grammar error occured");
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
 		public void TestOutputFromFile(String path, String output)
 		{
 			StreamReader pom = new System.IO.StreamReader(path);
+
+            ErrorHandler handler = new ErrorHandler();
 
 
 			AntlrInputStream inputStream = new AntlrInputStream(pom);
 			GrammarLexer lexer = new GrammarLexer(inputStream);
 			lexer.RemoveErrorListeners();
-			lexer.AddErrorListener(new GrammarErrorListener());
+			lexer.AddErrorListener(new GrammarErrorListener(handler));
 			CommonTokenStream c = new CommonTokenStream(lexer);
 			GrammarParser helloParser = new GrammarParser(c);
 
 			helloParser.RemoveErrorListeners();
-			helloParser.AddErrorListener(new GrammarErrorListener());
+			helloParser.AddErrorListener(new GrammarErrorListener(handler));
 
 			String path_file_ins = "insc1.txt";
 
 			try
 			{
 				IParseTree tree = helloParser.start();
+                pom.Close();
 
+                if (handler.errorsOccured())
+                {
+                    Assert.Fail("Errors detected during lexical or syntactic analysis.");
+                }
 
-				Visitor visitor = new Visitor();
+                Visitor visitor = new Visitor(handler);
 				visitor.PrepareLibraryFunctions();
 				visitor.DoInitialJmp();
 				int t = visitor.Visit(tree);
-				visitor.numberInstructions();
+
+                if (handler.errorsOccured())
+                {
+                    Assert.Fail("Errors detected during semantic analysis.");
+                }
+
+                visitor.numberInstructions();
 
 				Program.WriteInstructions(visitor.GetInstructions(), path_file_ins);
 			}
@@ -277,20 +332,20 @@ namespace Happy_language.Tests
 				Console.WriteLine(e.Message);
 			}
 
-			Process compiler = new Process();
-			compiler.StartInfo.FileName = "../../../refint_pl0_ext.exe";
-			compiler.StartInfo.Arguments = path_file_ins + " -s -l";
-			compiler.StartInfo.UseShellExecute = false;
-			compiler.StartInfo.RedirectStandardOutput = true;
+			Process interpreter = new Process();
+			interpreter.StartInfo.FileName = "../../../refint_pl0_ext.exe";
+			interpreter.StartInfo.Arguments = path_file_ins + " -s -l";
+			interpreter.StartInfo.UseShellExecute = false;
+			interpreter.StartInfo.RedirectStandardOutput = true;
 
-			compiler.Start();
+			interpreter.Start();
 
-			StreamReader reader = new StreamReader(compiler.StandardOutput.BaseStream);
+			StreamReader reader = new StreamReader(interpreter.StandardOutput.BaseStream);
 
-			if (!compiler.WaitForExit(15000))
+			if (!interpreter.WaitForExit(15000))
 			{
 				Assert.IsFalse(true, "proces má pravděpodně nekončnou smyčku");
-				compiler.Kill();
+				interpreter.Kill();
 			}
 
 

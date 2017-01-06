@@ -362,6 +362,7 @@ namespace Happy_language
 
         public void AddLIT(String value)
         {
+            Console.WriteLine(value);
             instructions.Add(new Instruction(InstructionType.LIT, 0, value));
             instructionCount += 1;
         }
@@ -507,7 +508,7 @@ namespace Happy_language
             }
             else if (context.String() != null)
             {
-                length = context.String().GetText().Length + 1;
+                length = context.String().GetText().Length - 1;
             }
             else if (context.number_array_assign() != null)
             {
@@ -915,7 +916,7 @@ namespace Happy_language
             else if (context.String() != null)
             {
                 String content = context.String().GetText();
-                for (int i = 1; i < newArray.GetLength() - 2; i++)
+                for (int i = 1; i < newArray.GetLength(); i++)
                 {
                     AddLIT(Convert.ToString(Convert.ToInt32(content[i])));
                 }
@@ -1970,7 +1971,19 @@ namespace Happy_language
             //    return (int)DataType.Bool;
             //}
 
-            return Visit(context.expression());
+            int ret = Visit(context.expression());
+
+            if (context.Negation() != null)
+            {
+                if ((DataType) ret != DataType.Bool)
+                {
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.conditionTypeMismatch, "");
+                }
+
+                AddNeg();
+            }
+
+            return ret;
         }
     }
     #endregion

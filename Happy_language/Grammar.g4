@@ -175,6 +175,7 @@ condition_item
 	: Bool
 	| Negation Bool
 	| expression
+	| Negation expression
 	| '(' Bool ')'
 	| Negation '(' Bool ')';
 
@@ -263,7 +264,7 @@ Start_blok: '{:';
 End_blok: ':}';
 Int : [0-9]+;								
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
-String: '\"' ( '$' '\''? | ~('$' | '\'') )* '\"';
+String: '\"' ( '$' '\"'? | ~('$' | '\"') )* '\"';
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				
 
 

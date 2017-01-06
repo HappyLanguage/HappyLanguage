@@ -6,7 +6,7 @@ grammar Grammar;
 start
 	: Start_prog Start_blok  def_con_var def_functions main End_blok;
 
-//============== Definice promennych ==============
+//============== Var ==============
 def_con_var
 	: def_const def_con_var
 	| def_var def_con_var
@@ -49,7 +49,7 @@ number_array_assign
 	: expression ',' number_array_assign
 	| expression ;
 
-//============== Definice funkci ==============
+//============== functions ==============
 
 def_functions
 	: def_one_function def_functions
@@ -77,7 +77,7 @@ blok
 	| for blok
 	| ; // empty
 
-def_var_blok									// definovane promenné jen na zaèátku funkce
+def_var_blok
 	: def_var def_var_blok
 	| array_inicialization def_var_blok
 	| ;  // empty
@@ -106,14 +106,14 @@ function_return_data_typ
 main
 	: Main_name Bracket_left Bracket_right Start_blok blok_function End_blok;
 	
-//============== Datove typy ==============
+//============== Data type ==============
 
 data_type
 	: Data_type_int
 	| Data_type_bool;
 
 
-//============== Casti bloku (if, for, while..) ==============
+//============== (if, for, while..) ==============
 
 if
 	: If Bracket_left condition Bracket_right Start_blok blok End_blok else_if;
@@ -144,7 +144,7 @@ increment
 	: one_assignment
 	|;//empty
 
-//============== Vyrazy a prirazeni ==============
+//============== expression ==============
 
 expression 
 	: expression Add expression_multiply			
@@ -162,7 +162,7 @@ expression_item
 	| function_call
 	| array_index
 	| '(' expression ')'		
-	| Add Int	//unární plus mínus 
+	| Add Int	
 	| Sub Int
 	| Sub Identifier
 	| Add Identifier
@@ -253,15 +253,15 @@ Else : 'else';
 Operator_condition: '==' | '!=' | '<=' | '>=' | '>' | '<' ;
 Logical_operator: '&&' | '||' ;
 Negation: '!';
-Start_prog: 'happy_start';					// zaèátek programu
+Start_prog: 'happy_start';					
 Main_name: 'mainSmile';							
 Bool: 'true'| 'false';
 Start_blok: '{:';
 End_blok: ':}';
-Int : [0-9]+;								// jedno èíslo
+Int : [0-9]+;								
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
 String: '\'' ( '$' '\''? | ~('$' | '\'') )* '\'';
-WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak
+WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				
 
 
 

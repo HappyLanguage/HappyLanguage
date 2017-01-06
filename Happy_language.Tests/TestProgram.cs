@@ -290,6 +290,13 @@ namespace Happy_language.Tests
                 "Hello world!");
         }
 
+        [TestMethod()]
+        public void TestConditions1()
+        {
+            TestOutputFromFile("../../../TestFiles/Conditions/test-file-1.txt",
+                "321134");
+        }
+
         public void TestGrammarError(String path, ErrorCode expectedError)
         {
             StreamReader pom = new System.IO.StreamReader(path);

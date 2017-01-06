@@ -1,0 +1,11 @@
+happy_start {:
+	:B a := true;)
+	const :B aa := false;)
+	const :I b := BoolToInt(:a:);)
+
+	mainSmile(::){:
+		:I c := BoolToInt(:aa:);)
+		PrintInt(:b:);)
+		PrintInt(:c:);)
+	:}
+:}

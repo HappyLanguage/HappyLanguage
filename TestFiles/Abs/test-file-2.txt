@@ -1,0 +1,9 @@
+happy_start {:
+	
+	def :V test(::){:
+	:}
+
+	mainSmile(::){:
+		test(::);)
+	:}
+:}

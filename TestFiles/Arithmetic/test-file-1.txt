@@ -1,0 +1,29 @@
+happy_start {:
+	:I a := Max(:5, 10:);) ://10
+	:I b := 5;)
+
+	def :I f(::){:
+		ret -5;)
+	:}
+	
+	def :V test(::I c:){:
+		:I test1 := 0;)
+		:I test2 := 0;)
+		:I test3 := 0;)
+		:I test4 := 0;)
+		
+		test1 := (f(::) + 5 * a + b) * 2 / 10;) 
+		
+		PrintInt(:test1:);)
+		PrintNewLine(::);)
+		PrintInt(:test2:);)
+		PrintNewLine(::);)
+		PrintInt(:test3:);)
+		PrintNewLine(::);)
+		PrintInt(:test4:);)
+	:}
+	
+	mainSmile(::){:
+		test(:2:);)
+	:}
+:}

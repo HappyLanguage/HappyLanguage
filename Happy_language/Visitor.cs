@@ -65,6 +65,8 @@ namespace Happy_language
         private int level = 0;
         private int funcReturnAddress = 3;
 
+        private bool globalVarsDefined = false;
+
         /// <summary>
         /// Proměnná na levé straně přiřazení
         /// </summary>
@@ -985,6 +987,7 @@ namespace Happy_language
         public override int VisitDef_one_function([NotNull] GrammarParser.Def_one_functionContext context)
         {
             inFunction = true;
+            globalVarsDefined = true;
             localSymbolTable = new SymbolTable();
             if (!jmpToMainDone) DoMainJmp(0);
 
@@ -1235,6 +1238,7 @@ namespace Happy_language
 
         public override int VisitMain([NotNull] GrammarParser.MainContext context)
         {
+            globalVarsDefined = true;
             if (!jmpToMainDone) DoMainJmp(0);
             inFunction = true;
             inFunctionAddress = 3;
@@ -1323,7 +1327,7 @@ namespace Happy_language
             }
 
             AddINT(-1 * (3 + usedParameters.Count()));
-            AddCAL(1, calledFce.GetAddress());
+            AddCAL(globalVarsDefined ? 1 : 0, calledFce.GetAddress());
 
             if (calledFce.GetReturnDataType() != DataType.Void)
                 AddLOD(level, funcReturnAddress);

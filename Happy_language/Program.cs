@@ -26,7 +26,7 @@ namespace Happy_language
         static void Main(string[] args)
         {
 
-            StreamReader pom = new System.IO.StreamReader("../../../sourceCode.txt");
+            StreamReader pom = new System.IO.StreamReader("../../../sourceCode11.txt");
 
             AntlrInputStream inputStream = new AntlrInputStream(pom);
             GrammarLexer lexer = new GrammarLexer(inputStream);

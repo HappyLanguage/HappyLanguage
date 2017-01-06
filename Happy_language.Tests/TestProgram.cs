@@ -126,6 +126,12 @@ namespace Happy_language.Tests
         }
 
         [TestMethod()]
+        public void TestBoolToInt3()
+        {
+            TestOutputFromFile("../../../TestFiles/BoolToInt/test-file-3.txt", "10");
+        }
+
+        [TestMethod()]
         public void TestIntToBool1()
         {
             TestOutputFromFile("../../../TestFiles/IntToBool/test-file-1.txt",
@@ -237,10 +243,17 @@ namespace Happy_language.Tests
 		}
 
 		[TestMethod()]
-		public void TestTernaryOperator6()
-		{
-			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-6.txt", "-8811-10");
-		}
+        public void TestTernaryOperator6()
+        {
+            TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-6.txt", "-8811-10");
+        }
+
+        [TestMethod()]
+        public void TestArithmetic1()
+        {
+            TestOutputFromFile("../../../TestFiles/Arithmetic/test-file-1.txt",
+                "10" + NEW_LINE + "0" + NEW_LINE + "0" + NEW_LINE + "0");
+        }
 
         public void TestGrammarError(String path, ErrorCode expectedError)
         {

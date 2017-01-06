@@ -16,14 +16,12 @@ def_const
 	: Const Data_type_bool multiple_assign Assign condition_expression Semi
     | Const Data_type_bool multiple_assign Assign function_call Semi
 	| Const Data_type_int multiple_assign Assign expression Semi
-	| Const Data_type_int multiple_assign Assign ternary_operator Semi
-	| Const Data_type_double multiple_assign Assign expression Semi;
-
+	| Const Data_type_int multiple_assign Assign ternary_operator Semi;
+	
 def_var
 	: Data_type_bool multiple_assign Assign condition_expression Semi
 	| Data_type_bool multiple_assign Assign function_call Semi
 	| Data_type_int multiple_assign Assign expression Semi
-	| Data_type_double multiple_assign Assign expression Semi
 	| Data_type_int multiple_assign Assign ternary_operator Semi
 	| array_inicialization;
 
@@ -31,13 +29,10 @@ def_var
 array_inicialization
 	: Data_type_bool '[:' Int ':]' Identifier Semi
    	| Data_type_int '[:' Int ':]' Identifier Semi
-	| Data_type_double '[:' Int ':]' Identifier Semi
 	| Data_type_bool '[:'':]' Identifier Assign  Start_blok  bool_array_assign  End_blok Semi
 	| Data_type_int '[:'':]' Identifier Assign  Start_blok number_array_assign  End_blok Semi
-	| Data_type_double '[:'':]' Identifier Assign Start_blok number_array_assign  End_blok Semi
 	| Data_type_bool '[:'':]' Identifier Assign  String  Semi
-	| Data_type_int '[:'':]' Identifier Assign  String  Semi
-	| Data_type_double '[:'':]' Identifier Assign  String  Semi;
+	| Data_type_int '[:'':]' Identifier Assign  String  Semi;
 
 multiple_assign
 	: Identifier ',' multiple_assign
@@ -115,8 +110,7 @@ main
 
 data_type
 	: Data_type_int
-	| Data_type_bool
-	| Data_type_double;
+	| Data_type_bool;
 
 
 //============== Casti bloku (if, for, while..) ==============
@@ -164,15 +158,12 @@ expression_multiply
  
 expression_item
 	: Int
-	| Double
 	| Identifier
 	| function_call
 	| array_index
 	| '(' expression ')'		
 	| Add Int	//unární plus mínus 
 	| Sub Int
-	| Add Double
-	| Sub Double
 	| Sub Identifier
 	| Add Identifier
 	| Sub array_index
@@ -251,7 +242,6 @@ Bracket_left: '(:';
 Bracket_right: ':)';
 Data_type_void: ':V';
 Data_type_bool: ':B';
-Data_type_double: ':D';
 Data_type_int: ':I';
 Function_def: 'def';
 Const: 'const';
@@ -269,7 +259,6 @@ Bool: 'true'| 'false';
 Start_blok: '{:';
 End_blok: ':}';
 Int : [0-9]+;								// jedno èíslo
-Double : [+-]?[0-9]+'.'[0-9]+;
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
 String: '\'' ( '$' '\''? | ~('$' | '\'') )* '\'';
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				// pøeskoèit na další býlí znak

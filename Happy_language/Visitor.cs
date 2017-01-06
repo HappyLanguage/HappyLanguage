@@ -554,14 +554,12 @@ namespace Happy_language
 
             if (context.function_return_data_typ().Data_type_void() != null) returnDataType = DataType.Void;
             else if (context.function_return_data_typ().data_type().Data_type_bool() != null) returnDataType = DataType.Bool;
-            else if (context.function_return_data_typ().data_type().Data_type_double() != null) returnDataType = DataType.Double;
-
+     
             GrammarParser.ParametersContext paramContext = context.parameters();
             while (paramContext != null && paramContext.Identifier() != null)
             {
                 DataType dType = DataType.Int;
-                if (paramContext.data_type().Data_type_double() != null) dType = DataType.Double;
-                else if (paramContext.data_type().Data_type_bool() != null) dType = DataType.Bool;
+				if (paramContext.data_type().Data_type_bool() != null) dType = DataType.Bool;
 
                 parameters.Add(new FunctionParameter(paramContext.Identifier().GetText(), dType));
                 paramContext = paramContext.parameters();

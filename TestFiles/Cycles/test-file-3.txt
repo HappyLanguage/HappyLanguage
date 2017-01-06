@@ -1,0 +1,17 @@
+happy_start {:
+	def :V test(::){:
+		:B done := false;)
+		:I sum := 0;)
+		do {:
+			sum := sum + 5;)
+			if (:sum > 32:){:
+				done := true;)
+			:}
+		:} while(:!done:);)
+		PrintInt(:sum:);)
+	:}
+		
+	mainSmile(::){:
+		test(::);)
+	:}
+:}

@@ -291,6 +291,20 @@ namespace Happy_language.Tests
         }
 
         [TestMethod()]
+        public void TestCycles3()
+        {
+            TestOutputFromFile("../../../TestFiles/Cycles/test-file-3.txt",
+                "35");
+        }
+
+        [TestMethod()]
+        public void TestBubbleSort1()
+        {
+            TestOutputFromFile("../../../TestFiles/BubbleSort/test-file-1.txt",
+                "_____aaahiinoorrrsssttty");
+        }
+
+        [TestMethod()]
         public void TestConditions1()
         {
             TestOutputFromFile("../../../TestFiles/Conditions/test-file-1.txt",

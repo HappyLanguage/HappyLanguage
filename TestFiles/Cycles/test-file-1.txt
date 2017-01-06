@@ -1,0 +1,17 @@
+happy_start {:
+	def :V test(::){:
+		:I i := 0;)
+		:I j := 0;)
+		:I[::] array := {:5, 7, 2, 4:};)
+
+		for (:i := 0;) i < 4;) i := i + 1:){:
+			for (:j := i;) j < 4;) j := j + 1:){:
+				PrintInt(:array[:j:]:);)
+			:}
+		:}
+	:}
+
+	mainSmile(::){:
+		test(::);)
+	:}
+:}

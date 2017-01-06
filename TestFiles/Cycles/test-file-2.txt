@@ -1,0 +1,20 @@
+happy_start {:
+	:I[::] a := "---Hello world!---";)
+	
+	def :V printHelloWorld(::){:
+		:I[::] minus := "-";)
+		:I index := 0;)
+		:I char := 0;)
+		while(:a[:index:] != 0:){:
+			char := a[:index:];)
+			if (:char != minus[:0:]:){:
+				PrintASCII(:a[:index:]:);)
+			:}
+			index := index + 1;)
+		:}
+	:}
+	
+	mainSmile(::){:
+		printHelloWorld(::);)
+	:}
+:}

@@ -276,6 +276,20 @@ namespace Happy_language.Tests
                 "Hello world!");
         }
 
+        [TestMethod()]
+        public void TestCycles1()
+        {
+            TestOutputFromFile("../../../TestFiles/Cycles/test-file-1.txt",
+                "5724724244");
+        }
+
+        [TestMethod()]
+        public void TestCycles2()
+        {
+            TestOutputFromFile("../../../TestFiles/Cycles/test-file-2.txt",
+                "Hello world!");
+        }
+
         public void TestGrammarError(String path, ErrorCode expectedError)
         {
             StreamReader pom = new System.IO.StreamReader(path);

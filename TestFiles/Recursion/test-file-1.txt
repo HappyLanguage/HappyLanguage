@@ -1,0 +1,20 @@
+happy_start {:
+	def :I func(::I val:){:
+		:I r := 0;)
+		if (:val != 0:){:
+			r := func(:val - 1:);)
+		:}
+		PrintInt(:val:);)
+		ret r;)
+	:}
+	
+	def :V test(::){:
+		func(:3:);)
+	:}
+	
+	mainSmile(::){:
+		func(:5:);)
+		PrintNewLine(::);)
+		test(::);)
+	:}
+:}

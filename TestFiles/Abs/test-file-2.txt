@@ -1,6 +1,14 @@
 happy_start {:
-	
+	const :I a := -20;)
+	const :I b := Abs(:a:);)	
+
+
 	def :V test(::){:
+		:I a := -30;)
+		:I c := Abs(:a:);)
+		PrintInt(:b:);)
+		PrintNewLine(::);)
+		PrintInt(:c:);)
 	:}
 
 	mainSmile(::){:

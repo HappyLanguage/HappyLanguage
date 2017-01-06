@@ -3,7 +3,9 @@ happy_start {:
 	:I b := 5;)
 
 	def :I f(::){:
-		ret -5;)
+		:I a := 12;)
+		:I b := -3;)
+		ret (a * 4 + 5 * b) / -b - 16;) ://-5
 	:}
 	
 	def :V test(::I c:){:
@@ -12,7 +14,10 @@ happy_start {:
 		:I test3 := 0;)
 		:I test4 := 0;)
 		
-		test1 := (f(::) + 5 * a + b) * 2 / 10;) 
+		test1 := (f(::) + 5 * a + b) * c / 10;) 
+		test2 := (a + b * f(::)) * a / 5;)
+		test3 := ((a * b) + 3 * f(::)) == 35 ? (a - b) / f(::) : f(::) + a;)
+		test4 := (((a / b + 3 * a + b * 3 * a) / (3 + c)) * a * b) / f(::);)
 		
 		PrintInt(:test1:);)
 		PrintNewLine(::);)

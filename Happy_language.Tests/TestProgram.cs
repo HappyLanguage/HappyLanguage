@@ -167,7 +167,14 @@ namespace Happy_language.Tests
                 "123" + NEW_LINE + "92" + NEW_LINE + "55");
         }
 
-		[TestMethod()]
+        [TestMethod()]
+        public void TestAbs2()
+        {
+            TestOutputFromFile("../../../TestFiles/Abs/test-file-2.txt",
+                "20" + NEW_LINE + "30");
+        }
+
+        [TestMethod()]
 		public void TestUnaryOperator1()
 		{
 			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-1.txt", "-5");
@@ -252,7 +259,21 @@ namespace Happy_language.Tests
         public void TestArithmetic1()
         {
             TestOutputFromFile("../../../TestFiles/Arithmetic/test-file-1.txt",
-                "10" + NEW_LINE + "0" + NEW_LINE + "0" + NEW_LINE + "0");
+                "10" + NEW_LINE + "-30" + NEW_LINE + "-1" + NEW_LINE + "-360");
+        }
+
+        [TestMethod()]
+        public void TestRecursion1()
+        {
+            TestOutputFromFile("../../../TestFiles/Recursion/test-file-1.txt",
+                "012345" + NEW_LINE + "0123");
+        }
+
+        [TestMethod()]
+        public void TestRecursion2()
+        {
+            TestOutputFromFile("../../../TestFiles/Recursion/test-file-2.txt",
+                "Hello world!");
         }
 
         public void TestGrammarError(String path, ErrorCode expectedError)

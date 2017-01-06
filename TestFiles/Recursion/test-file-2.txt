@@ -1,0 +1,14 @@
+happy_start {:
+	:I[::] a := 'Hello world!';)
+	
+	def :V printHelloWorld(::I beginIndex:){:
+		if (:a[:beginIndex:] != 0:){:
+			PrintASCII(:a[:beginIndex:]:);)
+			printHelloWorld(:beginIndex + 1:);)
+		:}
+	:}
+	
+	mainSmile(::){:
+		printHelloWorld(:0:);)
+	:}
+:}

@@ -1,5 +1,5 @@
 happy_start {:
-	:I[::] a := 'Hello world!';)
+	:I[::] a := "Hello world!";)
 	
 	def :V printHelloWorld(::I beginIndex:){:
 		if (:a[:beginIndex:] != 0:){:

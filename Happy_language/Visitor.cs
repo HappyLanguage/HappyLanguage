@@ -915,7 +915,7 @@ namespace Happy_language
             else if (context.String() != null)
             {
                 String content = context.String().GetText();
-                for (int i = 0; i < newArray.GetLength(); i++)
+                for (int i = 1; i < newArray.GetLength() - 2; i++)
                 {
                     AddLIT(Convert.ToString(Convert.ToInt32(content[i])));
                 }

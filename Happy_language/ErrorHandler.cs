@@ -25,7 +25,8 @@ namespace Happy_language
         operatorTypeMismatch = 16,
         grammarError = 17,
         subExpressionMismatch = 18,
-        indexTypeMismatch = 19
+        indexTypeMismatch = 19,
+        conditionTypeMismatch = 20
     }
 
     public class Error
@@ -48,6 +49,7 @@ namespace Happy_language
         public static int operatorTypeMismatch = -16;
         public static int subExpressionMismatch = -18;
         public static int indexTypeMismatch = -19;
+        public static int conditionTypeMismatch = -20;
 
         private ErrorCode errorCode;
         private int lineNumber;

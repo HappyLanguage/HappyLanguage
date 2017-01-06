@@ -507,7 +507,7 @@ namespace Happy_language
             }
             else if (context.String() != null)
             {
-                length = context.String().GetText().Length;
+                length = context.String().GetText().Length + 1;
             }
             else if (context.number_array_assign() != null)
             {
@@ -916,7 +916,11 @@ namespace Happy_language
             {
                 String content = context.String().GetText();
                 for (int i = 0; i < newArray.GetLength(); i++)
+                {
                     AddLIT(Convert.ToString(Convert.ToInt32(content[i])));
+                }
+
+                AddLIT("0");
             }
             else if (context.number_array_assign() != null)
             {
@@ -1826,6 +1830,21 @@ namespace Happy_language
                 Visit(context.condition_expression());
             }
 
+            if (context.expression() != null)
+            {
+                int ret = Visit(context.expression());
+
+                if ((DataType) ret != DataType.Bool)
+                {
+                    handler.reportVisitorError(context.Start.Line, context.expression().Start.Column, ErrorCode.conditionTypeMismatch, "Expression in condition must be of the Bool type");
+                }
+
+                if (context.Negation() != null)
+                {
+                    AddNeg();
+                }
+            }
+
             GrammarParser.ConditionContext condition1 = context.GetChild<GrammarParser.ConditionContext>(0);
             if (condition1 != null)
             {
@@ -1866,6 +1885,12 @@ namespace Happy_language
             if (context.Bool() != null)
             {
                 AddLIT(BoolToInt(context.Bool().GetText()));
+
+                //if (context.Negation() != null)
+                //{
+                //    AddNeg();
+                //}
+
                 return (int) DataType.Bool;
             }
 
@@ -1913,6 +1938,37 @@ namespace Happy_language
 
                 return (int) DataType.Bool;
             }
+            
+            //if (context.Identifier() != null)
+            //{
+            //    String varConstName = context.Identifier().GetText();
+            //    VarConstItem varConst = null;
+
+            //    if (localSymbolTable.ContainsVarConstItem(varConstName)) varConst = localSymbolTable.GetVarConstItemByName(varConstName);
+            //    else if (globalSymbolTable.ContainsVarConstItem(varConstName)) varConst = globalSymbolTable.GetVarConstItemByName(varConstName);
+            //    else
+            //    {
+            //        handler.reportVisitorError(context.Start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable '" + varConstName + "'");
+
+            //        return Error.varConstDoesNotExist;
+            //    }
+
+            //    if (varConst.GetDataType() != DataType.Bool)
+            //    {
+            //        handler.reportVisitorError(context.Start.Line, ErrorCode.conditionTypeMismatch, "Variable in condition must be of the Bool type");
+            //    }
+
+            //    int varLevel = varConst.GetLevel();
+            //    int levelToMove = Math.Abs(level - varLevel);
+            //    AddLOD(levelToMove, varConst.GetAddress());
+
+            //    if (context.Negation() != null)
+            //    {
+            //        AddNeg();
+            //    }
+
+            //    return (int)DataType.Bool;
+            //}
 
             return Visit(context.expression());
         }

@@ -185,6 +185,9 @@ condition_expression
 condition
 	: condition_expression
 	| condition_expression Logical_operator condition
+	| expression
+	| Negation expression
+	| expression Logical_operator condition 
 	| '('condition')'
 	| Negation '('condition')'
 	| '('condition')' Logical_operator condition
@@ -260,7 +263,7 @@ Start_blok: '{:';
 End_blok: ':}';
 Int : [0-9]+;								
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*;
-String: '\'' ( '$' '\''? | ~('$' | '\'') )* '\'';
+String: '\"' ( '$' '\''? | ~('$' | '\'') )* '\"';
 WS :  (' '|'\t'| '\r' | '\n' ) + -> channel(HIDDEN)	 ;				
 
 

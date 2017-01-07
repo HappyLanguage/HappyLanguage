@@ -8,70 +8,48 @@ namespace Happy_language
 {
     public class SymbolTable
     {
-        Dictionary<String, VarConstItem> varConstTable = new Dictionary<String, VarConstItem>();
-        Dictionary<String, FuncItem> funcTable = new Dictionary<String, FuncItem>();
+        Dictionary<string, Symbol> symbolTable = new Dictionary<string, Symbol>();
+        Dictionary<string, Function> functionTable = new Dictionary<string, Function>();
 
-        public void AddVarConstItem(VarConstItem item)
+        #region Symbols
+        public void AddSymbol(Symbol symbol)
         {
-            varConstTable[item.GetName()] = item;
+            symbolTable[symbol.GetName()] = symbol;
         }
 
-        public VarConstItem GetVarConstItemByName(String name)
+        public Symbol GetSymbol(string name)
         {
-            if(ContainsVarConstItem(name))
-                return varConstTable[name];
+            if(SymbolPresent(name))
+                return symbolTable[name];
 
             return null;
         }
 
-        public String VarConstToString()
+        public bool SymbolPresent(string key)
         {
-            String s = "";
-            foreach (String key in varConstTable.Keys)
-            {
-                s += varConstTable[key].ToString() + "\n";
-            }
-            return s;
+            return symbolTable.ContainsKey(key);
+        }
+        #endregion
+
+        #region Functions
+        public void AddFunction(Function item)
+        {
+            functionTable[item.GetName()] = item;
         }
 
-        public Boolean ContainsVarConstItem(String key)
+        public Function GetFunction(string name)
         {
-            return varConstTable.ContainsKey(key);
+            if (FunctionPresent(name))
+                return functionTable[name];
+
+            return null;
         }
 
-        /* FUNCKCE */
-
-        public Boolean Exists(FuncItem item)
+        public bool FunctionPresent(string key)
         {
-            Boolean exist = true;
-
-            return exist;
+            return functionTable.ContainsKey(key);
         }
-
-        public void AddFuncItem(FuncItem item)
-        {
-            funcTable[item.GetName()] = item;
-        }
-
-        public FuncItem GetFuncItemByName(String name)
-        {
-            return funcTable[name];
-        }
-
-        public Boolean ContainsFuncItem(String key)
-        {
-            return funcTable.ContainsKey(key);
-        }
-
-        public String FuncsToString()
-        {
-            String s = "";
-            foreach (String key in varConstTable.Keys)
-            {
-                s += funcTable[key].ToString() + "\n";
-            }
-            return s;
-        }
+        #endregion
 
     }
 }

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 
 namespace Happy_language
-{
-
+{ 
     public class GrammarErrorListener:BaseErrorListener, IAntlrErrorListener<int>
     {
         private ErrorHandler handler;
@@ -20,18 +19,12 @@ namespace Happy_language
 
         public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            //throw new ArgumentException("Syntax error on line: " + line + " (" + msg + ")", msg, e);
-            handler.reportGrammarError(line, charPositionInLine, "Unexpected symbol '" + offendingSymbol.Text + "'");
-            //throw new ArgumentException("Syntax error on line: " + line + ":"+ charPositionInLine + " '" + offendingSymbol.Text + "'");
+            handler.reportError(line, charPositionInLine, "Unexpected symbol '" + offendingSymbol.Text + "'");
         }
-
-        //IAntlrErrorListener<int> implementation;
 
         public void SyntaxError(IRecognizer recognizer, int offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            //throw new ArgumentException("Syntax error on line: " + line + " (" + msg + ")", msg, e);
-            handler.reportGrammarError(line, charPositionInLine, "Unexpected symbol");
-            //throw new ArgumentException("Syntax error on line: " + line + ":" + charPositionInLine + " '" + offendingSymbol + "'");
+            handler.reportError(line, charPositionInLine, "Unexpected symbol");
         }
 
 

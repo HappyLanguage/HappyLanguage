@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using System.Diagnostics;
+using static Happy_language.GrammarParser;
+using Antlr4.Runtime;
 
 namespace Happy_language
-{ 
+{
     public class Visitor : GrammarBaseVisitor<int>
     {
         #region Attributes
         /// <summary>
         /// Symbol table for global variables and constants
         /// </summary>
-        private SymbolTable globalSymbolTable = new SymbolTable();
+        private SymbolTable globalTable = new SymbolTable();
 
         /// <summary>
         /// Local symbol table
         /// </summary>
-        private SymbolTable localSymbolTable = new SymbolTable();
+        private SymbolTable localTable = new SymbolTable();
 
         /// <summary>
         /// List of generated instructions
@@ -82,9 +82,10 @@ namespace Happy_language
         /// Constructor of the Parse tree visitor
         /// </summary>
         /// <param name="handler">Instance handling compilation errors</param>
+
         public Visitor(ErrorHandler handler) : base()
         {
-            this.handler = handler; 
+            this.handler = handler;
         }
 
         #region Util methods
@@ -93,7 +94,7 @@ namespace Happy_language
         /// </summary>
         /// <param name="value">String representation of boolean</param>
         /// <returns>Integer representation of boolean</returns>
-        public static string BoolToInt(string value)
+        private static string BoolToInt(string value)
         {
             if (value.Equals("True", StringComparison.OrdinalIgnoreCase))
             {
@@ -134,7 +135,7 @@ namespace Happy_language
         {
             AddJMP(0);
             PreparePrintASCIIFunction();
-			PreparePrintIntFunction();
+            PreparePrintIntFunction();
             PreparePrintNewLineFunction();
             PreparePrintBoolFunction();
             PrepareBoolToIntFunction();
@@ -163,11 +164,11 @@ namespace Happy_language
             AddJMP(instructionCount + 1);
             AddLOD(0, 3);
             AddSTO(1, funcReturnAddress);
-            AddRET(0, 0);
+            AddRET();
 
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("value", DataType.Int));
-            globalSymbolTable.AddFuncItem(new FuncItem("Abs", DataType.Int, instructionCount - 13, parameters));
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("value", DataType.Int));
+            globalTable.AddFunction(new Function("Abs", DataType.Int, instructionCount - 13, parameters));
         }
 
         /// <summary>
@@ -189,12 +190,12 @@ namespace Happy_language
             AddSTO(0, 5);
             AddLOD(0, 5);
             AddSTO(1, funcReturnAddress);
-            AddRET(0, 0);
+            AddRET();
 
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("a", DataType.Int));
-            parameters.Add(new FunctionParameter("b", DataType.Int));
-            globalSymbolTable.AddFuncItem(new FuncItem("Max", DataType.Int, instructionCount - 14, parameters));
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("a", DataType.Int));
+            parameters.Add(new Parameter("b", DataType.Int));
+            globalTable.AddFunction(new Function("Max", DataType.Int, instructionCount - 14, parameters));
         }
 
         /// <summary>
@@ -216,12 +217,12 @@ namespace Happy_language
             AddSTO(0, 5);
             AddLOD(0, 5);
             AddSTO(1, funcReturnAddress);
-            AddRET(0, 0);
+            AddRET();
 
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("a", DataType.Int));
-            parameters.Add(new FunctionParameter("b", DataType.Int));
-            globalSymbolTable.AddFuncItem(new FuncItem("Min", DataType.Int, instructionCount - 14, parameters));
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("a", DataType.Int));
+            parameters.Add(new Parameter("b", DataType.Int));
+            globalTable.AddFunction(new Function("Min", DataType.Int, instructionCount - 14, parameters));
         }
 
         /// <summary>
@@ -236,16 +237,16 @@ namespace Happy_language
             AddLIT("1");
             AddSTO(1, funcReturnAddress);
             AddINT(-4);
-            AddRET(0, 0);
+            AddRET();
 
             AddLIT("0");
             AddSTO(1, funcReturnAddress);
             AddINT(-4);
-            AddRET(0, 0);
+            AddRET();
 
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("value", DataType.Int));
-            globalSymbolTable.AddFuncItem(new FuncItem("IntToBool", DataType.Bool, instructionCount - 10, parameters));
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("value", DataType.Int));
+            globalTable.AddFunction(new Function("IntToBool", DataType.Bool, instructionCount - 10, parameters));
         }
 
         /// <summary>
@@ -257,11 +258,11 @@ namespace Happy_language
             AddINT(4);
             AddSTO(1, funcReturnAddress);
             AddINT(-3);
-            AddRET(0, 0);
+            AddRET();
 
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("value", DataType.Bool));
-            globalSymbolTable.AddFuncItem(new FuncItem("BoolToInt", DataType.Int, instructionCount - 4, parameters));
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("value", DataType.Bool));
+            globalTable.AddFunction(new Function("BoolToInt", DataType.Int, instructionCount - 4, parameters));
         }
 
         /// <summary>
@@ -277,8 +278,8 @@ namespace Happy_language
             AddLIT("10");
             AddWRI();
             AddINT(-4);
-            AddRET(0, 0);
-            globalSymbolTable.AddFuncItem(new FuncItem("PrintNewLine", DataType.Void, instructionCount - 8, new List<FunctionParameter>()));
+            AddRET();
+            globalTable.AddFunction(new Function("PrintNewLine", DataType.Void, instructionCount - 8, new List<Parameter>()));
         }
 
         /// <summary>
@@ -290,10 +291,10 @@ namespace Happy_language
             AddINT(4);
             AddWRI();
             AddINT(-4);
-            AddRET(0, 0);
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("value", DataType.Int));
-            globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, instructionCount - 4, parameters));
+            AddRET();
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("value", DataType.Int));
+            globalTable.AddFunction(new Function("PrintASCII", DataType.Void, instructionCount - 4, parameters));
         }
 
         /// <summary>
@@ -317,7 +318,7 @@ namespace Happy_language
             AddLIT("101");
             AddWRI();
             AddINT(-4);
-            AddRET(0, 0);
+            AddRET();
 
             AddLIT("102");
             AddWRI();
@@ -334,11 +335,11 @@ namespace Happy_language
             AddLIT("101");
             AddWRI();
             AddINT(-4);
-            AddRET(0, 0);
+            AddRET();
 
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("value", DataType.Bool));
-            globalSymbolTable.AddFuncItem(new FuncItem("PrintBool", DataType.Void, instructionCount - 31, parameters));
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("value", DataType.Bool));
+            globalTable.AddFunction(new Function("PrintBool", DataType.Void, instructionCount - 31, parameters));
         }
 
         /// <summary>
@@ -383,10 +384,10 @@ namespace Happy_language
 
             AddINT(-4);
 
-            AddRET(0, 0);
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
-            parameters.Add(new FunctionParameter("value", DataType.Int));
-            globalSymbolTable.AddFuncItem(new FuncItem("PrintInt", DataType.Void, instructionCount - 31, parameters));
+            AddRET();
+            List<Parameter> parameters = new List<Parameter>();
+            parameters.Add(new Parameter("value", DataType.Int));
+            globalTable.AddFunction(new Function("PrintInt", DataType.Void, instructionCount - 31, parameters));
         }
         #endregion
 
@@ -394,7 +395,7 @@ namespace Happy_language
         /// <summary>
         /// Add WRI instruction to the instruction list
         /// </summary>
-        public void AddWRI()
+        private void AddWRI()
         {
             instructions.Add(new Instruction(InstructionType.WRI, 0, "0"));
             instructionCount += 1;
@@ -403,7 +404,7 @@ namespace Happy_language
         /// <summary>
         /// Add PST instruction to the instruction list
         /// </summary>
-        public void AddPST()
+        private void AddPST()
         {
             instructions.Add(new Instruction(InstructionType.PST, 0, "0"));
             instructionCount += 1;
@@ -412,7 +413,7 @@ namespace Happy_language
         /// <summary>
         /// Add PLD instruction to the instruction list
         /// </summary>
-        public void AddPLD()
+        private void AddPLD()
         {
             instructions.Add(new Instruction(InstructionType.PLD, 0, "0"));
             instructionCount += 1;
@@ -422,7 +423,7 @@ namespace Happy_language
         /// Add LIT instruction to the instruction list
         /// </summary>
         /// <param name="value">string representation of the value to add to stack</param>
-        public void AddLIT(string value)
+        private void AddLIT(string value)
         {
             instructions.Add(new Instruction(InstructionType.LIT, 0, value));
             instructionCount += 1;
@@ -433,7 +434,7 @@ namespace Happy_language
         /// </summary>
         /// <param name="level">Level of the address to store</param>
         /// <param name="address">Address where to store</param>
-        public void AddSTO(int level, int address)
+        private void AddSTO(int level, int address)
         {
             instructions.Add(new Instruction(InstructionType.STO, level, address.ToString()));
             instructionCount += 1;
@@ -443,7 +444,7 @@ namespace Happy_language
         /// Add OPR instruction to the instruction list
         /// </summary>
         /// <param name="opCode">Operator code</param>
-        public void AddOPR(int opCode)
+        private void AddOPR(int opCode)
         {
             instructions.Add(new Instruction(InstructionType.OPR, 0, opCode.ToString()));
             instructionCount += 1;
@@ -453,7 +454,7 @@ namespace Happy_language
         /// Add JMP instruction to the instruction list
         /// </summary>
         /// <param name="codeAddress">Address where to jump</param>
-        public void AddJMP(int codeAddress)
+        private void AddJMP(int codeAddress)
         {
             instructions.Add(new Instruction(InstructionType.JMP, 0, codeAddress.ToString()));
             instructionCount += 1;
@@ -464,7 +465,7 @@ namespace Happy_language
         /// </summary>
         /// <param name="codeAddress">Address where to jump</param>
         /// <param name="index">Index of the JMP instruction in the instruction list</param>
-        public void ChangeJMP(int codeAddress, int index)
+        private void ChangeJMP(int codeAddress, int index)
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMP);
             instructions[index].Value = codeAddress.ToString();
@@ -474,7 +475,7 @@ namespace Happy_language
         /// Add INT instruction to the instruction list
         /// </summary>
         /// <param name="value">Value of how much the top of the stack will be increased (or decreased if the value is negative)</param>
-        public void AddINT(int value)
+        private void AddINT(int value)
         {
             instructions.Add(new Instruction(InstructionType.INT, 0, value.ToString()));
             instructionCount += 1;
@@ -485,19 +486,19 @@ namespace Happy_language
         /// </summary>
         /// <param name="level">Level of the address that will be called</param>
         /// <param name="address">Address that will be called</param>
-        public void AddCAL(int level, int address)
+        private void AddCAL(int level, int address)
         {
             instructions.Add(new Instruction(InstructionType.CAL, level, address.ToString()));
             instructionCount += 1;
         }
-        
+
         /// <summary>
         /// Changes the CAL instruction on given index
         /// </summary>
         /// <param name="level">Level of the address that will be called</param>
         /// <param name="address">Address that will be called</param>
         /// <param name="index">Index of the instruction that will be changed</param>
-        public void ChangeCAL(int level, int address, int index)
+        private void ChangeCAL(int level, int address, int index)
         {
             Debug.Assert(instructions[index].Type == InstructionType.CAL);
 
@@ -508,11 +509,9 @@ namespace Happy_language
         /// <summary>
         /// Add RET instruction to the instruction list
         /// </summary>
-        /// <param name="level">Level of the address where to return</param>
-        /// <param name="codeAddress">Address where to return</param>
-        public void AddRET(int level, int codeAddress)
+        private void AddRET()
         {
-            instructions.Add(new Instruction(InstructionType.RET, level, codeAddress.ToString()));
+            instructions.Add(new Instruction(InstructionType.RET, 0, "0"));
             instructionCount += 1;
         }
 
@@ -521,7 +520,7 @@ namespace Happy_language
         /// </summary>
         /// <param name="level">Level of the address from where to load the value</param>
         /// <param name="address">Address from where to load the value</param>
-        public void AddLOD(int level, int address)
+        private void AddLOD(int level, int address)
         {
             instructions.Add(new Instruction(InstructionType.LOD, level, address.ToString()));
             instructionCount += 1;
@@ -531,7 +530,7 @@ namespace Happy_language
         /// Add JMC instruction to the instruction list
         /// </summary>
         /// <param name="codeAddress">Address where to jump</param>
-        public void AddJMC(int codeAddress)
+        private void AddJMC(int codeAddress)
         {
             instructions.Add(new Instruction(InstructionType.JMC, 0, codeAddress.ToString()));
             instructionCount += 1;
@@ -542,7 +541,7 @@ namespace Happy_language
         /// </summary>
         /// <param name="index">Index of modified instruction</param>
         /// <param name="codeAddress">Address where to jump</param>
-        public void ChangeJMC(int index, int codeAddress)
+        private void ChangeJMC(int index, int codeAddress)
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMC);
             instructions[index].Value = codeAddress.ToString();
@@ -552,7 +551,7 @@ namespace Happy_language
         /// Adds instructions for logical negation
         /// !val = val == false
         /// </summary>
-        public void AddNeg()
+        private void AddNeg()
         {
             AddLIT("0");
             AddOPR(Instruction.EQ);
@@ -571,7 +570,7 @@ namespace Happy_language
         {
             AddCAL(0, dest);
             jmpToMainIndex = instructionCount - 1;
-            AddRET(0, 0);
+            AddRET();
             jmpToMainDone = true;
         }
 
@@ -583,7 +582,7 @@ namespace Happy_language
 
         private void endProgram()
         {
-            AddRET(0, 0);
+            AddRET();
         }
         #endregion
 
@@ -594,7 +593,7 @@ namespace Happy_language
         /// <param name="context">Context</param>
         /// <param name="name">Name of the constant</param>
         /// <returns>Object representing created constant</returns>
-        private VarConstItem createConst(GrammarParser.Def_constContext context, string name)
+        private Symbol createConst(Def_constContext context, string name)
         {
             DataType dt = DataType.Int;
 
@@ -609,7 +608,7 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, VarConstType.Const, dt, context.start.Line, addr, level);
+            return new Symbol(name, SymbolType.Const, dt, context.start.Line, addr, level);
         }
 
         /// <summary>
@@ -618,7 +617,7 @@ namespace Happy_language
         /// <param name="context">Context</param>
         /// <param name="name">Name of the variable</param>
         /// <returns>Object representing created variable</returns>
-        private VarConstItem createVar(GrammarParser.Def_varContext context, string name)
+        private Symbol createVar(Def_varContext context, string name)
         {
             DataType dt = DataType.Int;
 
@@ -633,7 +632,7 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, VarConstType.Var, dt, context.start.Line, addr, level);
+            return new Symbol(name, SymbolType.Var, dt, context.start.Line, addr, level);
         }
 
         /// <summary>
@@ -641,7 +640,7 @@ namespace Happy_language
         /// </summary>
         /// <param name="context">Context</param>
         /// <returns>Object representing created array</returns>
-        private VarConstItem createArray(GrammarParser.Array_inicializationContext context)
+        private Symbol createArray(Array_inicializationContext context)
         {
             string name = context.Identifier().GetText();
             DataType dt = DataType.Int;
@@ -657,7 +656,7 @@ namespace Happy_language
             }
             else if (context.number_array_assign() != null)
             {
-                GrammarParser.Number_array_assignContext values = context.number_array_assign();
+                Number_array_assignContext values = context.number_array_assign();
                 while (values != null)
                 {
                     length += 1;
@@ -666,7 +665,7 @@ namespace Happy_language
             }
             else if (context.bool_array_assign() != null)
             {
-                GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
+                Bool_array_assignContext values = context.bool_array_assign();
                 while (values != null)
                 {
                     length += 1;
@@ -682,7 +681,7 @@ namespace Happy_language
             else
                 addr = globalAddress;
 
-            return new VarConstItem(name, length, VarConstType.Var, dt, context.start.Line, addr, level); ;
+            return new Symbol(name, length, SymbolType.Var, dt, context.start.Line, addr, level); ;
         }
 
         /// <summary>
@@ -690,26 +689,26 @@ namespace Happy_language
         /// </summary>
         /// <param name="context">Context</param>
         /// <returns>Object representing created function</returns>
-        private FuncItem createFunction(GrammarParser.Def_functionContext context)
+        private Function createFunction(Def_functionContext context)
         {
             string name = context.Identifier().GetText(); ;
             DataType returnDataType = DataType.Int;
-            List<FunctionParameter> parameters = new List<FunctionParameter>();
+            List<Parameter> parameters = new List<Parameter>();
 
             if (context.function_return_data_typ().Data_type_void() != null) returnDataType = DataType.Void;
             else if (context.function_return_data_typ().data_type().Data_type_bool() != null) returnDataType = DataType.Bool;
-     
-            GrammarParser.ParametersContext paramContext = context.parameters();
+
+            ParametersContext paramContext = context.parameters();
             while (paramContext != null && paramContext.Identifier() != null)
             {
                 DataType dType = DataType.Int;
-				if (paramContext.data_type().Data_type_bool() != null) dType = DataType.Bool;
+                if (paramContext.data_type().Data_type_bool() != null) dType = DataType.Bool;
 
-                parameters.Add(new FunctionParameter(paramContext.Identifier().GetText(), dType));
+                parameters.Add(new Parameter(paramContext.Identifier().GetText(), dType));
                 paramContext = paramContext.parameters();
             }
 
-            return new FuncItem(name, returnDataType, instructionCount, parameters);
+            return new Function(name, returnDataType, instructionCount, parameters);
         }
 
         /// <summary>
@@ -717,42 +716,37 @@ namespace Happy_language
         /// </summary>
         /// <param name="array">Processed array</param>
         /// <returns>Result of validation. Zero if OK, negative value if array is not valid</returns>
-        private int processArray(VarConstItem array)
+        private int processArray(Symbol array)
         {
             if (array.GetLength() < 0)
             {
-                //error
-                handler.reportVisitorError(array.GetDeclarationLine(), ErrorCode.arrayLengthNegative, "Array has negative length");
-                return Error.arrayLengthNegative;
+                return handler.reportError(array.GetDeclarationLine(), ErrorCode.arrayLengthNegative,
+                    "Array has negative length");
             }
 
             if (inFunction)
             {
-                if (!localSymbolTable.ContainsVarConstItem(array.GetName()))
-                    localSymbolTable.AddVarConstItem(array);
+                if (!localTable.SymbolPresent(array.GetName()))
+                    localTable.AddSymbol(array);
                 else
                 {
-                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(array.GetName());
+                    Symbol alreadyDeclared = localTable.GetSymbol(array.GetName());
 
-                    handler.reportVisitorError(array.GetDeclarationLine(), ErrorCode.arrayAlreadyExists,
+                    return handler.reportError(array.GetDeclarationLine(), ErrorCode.arrayAlreadyExists,
                         "Variable with name '" + array.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
-
-                    return Error.arrayAlreadyExists;
                 }
                 inFunctionAddress += array.GetLength();
             }
             else
             {
-                if (!globalSymbolTable.ContainsVarConstItem(array.GetName()))
-                    globalSymbolTable.AddVarConstItem(array);
+                if (!globalTable.SymbolPresent(array.GetName()))
+                    globalTable.AddSymbol(array);
                 else
                 {
-                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(array.GetName());
+                    Symbol alreadyDeclared = localTable.GetSymbol(array.GetName());
 
-                    handler.reportVisitorError(array.GetDeclarationLine(), ErrorCode.arrayAlreadyExists,
+                    return handler.reportError(array.GetDeclarationLine(), ErrorCode.arrayAlreadyExists,
                         "Variable with name '" + array.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
-
-                    return Error.arrayAlreadyExists;
                 }
                 globalAddress += array.GetLength();
             }
@@ -765,37 +759,32 @@ namespace Happy_language
         /// </summary>
         /// <param name="item">Processed variable or constant</param>
         /// <returns>0 if OK, negative value if the value or constant is not valid</returns>
-        private int processVarConst(VarConstItem item)
+        private int processVarConst(Symbol item)
         {
             if (inFunction)
             {
-                if (!localSymbolTable.ContainsVarConstItem(item.GetName()))
-                    localSymbolTable.AddVarConstItem(item);
+                if (!localTable.SymbolPresent(item.GetName()))
+                    localTable.AddSymbol(item);
                 else
                 {
-                    //Console.WriteLine("Promena " + item.GetName() + " uz existuje!\n");
+                    Symbol alreadyDeclared = localTable.GetSymbol(item.GetName());
 
-                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(item.GetName());
-
-                    handler.reportVisitorError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
+                    return handler.reportError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
                         "Variable with name '" + item.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
-
-                    return Error.varConstAlreadyExists;
                 }
+
                 inFunctionAddress += 1;
             }
             else
             {
-                if (!globalSymbolTable.ContainsVarConstItem(item.GetName()))
-                    globalSymbolTable.AddVarConstItem(item);
+                if (!globalTable.SymbolPresent(item.GetName()))
+                    globalTable.AddSymbol(item);
                 else
                 {
-                    VarConstItem alreadyDeclared = localSymbolTable.GetVarConstItemByName(item.GetName());
+                    Symbol alreadyDeclared = localTable.GetSymbol(item.GetName());
 
-                    handler.reportVisitorError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
+                    return handler.reportError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
                         "Variable with name '" + item.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
-
-                    return Error.varConstAlreadyExists;
                 }
                 globalAddress += 1;
             }
@@ -808,98 +797,50 @@ namespace Happy_language
         /// </summary>
         /// <param name="varConstName">Name of the symbol</param>
         /// <returns></returns>
-        public VarConstItem GetVarConst(string varConstName)
+        private Symbol GetSymbol(string varConstName)
         {
-            if (localSymbolTable.ContainsVarConstItem(varConstName))
-                return localSymbolTable.GetVarConstItemByName(varConstName);
-            else if (globalSymbolTable.ContainsVarConstItem(varConstName))
-                return globalSymbolTable.GetVarConstItemByName(varConstName);
+            if (localTable.SymbolPresent(varConstName))
+                return localTable.GetSymbol(varConstName);
+            else if (globalTable.SymbolPresent(varConstName))
+                return globalTable.GetSymbol(varConstName);
 
             return null;
         }
         #endregion
 
         #region Visitors
+
+        #region Definitions
         /// <summary>
         /// Constant definition
         /// </summary>
         /// <param name="context"></param>
         /// <returns>((int) DataType) if ok, negative value if semantic error</returns>
-        public override int VisitDef_const([NotNull] GrammarParser.Def_constContext context)
+        public override int VisitDef_const([NotNull] Def_constContext context)
         {
             int result = 0;
-            GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
+            int column = 0;
+
+            //for each left side assign given value
+            Multiple_assignContext leftSides = context.multiple_assign();
             while (leftSides != null)
             {
-                VarConstItem newConst = createConst(context, leftSides.Identifier().GetText());
+                Symbol newConst = createConst(context, leftSides.Identifier().GetText());
                 result = processVarConst(newConst);
 
                 if (result < 0)
                     return result;
-                
-                if (context.condition_expression() != null)
-                {
-                    result = VisitCondition_expression(context.condition_expression());
 
-                    if (result < 0)
-                        return result;
+                result = VisitRightSide(context, out column);
 
-                    if (newConst.GetDataType() != (DataType) result)
-                    {
-                        handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
-                }
-                //else if (context.function_call() != null)
-                //{
-                //    result = VisitFunction_call(context.function_call());
-
-                //    if (result < 0)
-                //        return result;
-
-                //    if (newConst.GetDataType() != (DataType)result)
-                //    {
-                //        handler.reportVisitorError(context.start.Line, context.function_call().start.Column, ErrorCode.assignmentMismatch,
-                //            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
-
-                //        return Error.assignmentMismatch;
-                //    }
-                //}
-				else if (context.expression() != null)
-				{
-					result = VisitExpression(context.expression());
-
-					if (result < 0)
-						return result;
-
-					if (newConst.GetDataType() != (DataType)result)
-					{
-                        handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
-				}
-				else if (context.ternary_operator() != null)
-				{
-					result = VisitTernary_operator(context.ternary_operator());
-
-					if (result < 0)
-						return result;
-
-					if (newConst.GetDataType() != (DataType)result)
-					{
-                        handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
-                             "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
-				}
-				
-				if (result < 0)
+                if (result < 0)
                     return result;
+
+                if (newConst.GetDataType() != (DataType)result)
+                {
+                    return handler.reportError(context.start.Line, column, ErrorCode.assignmentMismatch,
+                        "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
+                }
 
                 leftSides = leftSides.multiple_assign();
             }
@@ -912,90 +853,40 @@ namespace Happy_language
         /// </summary>
         /// <param name="context"></param>
         /// <returns>((int) DataType) if ok, negative value if semantic error</returns>
-        public override int VisitDef_var([NotNull] GrammarParser.Def_varContext context)
+        public override int VisitDef_var([NotNull] Def_varContext context)
         {
             int result = 0;
+            int column = 0;
             if (context.array_inicialization() == null)
             {
-                GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
+
+                //for each leftSide assign given value
+                Multiple_assignContext leftSides = context.multiple_assign();
                 while (leftSides != null)
                 {
-                    VarConstItem newVar = createVar(context, leftSides.Identifier().GetText());
-                    result = processVarConst(newVar);              
+                    Symbol newVar = createVar(context, leftSides.Identifier().GetText());
+                    result = processVarConst(newVar);
 
                     if (result < 0)
                         return result;
 
-                    if (context.condition_expression() != null)
-                    {
-                        result = VisitCondition_expression(context.condition_expression());
+                    result = VisitRightSide(context, out column);
 
-                        if (result < 0)
-                            return result;
-
-                        if (newVar.GetDataType() != (DataType)result)
-                        {
-                            handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
-
-                            return Error.assignmentMismatch;
-                        }
-                    }
-                    else if (context.function_call() != null)
-                    {
-                        result = VisitFunction_call(context.function_call());
-
-                        if (result < 0)
-                            return result;
-
-                        if (newVar.GetDataType() != (DataType)result)
-                        {
-                            handler.reportVisitorError(context.start.Line, context.function_call().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
-
-                            return Error.assignmentMismatch;
-                        }
-                    }
-                    else if (context.expression() != null)
-                    {
-						result = VisitExpression(context.expression());
-
-						if (result < 0)
-							return result;
-
-						if (newVar.GetDataType() != (DataType)result)
-						{
-                            handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
-
-                            return Error.assignmentMismatch;
-                        }
-
-					}
-					else if (context.ternary_operator() != null)
-					{
-						result = VisitTernary_operator(context.ternary_operator());
-
-						if (result < 0)
-							return result;
-
-						if (newVar.GetDataType() != (DataType)result)
-						{
-                            handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
-
-                            return Error.assignmentMismatch;
-                        }
-					}
-
-					if (result < 0)
+                    if (result < 0)
                         return result;
+
+                    if (newVar.GetDataType() != (DataType)result)
+                    {
+                        return handler.reportError(context.start.Line, column, ErrorCode.assignmentMismatch,
+                        "Cannot assign from " + ((DataType)result) + " to " + newVar.GetDataType());
+                    }
 
                     leftSides = leftSides.multiple_assign();
                 }
             }
             else
             {
+                //initialize array
                 result = VisitArray_inicialization(context.array_inicialization());
             }
 
@@ -1007,9 +898,9 @@ namespace Happy_language
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-		public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
+		public override int VisitArray_inicialization([NotNull] Array_inicializationContext context)
         {
-            VarConstItem newArray = createArray(context);
+            Symbol newArray = createArray(context);
             int result = processArray(newArray);
 
             if (result < 0)
@@ -1017,11 +908,13 @@ namespace Happy_language
 
             if (context.Int() != null)
             {
+                //if only size is given, fill memory with zeros
                 for (int i = 0; i < newArray.GetLength(); i++)
                     AddLIT("0");
             }
             else if (context.String() != null)
             {
+                //if string provided, fill memory with the characters ASCII values and add zero
                 string content = context.String().GetText();
                 for (int i = 1; i < newArray.GetLength(); i++)
                 {
@@ -1033,7 +926,8 @@ namespace Happy_language
             }
             else if (context.number_array_assign() != null)
             {
-                GrammarParser.Number_array_assignContext values = context.number_array_assign();
+                //list of arithmetic expressions
+                Number_array_assignContext values = context.number_array_assign();
                 while (values != null)
                 {
                     result = VisitExpression(values.expression());
@@ -1042,12 +936,10 @@ namespace Happy_language
                     {
                         return result;
                     }
-                    else if (newArray.GetDataType() != (DataType) result)
+                    else if (newArray.GetDataType() != (DataType)result)
                     {
-                        handler.reportVisitorError(values.start.Line, values.expression().start.Column, ErrorCode.assignmentMismatch,
+                        return handler.reportError(values.start.Line, values.expression().start.Column, ErrorCode.assignmentMismatch,
                             "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
-
-                        return Error.assignmentMismatch;
                     }
 
                     values = values.number_array_assign();
@@ -1055,90 +947,105 @@ namespace Happy_language
             }
             else if (context.bool_array_assign() != null)
             {
-				GrammarParser.Bool_array_assignContext values = context.bool_array_assign();
-				while (values != null)
+                //list of logical expressions
+                Bool_array_assignContext values = context.bool_array_assign();
+                int column = 0;
+                while (values != null)
                 {
-                    if (values.condition_expression() != null)
+                    if (values.condition() != null)
                     {
-                        result = VisitCondition_expression(values.condition_expression());
-
-                        if (result < 0)
-                        {
-                            return result;
-                        }
-                        else if (newArray.GetDataType() != (DataType)result)
-                        {
-                            handler.reportVisitorError(values.start.Line, values.condition_expression().start.Column, ErrorCode.assignmentMismatch,
-                                "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
-
-                            return Error.assignmentMismatch;
-                        }
+                        result = Visit(values.condition());
+                        column = values.condition().start.Column;
                     }
-                    else if (values.function_call() != null)
+                    else if (values.expression() != null)
                     {
-                        result = VisitFunction_call(values.function_call());
-
-                        if (result < 0)
-                        {
-                            return result;
-                        }
-                        else if (newArray.GetDataType() != (DataType)result)
-                        {
-                            handler.reportVisitorError(values.start.Line, values.function_call().start.Column, ErrorCode.assignmentMismatch,
-                                "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
-
-                            return Error.assignmentMismatch;
-                        }
+                        result = Visit(values.expression());
+                        column = values.expression().Start.Column;
                     }
+
+                    if (result < 0)
+                    {
+                        return result;
+                    }
+                    else if (newArray.GetDataType() != (DataType)result)
+                    {
+                        return handler.reportError(values.start.Line, column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to array item of type " + newArray.GetDataType());
+                    }
+
                     values = values.bool_array_assign();
                 }
             }
 
             return result;
         }
-        
+
         /// <summary>
         /// Function definition
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override int VisitDef_function([NotNull] GrammarParser.Def_functionContext context)
+        public override int VisitDef_function([NotNull] Def_functionContext context)
         {
             inFunction = true;
             globalVarsDefined = true;
-            localSymbolTable = new SymbolTable();
+            localTable = new SymbolTable();
             if (!jmpToMainDone) DoMainJmp(0);
 
-            FuncItem newItem = createFunction(context);
-            if (!globalSymbolTable.ContainsFuncItem(newItem.GetName()))
+            //check if the function is not already defined
+            Function newItem = createFunction(context);
+            if (!globalTable.FunctionPresent(newItem.GetName()))
             {
-                globalSymbolTable.AddFuncItem(newItem);
+                globalTable.AddFunction(newItem);
             }
             else
             {
-                handler.reportVisitorError(context.Start.Line, ErrorCode.functionAlreadyExists,
+                return handler.reportError(context.Start.Line, ErrorCode.functionAlreadyExists,
                     "Function with name '" + newItem.GetName() + "' already defined.");
-                return Error.functionAlreadyExists;
             }
 
             AddINT(3 + newItem.GetParameters().Count);
 
             level += 1;
             inFunctionAddress = 3;
+
+            //process parameters
             for (int i = 0; i < newItem.GetParameters().Count; i++)
             {
-                VarConstItem parItem = new VarConstItem(newItem.GetParameters()[i].getName(),
-                                                        VarConstType.Var, newItem.GetParameters()[i].getDataType(), context.start.Line, inFunctionAddress, level);
-                localSymbolTable.AddVarConstItem(parItem);
+                Symbol parItem = new Symbol(newItem.GetParameters()[i].getName(), SymbolType.Var,
+                    newItem.GetParameters()[i].getDataType(), context.start.Line, inFunctionAddress, level);
+
+                localTable.AddSymbol(parItem);
                 inFunctionAddress += 1;
             }
 
-            int result = base.VisitDef_function(context);
+            //process function block
+            int result = Visit(context.block_function());
+
+            if (result < 0)
+            {
+                return result;
+            }
+
+            //process return command
+            result = Visit(context.function_return());
+
+            if (result < 0)
+            {
+                return result;
+            }
+
+            if ((DataType)result != newItem.GetReturnDataType())
+            {
+                return handler.reportError(context.function_return().Start.Line, ErrorCode.returnTypeMismatch,
+                    "Return value must be of " + newItem.GetReturnDataType() + " type");
+            }
+
             level -= 1;
 
-            AddRET(0, 0);
+            AddRET();
             inFunction = false;
-            localSymbolTable = null;
+            localTable = null;
 
             return result;
         }
@@ -1148,117 +1055,82 @@ namespace Happy_language
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override int VisitFunction_return([NotNull] GrammarParser.Function_returnContext context)
+        public override int VisitFunction_return([NotNull] Function_returnContext context)
         {
             int result = 0;
-			if (context.condition_expression() == null && context.expression() == null && context.ternary_operator() == null)
+            if (context.condition() == null && context.expression() == null && context.ternary_operator() == null)
             {
-				return result;
+                //Void
+                return result;
             }
 
             if (context.expression() != null)
             {
                 result = VisitExpression(context.expression());
             }
-			else if (context.condition_expression() != null)
-			{
-				result = VisitCondition_expression(context.condition_expression());
-			}
-			else if (context.ternary_operator() != null)
-			{
-				result = VisitTernary_operator(context.ternary_operator());
-			}
+            else if (context.condition() != null)
+            {
+                result = Visit(context.condition());
+            }
+            else if (context.ternary_operator() != null)
+            {
+                result = VisitTernary_operator(context.ternary_operator());
+            }
 
             //Store the result on predefined address
-			AddSTO(level, funcReturnAddress);
+            AddSTO(level, funcReturnAddress);
 
             return result;
         }
+        #endregion
 
-        public override int VisitAssignment([NotNull] GrammarParser.AssignmentContext context)
+        #region Assignment
+        /// <summary>
+        /// Asignment command with possible multiple left sides
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitAssignment([NotNull] AssignmentContext context)
         {
             int result = 0;
-            GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
+            int column = 0;
+
+            //for each left side assign right side
+            Multiple_assignContext leftSides = context.multiple_assign();
             while (leftSides != null)
             {
-                string retValToName = leftSides.Identifier().GetText();
-                VarConstItem retValTo = GetVarConst(retValToName);
+                string leftSideName = leftSides.Identifier().GetText();
+                Symbol leftSide = GetSymbol(leftSideName);
 
-                if (retValTo == null)
+                if (leftSide == null)
                 {
-                    handler.reportVisitorError(context.start.Line, ErrorCode.unknownSymbol, "Unknown variable with name '" + retValToName + "'");
-					return Error.unknownSymbol;
+                    return handler.reportError(context.start.Line, ErrorCode.unknownSymbol,
+                        "Unknown variable with name '" + leftSideName + "'");
                 }
 
-                if (retValTo.GetVarConstType() == VarConstType.Const)
+                if (leftSide.GetSymbolType() == SymbolType.Const)
                 {
-                    handler.reportVisitorError(context.start.Line, ErrorCode.assignmentToConstant, "Cannot assign to a constant");
-                    return Error.assignmentToConstant;
+                    return handler.reportError(context.start.Line, ErrorCode.assignmentToConstant,
+                        "Cannot assign to a constant");
                 }
 
-                if (context.condition_expression() != null)
+                //process right side
+                result = VisitRightSide(context.assignment_right_side(), out column);
+                if (result < 0)
                 {
-                    result = VisitCondition_expression(context.condition_expression());
-
-                    if (result < 0)
-                        return result;
-
-                    if (retValTo.GetDataType() != (DataType)result)
-                    {
-                        handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
+                    return result;
                 }
-                else if (context.expression() != null)
+
+                if (leftSide.GetDataType() != (DataType)result)
                 {
-                    result = VisitExpression(context.expression());
-
-                    if (result < 0)
-                        return result;
-
-                    if (retValTo.GetDataType() != (DataType)result)
-                    {
-                        handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
+                    return handler.reportError(context.Start.Line, column,
+                        ErrorCode.assignmentMismatch,
+                        "Cannot assign from " + ((DataType)result) + " to " + leftSide.GetDataType());
                 }
-                else if (context.condition() != null)
-                {
-                    result = VisitCondition(context.condition());
 
-                    if (result < 0)
-                        return result;
-
-                    if (retValTo.GetDataType() != (DataType)result)
-                    {
-                        handler.reportVisitorError(context.start.Line, context.condition().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
-				}
-				else if (context.ternary_operator() != null)
-				{
-					result = VisitTernary_operator(context.ternary_operator());
-
-					if (result < 0)
-						return result;
-
-					if (retValTo.GetDataType() != (DataType)result)
-					{
-                        handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                        return Error.assignmentMismatch;
-                    }
-				}
-
-				int varLevel = retValTo.GetLevel();
-                int varAddress = retValTo.GetAddress();
+                //store right side to given address
+                int varLevel = leftSide.GetLevel();
+                int varAddress = leftSide.GetAddress();
                 int levelToMove = Math.Abs(level - varLevel);
                 AddSTO(levelToMove, varAddress);
 
@@ -1271,145 +1143,250 @@ namespace Happy_language
             return result;
         }
 
-        public override int VisitOne_assignment([NotNull] GrammarParser.One_assignmentContext context)
+        /// <summary>
+        /// Assignment with only one variable on the left side
+        /// It is also used in for loop
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitOne_assignment([NotNull] One_assignmentContext context)
         {
-			int result = 0;
-			string retValToName = context.Identifier().GetText();
-            VarConstItem retValTo = null;
+            int result = 0;
+            int column = 0;
+            string leftSideName = context.Identifier().GetText();
+            Symbol leftSide = GetSymbol(leftSideName);
 
-            if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
-            else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
-            else
+            if (leftSide == null)
             {
-                handler.reportVisitorError(context.start.Line, ErrorCode.unknownSymbol, "Unknown variable with name '" + retValToName + "'");
-                return Error.unknownSymbol;
+                return handler.reportError(context.start.Line, ErrorCode.unknownSymbol,
+                    "Unknown variable with name '" + leftSideName + "'");
             }
 
-            if (retValTo.GetVarConstType() == VarConstType.Const)
+            if (leftSide.GetSymbolType() == SymbolType.Const)
             {
-                handler.reportVisitorError(context.start.Line, ErrorCode.assignmentToConstant, "Cannot assign to a constant");
-                return Error.assignmentToConstant;
+                return handler.reportError(context.start.Line, ErrorCode.assignmentToConstant,
+                    "Cannot assign to a constant");
             }
 
-            if (context.condition_expression() != null)
+            //process right side
+            result = VisitRightSide(context.assignment_right_side(), out column);
+
+            if (result < 0)
             {
-                result = VisitCondition_expression(context.condition_expression());
-
-                if (result < 0)
-                    return result;
-
-                if (retValTo.GetDataType() != (DataType)result)
-                {
-                    handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
-            }
-			else if (context.expression() != null)
-			{
-				result = VisitExpression(context.expression());
-
-				if (result < 0)
-					return result;
-
-				if (retValTo.GetDataType() != (DataType)result)
-				{
-                    handler.reportVisitorError(context.start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
-			}
-
-			else if (context.ternary_operator() != null)
-			{
-				result = VisitTernary_operator(context.ternary_operator());
-
-				if (result < 0)
-					return result;
-
-				if (retValTo.GetDataType() != (DataType)result)
-				{
-                    handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
-			}
-			else if (context.condition() != null)
-            {
-                result = VisitCondition(context.condition());
-
-                if (result < 0)
-                    return result;
-
-                if (retValTo.GetDataType() != (DataType)result)
-                {
-                    handler.reportVisitorError(context.start.Line, context.condition().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + retValTo.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
+                return result;
             }
 
-            int varLevel = retValTo.GetLevel();
-            int varAddress = retValTo.GetAddress();
+            if (leftSide.GetDataType() != (DataType)result)
+            {
+                return handler.reportError(context.start.Line, column,
+                    ErrorCode.assignmentMismatch,
+                    "Cannot assign from " + ((DataType)result) + " to " + leftSide.GetDataType());
+            }
+            
+            //store right side to the given address
+            int varLevel = leftSide.GetLevel();
+            int varAddress = leftSide.GetAddress();
             int levelToMove = Math.Abs(level - varLevel);
             AddSTO(levelToMove, varAddress);
 
-            retValTo = null;
+            leftSide = null;
 
             return result;
         }
 
-        public override int VisitMain([NotNull] GrammarParser.MainContext context)
+        /// <summary>
+        /// Right side of the assignment
+        /// </summary>
+        /// <param name="context">Given assignment context</param>
+        /// <param name="column">output parameter determining the column where the right side is located</param>
+        /// <returns></returns>
+        public int VisitRightSide([NotNull] ParserRuleContext context, out int column)
+        {
+            if (context.GetChild<Condition_expressionContext>(0) != null)
+            {
+                //process logical expresssion
+                Condition_expressionContext condition_expression = context.GetChild<Condition_expressionContext>(0);
+                column = condition_expression.Start.Column;
+                return Visit(condition_expression);
+            }
+            else if (context.GetChild<ConditionContext>(0) != null)
+            {
+                //process arithmetic expression
+                ConditionContext condition = context.GetChild<ConditionContext>(0);
+                column = condition.Start.Column;
+                return Visit(condition);
+            }
+            else if (context.GetChild<ExpressionContext>(0) != null)
+            {
+                //process arithmetic expression
+                ExpressionContext expression = context.GetChild<ExpressionContext>(0);
+                column = expression.Start.Column;
+                return Visit(expression);
+            }
+            else if (context.GetChild<Function_callContext>(0) != null)
+            {
+                //process function call
+                Function_callContext function_call = context.GetChild<Function_callContext>(0);
+                column = function_call.Start.Column;
+                return Visit(function_call);
+            }
+            else
+            {
+                //process ternary operator
+                Ternary_operatorContext ternary_operator = context.GetChild<Ternary_operatorContext>(0);
+                column = ternary_operator.Start.Column;
+                return Visit(ternary_operator);
+            }
+        }
+
+        /// <summary>
+        /// Assignment to item of array
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitAssignment_array([NotNull] Assignment_arrayContext context)
+        {
+            string arrayName = context.array_index().Identifier().GetText();
+            Symbol leftSide = GetSymbol(arrayName);
+
+            if (leftSide == null)
+            {
+                return handler.reportError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + arrayName + "'");
+            }
+
+            int result = 0;
+            int column = 0;
+
+            //process right side of the assignment command
+            result = VisitRightSide(context, out column);
+
+            if (result < 0)
+                return result;
+
+            if (leftSide.GetDataType() != (DataType)result)
+            {
+                return handler.reportError(context.start.Line, column, ErrorCode.assignmentMismatch,
+                            "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
+            }
+
+            IndexContext indexContext = context.array_index().index();
+
+            int varLevel = leftSide.GetLevel();
+            int levelToMove = Math.Abs(level - varLevel);
+
+            if (indexContext.Int() != null)
+            {
+                //index given by literal
+                int index = Convert.ToInt32(indexContext.Int().GetText());
+
+                //the value is known on compile time - we can validate it
+                if (index < 0)
+                {
+                    return handler.reportError(context.Start.Line, ErrorCode.negativeIndex, "Negative index");
+                }
+
+                if (index >= leftSide.GetLength())
+                {
+                    return handler.reportError(context.Start.Line, ErrorCode.indexOutOfBounds, "Index out of bounds");
+                }
+
+                AddSTO(levelToMove, leftSide.GetAddress() + index);
+            }
+            else if (indexContext.expression() != null)
+            {
+                //index given by variable
+
+                //add level to the stack
+                AddLIT(levelToMove.ToString());
+
+                //add base address to the stack
+                AddLIT(leftSide.GetAddress().ToString());
+
+                //process arithmetic expression
+                result = VisitExpression(indexContext.expression());
+
+                if (result < 0)
+                {
+                    return result;
+                }
+
+                if (DataType.Int != ((DataType)result))
+                {
+                    return handler.reportError(context.Start.Line, indexContext.expression().start.Column, ErrorCode.indexTypeMismatch,
+                            "Index must be of type Int");
+                }
+
+
+                //given item is on address base + top of the stack
+                AddOPR(Instruction.ADD);
+                AddPST();
+            }
+
+            return result;
+        }
+        #endregion
+
+        /// <summary>
+        /// Visit Main entrance of the program
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitMain([NotNull] MainContext context)
         {
             globalVarsDefined = true;
             if (!jmpToMainDone) DoMainJmp(0);
             inFunction = true;
             inFunctionAddress = 3;
             level += 1;
-            localSymbolTable = new SymbolTable();
+            localTable = new SymbolTable();
 
             changeJMPtoMain();
             int result = base.VisitMain(context);
             endProgram();
 
             inFunction = false;
-            localSymbolTable = null;
+            localTable = null;
             level -= 1;
             return result;
         }
 
-        public override int VisitFunction_call([NotNull] GrammarParser.Function_callContext context)
+        /// <summary>
+        /// Function call
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitFunction_call([NotNull] Function_callContext context)
         {
             string fName = context.Identifier().GetText();
 
-            FuncItem calledFce = null;
-            if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
+            //check if function exists
+            Function calledFce = null;
+            if (globalTable.FunctionPresent(fName)) calledFce = globalTable.GetFunction(fName);
             else
             {
-                handler.reportVisitorError(context.start.Line, ErrorCode.functionDoesNotExist, "Uknown function with name '" + fName + "'");
-                return Error.functionDoesNotExist;
+                return handler.reportError(context.start.Line, ErrorCode.functionDoesNotExist,
+                    "Uknown function with name '" + fName + "'");
             }
 
+            //increase top of the stack
             AddINT(3);
-            List<VarConstItem> usedParameters = new List<VarConstItem>();
-            GrammarParser.Par_in_functionContext paramContext = context.par_in_function();
+            
+            //process all parameters
+            List<Symbol> usedParameters = new List<Symbol>();
+            Par_in_functionContext paramContext = context.par_in_function();
             while (paramContext != null)
             {
-                VarConstItem par = null;
+                Symbol par = null;
 
                 if (paramContext.expression() != null)
                 {
                     int result = VisitExpression(paramContext.expression());
-                    par = new VarConstItem("", VarConstType.Var, (DataType) result, context.start.Line, 0, 0);
+                    par = new Symbol("", SymbolType.Var, (DataType)result, context.start.Line, 0, 0);
                 }
                 else if (paramContext.condition_expression() != null)
                 {
                     VisitCondition_expression(paramContext.condition_expression());
-                    par = new VarConstItem("", VarConstType.Var, DataType.Bool, context.start.Line, 0, 0);
+                    par = new Symbol("", SymbolType.Var, DataType.Bool, context.start.Line, 0, 0);
                 }
 
                 if (par != null)
@@ -1419,70 +1396,46 @@ namespace Happy_language
                 paramContext = paramContext.par_in_function();
             }
 
-            List<FunctionParameter> requestedParameters = calledFce.GetParameters();
+            //check parameter count
+            List<Parameter> requestedParameters = calledFce.GetParameters();
             if (requestedParameters.Count != usedParameters.Count)
             {
-                handler.reportVisitorError(context.Start.Line, context.par_in_function().Stop.Column, ErrorCode.functionWrongParametersCount,
+                return handler.reportError(context.Start.Line, context.par_in_function().Stop.Column,
+                    ErrorCode.functionWrongParameterCount,
                     "Wrong parameter count, expected: " + requestedParameters.Count);
-
-                return Error.functionWrongParametersCount;
             }
+
             for (int i = 0; i < requestedParameters.Count; i++)
             {
                 if (requestedParameters[i].getDataType() != usedParameters[i].GetDataType())
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.functionParameterDataTypeMismatch,
+                    return handler.reportError(context.Start.Line,
+                        ErrorCode.functionParameterDataTypeMismatch,
                         "Type mismatch in parameter number " + (i + 1));
-
-                    return Error.functionParameterDataTypeMismatch;
                 }
             }
 
+            //decrease the top of the stack
             AddINT(-1 * (3 + usedParameters.Count()));
+
+            //call the function
             AddCAL(globalVarsDefined ? 1 : 0, calledFce.GetAddress());
 
+            //if the function has return value load it to the top of the stack from predefined address
             if (calledFce.GetReturnDataType() != DataType.Void)
                 AddLOD(level, funcReturnAddress);
 
-            return (int) calledFce.GetReturnDataType();
+            return (int)calledFce.GetReturnDataType();
         }
 
-        public override int VisitTernary_operator([NotNull] GrammarParser.Ternary_operatorContext context)
-        {
-            Visit(context.condition());
-            int jmcAddress = instructionCount;
-            AddJMC(0);
 
-            int ret1 = Visit(context.expression()[0]);
-            int jmpAddress = instructionCount;
-            AddJMP(0);
-            ChangeJMC(jmcAddress, instructionCount);
-            int ret2 = Visit(context.expression()[1]);
-            ChangeJMP(instructionCount, jmpAddress);
-
-            if (ret1 < 0)
-            {
-                return ret1;
-            }
-
-
-            if (ret2 < 0)
-            {
-                return ret2;
-            }
-
-            if (ret1 != ret2)
-            {
-                handler.reportVisitorError(context.start.Line, context.start.Column, ErrorCode.subExpressionMismatch,
-                    "Subexpressions of ternary operator must have same data type");
-
-                return Error.subExpressionMismatch;
-            }
-
-            return ret1;
-        }
-
-        public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
+        #region Arithmetic expressions
+        /// <summary>
+        /// Arithmetic expression
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>Data type, or negative value if error occured</returns>
+        public override int VisitExpression([NotNull] ExpressionContext context)
         {
             int ret1 = 0, ret2 = 0;
             if (context.expression() != null)
@@ -1500,38 +1453,41 @@ namespace Happy_language
                     return ret2;
             }
 
+            //operation +
             if (context.Add() != null)
             {
+                //expressions on both sides must have same type
                 if (ret1 != ret2)
                 {
-                    //Console.WriteLine("Expression - Add: Type mismatch");
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '+' operation on conflicting data types");
-                    return Error.assignmentMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch,
+                        "Canot perform '+' operation on conflicting data types");
                 }
 
-                if ((DataType) ret1 == DataType.Bool)
+                //bool is not allowed here
+                if ((DataType)ret1 == DataType.Bool)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '+' operation on Bool type");
-
-                    return Error.operatorTypeMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch, 
+                        "Cannot perform '+' operation on Bool type");
                 }
 
                 AddOPR(Instruction.ADD);
 
             }
+            //operation -
             else if (context.Sub() != null)
             {
+                //expressions on both sides must have same type
                 if (ret1 != ret2)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '-' operation on conflicting data types");
-                    return Error.assignmentMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch, 
+                        "Canot perform '-' operation on conflicting data types");
                 }
 
+                //bool is not allowed here
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '-' operation on Bool type");
-
-                    return Error.operatorTypeMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch, 
+                        "Cannot perform '-' operation on Bool type");
                 }
 
                 AddOPR(Instruction.SUB);
@@ -1540,7 +1496,12 @@ namespace Happy_language
             return ret2;
         }
 
-        public override int VisitExpression_multiply([NotNull] GrammarParser.Expression_multiplyContext context)
+        /// <summary>
+        /// Arithmetic expression with with '*' or '/'
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>Data type, or negative value if error occured</returns>
+        public override int VisitExpression_multiply([NotNull] Expression_multiplyContext context)
         {
             int ret1 = 0, ret2 = 0;
             if (context.expression_multiply() != null)
@@ -1555,36 +1516,40 @@ namespace Happy_language
             if (ret2 < 0)
                 return ret2;
 
+            //operation '*'
             if (context.Mul() != null)
             {
+                //both sides must be of the same type
                 if (ret1 != ret2)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '*' operation on conflicting data types");
-                    return Error.assignmentMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch, 
+                        "Canot perform '*' operation on conflicting data types");
                 }
 
+                //bool is not allowed here
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '*' operation on Bool type");
-
-                    return Error.operatorTypeMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch, 
+                        "Cannot perform '*' operation on Bool type");
                 }
 
                 AddOPR(Instruction.MUL);
             }
+            //operation '/'
             else if (context.Div() != null)
             {
+                //both sides must be of the same type
                 if (ret1 != ret2)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.assignmentMismatch, "Canot perform '/' operation on conflicting data types");
-                    return Error.assignmentMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch,
+                        "Canot perform '/' operation on conflicting data types");
                 }
 
+                //bool is not allowed here
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.operatorTypeMismatch, "Cannot perform '/' operation on Bool type");
-
-                    return Error.operatorTypeMismatch;
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch,
+                        "Cannot perform '/' operation on Bool type");
                 }
 
                 AddOPR(Instruction.DIV);
@@ -1593,114 +1558,97 @@ namespace Happy_language
             return ret2;
         }
 
-        public override int VisitExpression_item([NotNull] GrammarParser.Expression_itemContext context)
+        /// <summary>
+        /// Item of the expression
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>Data type, or negative value if error occured</returns>
+        public override int VisitExpression_item([NotNull] Expression_itemContext context)
         {
             int result = 0;
+            //variable
             if (context.Identifier() != null)
             {
                 string varConstName = context.Identifier().GetText();
-                VarConstItem varConst = GetVarConst(varConstName);
-                if (varConst == null)
-                {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.unknownSymbol, "Unknown variable '" + varConstName + "'");
 
-                    return Error.unknownSymbol;
+                //look up the variable in the symbol table
+                Symbol symbol = GetSymbol(varConstName);
+                if (symbol == null)
+                {
+                    return handler.reportError(context.Start.Line, ErrorCode.unknownSymbol,
+                        "Unknown variable with name'" + varConstName + "'");
                 }
 
-                int varLevel = varConst.GetLevel();
+                if (symbol.isArray()) {
+                    return handler.reportError(context.Start.Line, ErrorCode.notIndexedArray,
+                        "Cannot access array without specifying the index.");
+                }
+
+                //load the variable into stack
+                int varLevel = symbol.GetLevel();
                 int levelToMove = Math.Abs(level - varLevel);
-                AddLOD(levelToMove, varConst.GetAddress());
+                AddLOD(levelToMove, symbol.GetAddress());
 
-				if (context.Sub() != null)
-				{
-					AddOPR(Instruction.UNARY_MINUS);
-				}
+                //add unary minus if it was specified
+                if (context.Sub() != null)
+                {
+                    AddOPR(Instruction.UNARY_MINUS);
+                }
 
-				result = (int) varConst.GetDataType();
+                result = (int)symbol.GetDataType();
             }
+            //array item
             else if (context.array_index() != null)
             {
+                //load given item to the stack
+                result = Visit(context.array_index());
 
-
-                VarConstItem array = GetVarConst(context.array_index().Identifier().GetText());
-                if (array == null)
+                if (result < 0)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + context.array_index().Identifier().GetText() + "'");
-
-                    return Error.arrayDoesNotExist;
+                    return result;
                 }
 
-                GrammarParser.IndexContext indexContext = context.array_index().index();
-
-                int varLevel = array.GetLevel();
-                int varAddress = array.GetAddress();
-                int levelToMove = Math.Abs(level - varLevel);
-
-                if (indexContext.Int() != null)
+                //add unary minus if it was specified
+                if (context.Sub() != null)
                 {
-                    int index = Convert.ToInt32(indexContext.Int().GetText());
-
-                    if (index < 0)
+                    if ((DataType) result != DataType.Int)
                     {
-                        handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
-
-                        return Error.arrayIndexNegative;
+                        return handler.reportError(context.Start.Line, context.array_index().Start.Column,
+                            ErrorCode.operatorTypeMismatch,
+                            "Cannot use unary minus on " + (DataType) result);
                     }
-                    if (index >= array.GetLength())
-                    {
-                        handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
-
-                        return Error.arrayOutOfBounds;
-                    }
-
-                    AddLOD(levelToMove, varAddress + index);
-                }
-                else if (indexContext.expression() != null)
-                {
-                    AddLIT(levelToMove.ToString());
-
-                    AddLIT(varAddress.ToString());
-
-                    result = VisitExpression(indexContext.expression());
-
-                    if (result < 0)
-                    {
-                        return result;
-                    }
-
-                    if (DataType.Int != ((DataType)result))
-                    {
-                        handler.reportVisitorError(context.Start.Line, indexContext.expression().start.Column, ErrorCode.indexTypeMismatch,
-                                "Index must be of type Int");
-
-                        return Error.indexTypeMismatch;
-                    }
-
-
-                    AddOPR(Instruction.ADD);
-                    AddPLD();
+                    AddOPR(Instruction.UNARY_MINUS);
                 }
 
-
-
-                result = (int) array.GetDataType();
             }
+            //function call
             else if (context.function_call() != null)
             {
+                //call function so that when it finishes, result will be on the top of the stack
                 result = VisitFunction_call(context.function_call());
 
-				if (context.Sub() != null)
-				{
-					AddOPR(Instruction.UNARY_MINUS);
-				}
+                //add unary minus if it was specified
+                if (context.Sub() != null)
+                {
+                    if ((DataType)result != DataType.Int)
+                    {
+                        return handler.reportError(context.Start.Line, context.function_call().Start.Column,
+                            ErrorCode.operatorTypeMismatch,
+                            "Cannot use unary minus on " + (DataType)result);
+                    }
 
-				if (result < 0)
+                    AddOPR(Instruction.UNARY_MINUS);
+                }
+
+                if (result < 0)
                 {
                     return result;
                 }
             }
+            //arithmetic expression in brackets
             else if (context.expression() != null)
             {
+                //perform the expression so that the result is on the top of the stack
                 result = VisitExpression(context.expression());
 
                 if (result < 0)
@@ -1708,113 +1656,80 @@ namespace Happy_language
                     return result;
                 }
             }
+            //literal
             else
             {
+                //add literal to the stack
                 AddLIT(context.Int().GetText());
-				if (context.Sub() != null)
-				{
-					AddOPR(Instruction.UNARY_MINUS);
-				}
 
-				result = (int) DataType.Int;
+                //add unary minus if it was specified
+                if (context.Sub() != null)
+                {
+                    AddOPR(Instruction.UNARY_MINUS);
+                }
+
+                result = (int)DataType.Int;
             }
 
             return result;
         }
 
-        public override int VisitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context)
+        /// <summary>
+        /// Load array item on given index
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitArray_index([NotNull] Array_indexContext context)
         {
-            string arrayName = context.array_index().Identifier().GetText();
-            VarConstItem leftSide = GetVarConst(arrayName);
-
-            if (leftSide == null)
-            { 
-                handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + arrayName + "'");
-
-                return Error.arrayDoesNotExist;
-            }
-
             int result = 0;
-            if (context.expression() != null)
+
+            //find array in symbol table
+            Symbol array = GetSymbol(context.Identifier().GetText());
+            if (array == null)
             {
-                result = VisitExpression(context.expression());
-
-                if (result < 0)
-                {
-                    return result;
-                }
-
-                if (leftSide.GetDataType() != ((DataType) result))
-                {
-                    handler.reportVisitorError(context.Start.Line, context.expression().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
+                return handler.reportError(context.Start.Line, ErrorCode.arrayDoesNotExist,
+                    "Unknown array '" + context.Identifier().GetText() + "'");
             }
-            else if (context.condition_expression() != null)
+
+            if (!array.isArray())
             {
-                result = VisitCondition_expression(context.condition_expression());
+                return handler.reportError(context.Start.Line, ErrorCode.notAnArray,
+                    "Variable with name '" + array.GetName() + "' is not an array");
+            }
 
-                if (result < 0)
-                {
-                    return result;
-                }
+            IndexContext indexContext = context.index();
 
-                if (leftSide.GetDataType() != ((DataType)result))
-                {
-                    handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
-                                "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
-			}
-			else if (context.ternary_operator() != null)
-			{
-				result = VisitTernary_operator(context.ternary_operator());
-
-				if (result < 0)
-					return result;
-
-				if (leftSide.GetDataType() != (DataType)result)
-				{
-                    handler.reportVisitorError(context.start.Line, context.ternary_operator().start.Column, ErrorCode.assignmentMismatch,
-                                "Cannot assign from " + ((DataType)result) + " to array item of type " + leftSide.GetDataType());
-
-                    return Error.assignmentMismatch;
-                }
-			}
-
-            GrammarParser.IndexContext indexContext = context.array_index().index();
-
-            int varLevel = leftSide.GetLevel();
+            int varLevel = array.GetLevel();
+            int varAddress = array.GetAddress();
             int levelToMove = Math.Abs(level - varLevel);
 
+            //Index specified by literal
             if (indexContext.Int() != null)
             {
                 int index = Convert.ToInt32(indexContext.Int().GetText());
+
+                //We can actually validate the index
                 if (index < 0)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayIndexNegative, "Negative index");
-
-                    return Error.arrayIndexNegative;
+                    return handler.reportError(context.Start.Line, ErrorCode.negativeIndex, "Negative index");
                 }
-
-                if (index >= leftSide.GetLength())
+                if (index >= array.GetLength())
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.arrayOutOfBounds, "Index out of bounds");
-
-                    return Error.arrayOutOfBounds;
+                    return handler.reportError(context.Start.Line, ErrorCode.indexOutOfBounds, "Index out of bounds");
                 }
 
-                AddSTO(levelToMove, leftSide.GetAddress() + index);
+                AddLOD(levelToMove, varAddress + index);
             }
+            //Index specified by expresion
             else if (indexContext.expression() != null)
             {
+                //add level to the stack
                 AddLIT(levelToMove.ToString());
 
-                AddLIT(leftSide.GetAddress().ToString());
+                //add base address to the stack
+                AddLIT(varAddress.ToString());
 
+                //calculate the index
                 result = VisitExpression(indexContext.expression());
 
                 if (result < 0)
@@ -1822,50 +1737,134 @@ namespace Happy_language
                     return result;
                 }
 
+                //check the data type of the index
                 if (DataType.Int != ((DataType)result))
                 {
-                    handler.reportVisitorError(context.Start.Line, indexContext.expression().start.Column, ErrorCode.indexTypeMismatch,
-                            "Index must be of type Int");
-
-                    return Error.indexTypeMismatch;
+                    return handler.reportError(context.Start.Line, indexContext.expression().start.Column,
+                        ErrorCode.indexTypeMismatch,
+                        "Index must be of type Int");
                 }
 
+                //address to load is base + index
                 AddOPR(Instruction.ADD);
-                AddPST();
+                AddPLD();
             }
 
-            return result;
+            return (int)array.GetDataType();
         }
+        #endregion
 
-        public override int VisitIf([NotNull] GrammarParser.IfContext context)
+        #region Loops and conditional jumps
+        /// <summary>
+        /// Ternary operator
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitTernary_operator([NotNull] Ternary_operatorContext context)
         {
+            //perform condition
             Visit(context.condition());
+
+            //add conditional jump
             int jmcAddress = instructionCount;
             AddJMC(0);
-            Visit(context.blok());
+
+            //process subexpression assigned when condition == true
+            int ret1 = Visit(context.expression()[0]);
+            if (ret1 < 0)
+            {
+                return ret1;
+            }
+
+            //change conditional jump and add jump to skip the second subexpression
             int jmpAddress = instructionCount;
             AddJMP(0);
             ChangeJMC(jmcAddress, instructionCount);
+            
+            //process subexpression assigned when condition == false
+            int ret2 = Visit(context.expression()[1]);
+            if (ret2 < 0)
+            {
+                return ret2;
+            }
+
+            //change the skip jump
+            ChangeJMP(instructionCount, jmpAddress);
+
+            //validate that both subexpressions are of the same type
+            if (ret1 != ret2)
+            {
+                return handler.reportError(context.start.Line, context.start.Column,
+                    ErrorCode.subExpressionMismatch,
+                    "Subexpressions of ternary operator must have same data type");
+            }
+
+            return ret1;
+        }
+
+        /// <summary>
+        /// If clause
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitIf([NotNull] IfContext context)
+        {
+            //process condition
+            Visit(context.condition());
+
+            //add conditional jump
+            int jmcAddress = instructionCount;
+            AddJMC(0);
+
+            //process if block
+            Visit(context.block());
+
+            //add jump to skip else clause
+            int jmpAddress = instructionCount;
+            AddJMP(0);
+            ChangeJMC(jmcAddress, instructionCount);
+
+            //process else clause
             Visit(context.else_if());
+
+            //change the skip jump
             ChangeJMP(instructionCount, jmpAddress);
             return 10;
         }
 
-        public override int VisitElse_if([NotNull] GrammarParser.Else_ifContext context)
+        /// <summary>
+        /// Else and Else if clause
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitElse_if([NotNull] Else_ifContext context)
         {
+            //else if clause is present
             if (context.If() != null)
             {
-				Visit(context.condition());
-				int jmcAddress = instructionCount;
-				AddJMC(0);
-				Visit(context.blok());
-				int jmpAddress = instructionCount;
-				AddJMP(0);
-				ChangeJMC(jmcAddress, instructionCount);
-				Visit(context.else_if());
-				ChangeJMP(instructionCount, jmpAddress);
-				return 11;
-			}
+                //process condition
+                Visit(context.condition());
+
+                //add conditional jump
+                int jmcAddress = instructionCount;
+                AddJMC(0);
+
+                //process  else if block
+                Visit(context.block());
+
+                //add jump to skip to the end
+                int jmpAddress = instructionCount;
+                AddJMP(0);
+                ChangeJMC(jmcAddress, instructionCount);
+
+                //process next else if clause
+                Visit(context.else_if());
+
+                //change the skip jump
+                ChangeJMP(instructionCount, jmpAddress);
+                return 11;
+            }
+            //no else if clause is present
             else
             {
                 Visit(context.@else());
@@ -1873,54 +1872,85 @@ namespace Happy_language
             }
         }
 
-        public override int VisitElse([NotNull] GrammarParser.ElseContext context)
+        /// <summary>
+        /// Else clause
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitElse([NotNull] ElseContext context)
         {
-            if (context.blok() != null)
+            //if there is else clause, process its block
+            if (context.block() != null)
             {
-                Visit(context.blok());
+                Visit(context.block());
                 return 0;
             }
-            else
-            {
-                return 1;
-            }
+
+            return 1;
         }
 
-        public override int VisitWhile([NotNull] GrammarParser.WhileContext context)
+        /// <summary>
+        /// While loop
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitWhile([NotNull] WhileContext context)
         {
+            //process condition
             int conditionAddress = instructionCount;
-			Visit(context.condition());
+            Visit(context.condition());
 
-			int jmcAddress = instructionCount;
+            //add conditional jump
+            int jmcAddress = instructionCount;
             AddJMC(0);
 
-            Visit(context.blok());
+            //process while block
+            Visit(context.block());
+
+            //jump back to condition
             AddJMP(conditionAddress);
 
+            //change conditional jump to the end of the loop
             ChangeJMC(jmcAddress, instructionCount);
 
             return 11;
         }
 
-        public override int VisitDo_while([NotNull] GrammarParser.Do_whileContext context)
+        /// <summary>
+        /// Do-while loop
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitDo_while([NotNull] Do_whileContext context)
         {
 
             int firstAddress = instructionCount;
-            Visit(context.blok());
+
+            //process the block
+            Visit(context.block());
+
+            //process the conditon
             Visit(context.condition());
 
-            //Value must be negated to jump when not true
+            //Value must be negated to jump when true
             AddNeg();
 
+            //conditional jump when true to the beginning
             AddJMC(firstAddress);
 
             return 0;
         }
 
-        public override int VisitFor([NotNull] GrammarParser.ForContext context)
+        /// <summary>
+        /// For loop
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitFor([NotNull] ForContext context)
         {
-            GrammarParser.For_conditionContext forCondition = context.for_condition();
+            For_conditionContext forCondition = context.for_condition();
 
+            //process assignment if not empty
             if (forCondition.one_assignment() != null)
             {
                 Visit(forCondition.one_assignment());
@@ -1928,7 +1958,8 @@ namespace Happy_language
 
             int conditionAddress = instructionCount;
             int jmcAddress = 0;
-            
+
+            //process condition if not empty
             if (forCondition.condition() != null)
             {
                 Visit(forCondition.condition());
@@ -1936,28 +1967,46 @@ namespace Happy_language
                 AddJMC(0);
             }
 
-            Visit(context.blok());
+            //process block
+            Visit(context.block());
 
+            //process increment
             Visit(forCondition.increment());
 
+            //jump back to the condition
             AddJMP(conditionAddress);
 
+            //change jmc to jump to the end when condition == false
             ChangeJMC(jmcAddress, instructionCount);
 
             return 0;
         }
-
-        public override int VisitIncrement([NotNull] GrammarParser.IncrementContext context)
+        
+        /// <summary>
+        /// Increment in the for loop
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitIncrement([NotNull] IncrementContext context)
         {
+            //if there is any assignment, process it
             if (context.one_assignment() != null)
             {
                 return Visit(context.one_assignment());
             }
 
+            //increment can be empty
             return 0;
         }
+        #endregion
 
-        public override int VisitCondition([NotNull] GrammarParser.ConditionContext context)
+        #region Logical expressions
+        /// <summary>
+        /// Condition used in 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitCondition([NotNull] ConditionContext context)
         {
             if (context.condition_expression() != null)
             {
@@ -1968,9 +2017,15 @@ namespace Happy_language
             {
                 int ret = Visit(context.expression());
 
-                if ((DataType) ret != DataType.Bool)
+                if (ret < 0)
                 {
-                    handler.reportVisitorError(context.Start.Line, context.expression().Start.Column, ErrorCode.conditionTypeMismatch, "Expression in condition must be of the Bool type");
+                    return ret;
+                }
+
+                if ((DataType)ret != DataType.Bool)
+                {
+                    return handler.reportError(context.Start.Line, context.expression().Start.Column,
+                        ErrorCode.conditionTypeMismatch, "Expression in condition must be of the Bool type");
                 }
 
                 if (context.Negation() != null)
@@ -1979,7 +2034,7 @@ namespace Happy_language
                 }
             }
 
-            GrammarParser.ConditionContext condition1 = context.GetChild<GrammarParser.ConditionContext>(0);
+            ConditionContext condition1 = context.GetChild<ConditionContext>(0);
             if (condition1 != null)
             {
                 Visit(condition1);
@@ -1990,7 +2045,7 @@ namespace Happy_language
                 }
             }
 
-            GrammarParser.ConditionContext condition2 = context.GetChild<GrammarParser.ConditionContext>(1);
+            ConditionContext condition2 = context.GetChild<ConditionContext>(1);
             if (condition2 != null)
             {
                 Visit(condition2);
@@ -2011,35 +2066,34 @@ namespace Happy_language
                 }
             }
 
-            return 0;
+            return (int) DataType.Bool;
         }
 
-        public override int VisitCondition_expression([NotNull] GrammarParser.Condition_expressionContext context)
+        public override int VisitCondition_expression([NotNull] Condition_expressionContext context)
         {
             if (context.Bool() != null)
             {
                 AddLIT(BoolToInt(context.Bool().GetText()));
 
-                return (int) DataType.Bool;
+                return (int)DataType.Bool;
             }
 
-			int ret1 = Visit(context.condition_item()[0]);
-			int ret2 = Visit(context.condition_item()[1]);
+            int ret1 = Visit(context.condition_item()[0]);
+            int ret2 = Visit(context.condition_item()[1]);
 
-			if (ret1 < 0)
-			{
-				return ret1;
-			}
-			else if (ret2 < 0)
-			{
-				return ret2;
-			}
-
-			if (ret1 != ret2)
+            if (ret1 < 0)
             {
-                handler.reportVisitorError(context.Start.Line, ErrorCode.cmpTypeMismatch, "Cannot compare values of different data types");
+                return ret1;
+            }
+            else if (ret2 < 0)
+            {
+                return ret2;
+            }
 
-                return Error.cmpTypeMismatch;
+            if (ret1 != ret2)
+            {
+                return handler.reportError(context.Start.Line, ErrorCode.cmpTypeMismatch,
+                    "Cannot compare values of different data types");
             }
 
             switch (context.Operator_condition().GetText())
@@ -2052,10 +2106,10 @@ namespace Happy_language
                 case ">=": AddOPR(Instruction.GEQ); break;
             }
 
-            return (int) DataType.Bool;
+            return (int)DataType.Bool;
         }
 
-        public override int VisitCondition_item([NotNull] GrammarParser.Condition_itemContext context)
+        public override int VisitCondition_item([NotNull] Condition_itemContext context)
         {
             if (context.Bool() != null)
             {
@@ -2065,16 +2119,17 @@ namespace Happy_language
                     AddNeg();
                 }
 
-                return (int) DataType.Bool;
+                return (int)DataType.Bool;
             }
 
             int ret = Visit(context.expression());
 
             if (context.Negation() != null)
             {
-                if ((DataType) ret != DataType.Bool)
+                if ((DataType)ret != DataType.Bool)
                 {
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.conditionTypeMismatch, "");
+                    return handler.reportError(context.Start.Line, ErrorCode.conditionTypeMismatch,
+                        "Expression in condition must be of the Bool type.");
                 }
 
                 AddNeg();
@@ -2082,6 +2137,8 @@ namespace Happy_language
 
             return ret;
         }
+        #endregion
+        
+        #endregion
     }
-    #endregion
 }

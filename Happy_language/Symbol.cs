@@ -2,10 +2,16 @@
 
 namespace Happy_language
 {
-    public class VarConstItem
+    public enum SymbolType
+    {
+        Var,
+        Const
+    }
+
+    public class Symbol
     {
         private String name;
-        private VarConstType type;
+        private SymbolType type;
         private DataType dataType;
         private int address;
         private int level;
@@ -13,7 +19,7 @@ namespace Happy_language
         private int length;
         private int declarationLine;
 
-        public VarConstItem(String name, VarConstType type, DataType dataType, int declarationLine, int address, int level)
+        public Symbol(String name, SymbolType type, DataType dataType, int declarationLine, int address, int level)
         {
             this.name = name;
             this.type = type;
@@ -24,7 +30,7 @@ namespace Happy_language
             this.array = false;
         }
 
-        public VarConstItem(String name, int length, VarConstType type, DataType dataType, int declarationLine, int address, int level)
+        public Symbol(String name, int length, SymbolType type, DataType dataType, int declarationLine, int address, int level)
         {
             this.name = name;
             this.type = type;
@@ -72,7 +78,7 @@ namespace Happy_language
             return this.name;
         }
 
-        public VarConstType GetVarConstType()
+        public SymbolType GetSymbolType()
         {
             return this.type;
         }

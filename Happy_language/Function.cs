@@ -6,14 +6,42 @@ using System.Threading.Tasks;
 
 namespace Happy_language
 {
-	public class FuncItem
+    public class Parameter
+    {
+        private String name;
+        private DataType dataType;
+
+        public Parameter(String name, DataType dataType)
+        {
+            this.name = name;
+            this.dataType = dataType;
+        }
+
+        public override string ToString()
+        {
+            return this.dataType + " " + this.name;
+        }
+
+        public String getName()
+        {
+            return this.name;
+        }
+
+        public DataType getDataType()
+        {
+            return this.dataType;
+        }
+    }
+
+
+    public class Function
     {
         private String name;
         private DataType returnDataType;
         private int address;
-        private List<FunctionParameter> parameters;
+        private List<Parameter> parameters;
 
-        public FuncItem(String name, DataType returnDataType, int address, List<FunctionParameter> parameters)
+        public Function(String name, DataType returnDataType, int address, List<Parameter> parameters)
         {
             this.name = name;
             this.returnDataType = returnDataType;
@@ -51,7 +79,7 @@ namespace Happy_language
             return this.address;
         }
 
-        public List<FunctionParameter> GetParameters()
+        public List<Parameter> GetParameters()
         {
             return this.parameters;
         }

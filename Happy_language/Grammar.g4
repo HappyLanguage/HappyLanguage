@@ -4,7 +4,7 @@ grammar Grammar;
  */
  
 start
-	: Start_prog Start_blok  def_con_var def_function_list main End_blok;
+	: Start_prog Start_block  def_con_var def_function_list main End_block;
 
 //========================== Var ==========================
 def_con_var
@@ -13,14 +13,14 @@ def_con_var
 	| ;	// empty
 
 def_const
-	: Const Data_type_bool multiple_assign Assign condition_expression Semi
-    //| Const Data_type_bool multiple_assign Assign function_call Semi
+	: Const Data_type_bool multiple_assign Assign condition Semi
+	| Const Data_type_bool multiple_assign Assign expression Semi
 	| Const Data_type_int multiple_assign Assign expression Semi
 	| Const Data_type_int multiple_assign Assign ternary_operator Semi;
 	
 def_var
-	: Data_type_bool multiple_assign Assign condition_expression Semi
-	| Data_type_bool multiple_assign Assign function_call Semi
+	: Data_type_bool multiple_assign Assign condition Semi
+	| Data_type_bool multiple_assign Assign expression Semi
 	| Data_type_int multiple_assign Assign expression Semi
 	| Data_type_int multiple_assign Assign ternary_operator Semi
 	| array_inicialization;
@@ -28,9 +28,8 @@ def_var
 array_inicialization
 	: Data_type_bool '[:' Int ':]' Identifier Semi
    	| Data_type_int '[:' Int ':]' Identifier Semi
-	| Data_type_bool '[:'':]' Identifier Assign  Start_blok  bool_array_assign  End_blok Semi
-	| Data_type_int '[:'':]' Identifier Assign  Start_blok number_array_assign  End_blok Semi
-	| Data_type_bool '[:'':]' Identifier Assign  String  Semi
+	| Data_type_bool '[:'':]' Identifier Assign  Start_block  bool_array_assign  End_block Semi
+	| Data_type_int '[:'':]' Identifier Assign  Start_block number_array_assign  End_block Semi
 	| Data_type_int '[:'':]' Identifier Assign  String  Semi;
 
 multiple_assign
@@ -38,14 +37,26 @@ multiple_assign
 	| Identifier;
 	
 bool_array_assign
-	: condition_expression ',' bool_array_assign
-	| function_call ',' bool_array_assign
-	| condition_expression
-	| function_call ;
+	: condition ',' bool_array_assign
+	| expression ',' bool_array_assign
+	| condition
+	| expression ;
 
 number_array_assign
 	: expression ',' number_array_assign
 	| expression ;
+
+one_assignment
+	: Identifier Assign assignment_right_side;
+
+assignment
+	: multiple_assign Assign assignment_right_side;
+
+assignment_right_side
+	: expression
+	| condition_expression
+	| condition
+	| ternary_operator;
 // ========================================================
 
 
@@ -55,30 +66,30 @@ def_function_list
 	| ;
 
 def_function
-	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right Start_blok blok_function function_return End_blok;
+	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right Start_block block_function function_return End_block;
 
 parameters
 	: data_type Identifier
 	| data_type Identifier ',' parameters
 	| ;	//empty
 
-blok_function
-	: def_var_blok blok
+block_function
+	: def_var_block block
 	| ; // empty
 
-blok
-	: assignment Semi blok
-	| assignment_array Semi blok
-	| function_call Semi blok
-	| if blok
-	| while blok
-	| do_while blok
-	| for blok
+block
+	: assignment Semi block
+	| assignment_array Semi block
+	| function_call Semi block
+	| if block
+	| while block
+	| do_while block
+	| for block
 	| ; // empty
 
-def_var_blok
-	: def_var def_var_blok
-	| array_inicialization def_var_blok
+def_var_block
+	: def_var def_var_block
+	| array_inicialization def_var_block
 	| ;  // empty
 
 par_in_function
@@ -90,8 +101,8 @@ par_in_function
  
 
 function_return
-	: Return condition_expression Semi
-	| Return expression Semi
+	: Return expression Semi
+	| Return condition Semi
 	| Return ternary_operator Semi
 	| ; // empty
 	
@@ -103,7 +114,7 @@ function_return_data_typ
 	| Data_type_void;
 
 main
-	: Main_name Bracket_left Bracket_right Start_blok blok_function End_blok;
+	: Main_name Bracket_left Bracket_right Start_block block_function End_block;
 // ========================================================
 	
 
@@ -116,24 +127,24 @@ data_type
 
 // =================== (if, for, while..) =================
 if
-	: If Bracket_left condition Bracket_right Start_blok blok End_blok else_if;
+	: If Bracket_left condition Bracket_right Start_block block End_block else_if;
 
 else_if
-	: Else If Bracket_left condition Bracket_right Start_blok blok End_blok else_if
+	: Else If Bracket_left condition Bracket_right Start_block block End_block else_if
 	| else;
 
 else
-	: Else Start_blok blok End_blok
+	: Else Start_block block End_block
 	| ;  // empty
 
 while
-	: While Bracket_left condition Bracket_right Start_blok blok End_blok;
+	: While Bracket_left condition Bracket_right Start_block block End_block;
 
 do_while
-	: Do Start_blok blok End_blok While Bracket_left condition Bracket_right Semi;
+	: Do Start_block block End_block While Bracket_left condition Bracket_right Semi;
 
 for
-	: For Bracket_left for_condition Bracket_right Start_blok blok End_blok;
+	: For Bracket_left for_condition Bracket_right Start_block block End_block;
 
 for_condition
 	: one_assignment Semi condition Semi increment
@@ -209,21 +220,9 @@ index
 	| expression;
 
 assignment_array
-	: array_index Assign condition_expression
-	| array_index Assign expression
+	: array_index Assign expression
+	| array_index Assign condition
 	| array_index Assign ternary_operator;
-
-one_assignment
-	: Identifier Assign expression
-	| Identifier Assign condition_expression
-	| Identifier Assign condition
-	| Identifier Assign ternary_operator;
-
-assignment
-	: multiple_assign Assign expression
-	| multiple_assign Assign condition_expression
-	| multiple_assign Assign condition
-	| multiple_assign Assign ternary_operator;
 // ========================================================
 
 
@@ -277,8 +276,8 @@ Semi: ';)';
 Assign: ':=';
 Bracket_left: '(:';
 Bracket_right: ':)';
-Start_blok: '{:';
-End_blok: ':}';							
+Start_block: '{:';
+End_block: ':}';							
 
 Int : [0-9]+; //Integers								
 Identifier: [a-zA-Z]+[a-zA-Z0-9]*; //Identifiers

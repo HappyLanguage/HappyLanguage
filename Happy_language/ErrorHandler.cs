@@ -8,48 +8,40 @@ namespace Happy_language
 {
     public enum ErrorCode
     {
-        unknownSymbol = 1,
-        varConstAlreadyExists = 2,
-        functionDoesNotExist = 3,
-        functionAlreadyExists = 4,
-        arrayDoesNotExist = 5,
-        arrayAlreadyExists = 6,
-        arrayLengthNegative = 7,
-        arrayOutOfBounds = 8,
-        functionWrongParametersCount = 10,
-        functionParameterDataTypeMismatch = 11,
-        arrayIndexNegative = 12,
-        cmpTypeMismatch = 13,
-        assignmentMismatch = 14,
-        assignmentToConstant = 15,
-        operatorTypeMismatch = 16,
-        grammarError = 17,
-        subExpressionMismatch = 18,
-        indexTypeMismatch = 19,
-        conditionTypeMismatch = 20
+        grammarError = 10,
+
+        unknownSymbol = 20,
+        varConstAlreadyExists = 21,
+
+
+        functionDoesNotExist = 30,
+        functionAlreadyExists = 31,
+        functionWrongParameterCount = 32,
+        functionParameterDataTypeMismatch = 33,
+        returnTypeMismatch = 34,
+
+
+        arrayDoesNotExist = 40,
+        arrayAlreadyExists = 41,
+        arrayLengthNegative = 42,
+        indexOutOfBounds = 43,
+        negativeIndex = 44,
+        notAnArray = 45,
+        notIndexedArray = 46,
+        
+        
+        cmpTypeMismatch = 50,
+        assignmentMismatch = 51,
+        assignmentToConstant = 52,
+        operatorTypeMismatch = 53,
+        subExpressionMismatch = 54,
+        indexTypeMismatch = 55,
+        conditionTypeMismatch = 56,
+        operatorConflictingTypes = 57    
     }
 
     public class Error
     {
-        public static int unknownSymbol = -1;
-        public static int varConstAlreadyExists = -2;
-        public static int functionDoesNotExist = -3;
-        public static int functionAlreadyExists = -4;
-        public static int arrayDoesNotExist = -5;
-        public static int arrayAlreadyExists = -6;
-        public static int arrayLengthNegative = -7;
-        public static int arrayOutOfBounds = -8;
-        public static int functionWrongParametersCount = -10;
-        public static int functionParameterDataTypeMismatch = -11;
-        public static int arrayIndexNegative = -12;
-        public static int cmpTypeMismatch = -13;
-        public static int assignmentMismatch = -14;
-        public static int assignmentToConstant = -15;
-        public static int operatorTypeMismatch = -16;
-        public static int subExpressionMismatch = -18;
-        public static int indexTypeMismatch = -19;
-        public static int conditionTypeMismatch = -20;
-
         private ErrorCode errorCode;
         private int lineNumber;
         private int charPositionInLine;
@@ -106,19 +98,23 @@ namespace Happy_language
             set { visitorErrors = value; }
         }
 
-        public void reportGrammarError(int lineNumber, int charPositionInLine, string msg)
+        public void reportError(int lineNumber, int charPositionInLine, string msg)
         {
             grammarErrors.Add(new Error(ErrorCode.grammarError, lineNumber, charPositionInLine, msg));
         }
 
-        public void reportVisitorError(int lineNumber, ErrorCode errorCode, string msg)
+        public int reportError(int lineNumber, ErrorCode errorCode, string msg)
         {
             visitorErrors.Add(new Error(errorCode, lineNumber, -1, msg));
+
+            return -(int)errorCode;
         }
 
-        public void reportVisitorError(int lineNumber, int charPositionInLine, ErrorCode errorCode, string msg)
+        public int reportError(int lineNumber, int charPositionInLine, ErrorCode errorCode, string msg)
         {
             visitorErrors.Add(new Error(errorCode, lineNumber, charPositionInLine, msg));
+
+            return -(int)errorCode;
         }
 
         public void printErrors()

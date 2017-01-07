@@ -8,30 +8,22 @@ using Antlr4.Runtime.Tree;
 using System.Diagnostics;
 
 namespace Happy_language
-{
-    // http://elemarjr.com/en/2016/04/21/learning-antlr4-part-1-quick-overview/
+{ 
     public class Visitor : GrammarBaseVisitor<int>
     {
-        public Visitor(ErrorHandler handler) : base()
-        {
-            this.handler = handler;    
-        }
-
         #region Attributes
         /// <summary>
-        /// Tabulka symbolů pro globalni proměnný a konstanty
+        /// Symbol table for global variables and constants
         /// </summary>
         private SymbolTable globalSymbolTable = new SymbolTable();
 
         /// <summary>
-        /// Tabulka symbolů pro proměnný ( i parametry) funkcí a mainu
+        /// Local symbol table
         /// </summary>
-        private SymbolTable localSymbolTable = null;
-
-        private List<String> errors = new List<String>();
+        private SymbolTable localSymbolTable = new SymbolTable();
 
         /// <summary>
-        /// Seznam vygenerovaných instrukcí
+        /// List of generated instructions
         /// </summary>
         private List<Instruction> instructions = new List<Instruction>();
 
@@ -40,41 +32,104 @@ namespace Happy_language
         /// </summary>
         private ErrorHandler handler;
 
-        private Boolean jmpToMainDone = false;
+        /// <summary>
+        /// Flag representing whether the instruction for jumping to main function was already created
+        /// </summary>
+        private bool jmpToMainDone = false;
 
         /// <summary>
-        /// Index na které pozici v seznamu instrukcí je instrukce skoku na první instrukci mainu
+        /// Address of the jump instruction to main function
         /// </summary>
         private int jmpToMainIndex = 0;
 
         /// <summary>
-        /// Indikace jestli se prochazi funkce
+        /// Flag representing whether the visitor is in function
         /// </summary>
-        private Boolean inFunction = false;
+        private bool inFunction = false;
+
         /// <summary>
-        /// Adresa která se používá pro adresování proměnných ve funkci a v mainu
+        /// Address used for addressing in function
         /// </summary>
         private int inFunctionAddress = 3;
 
         /// <summary>
-        /// Počet instrukcí, používá se i  např. jako adresa pro funkce
+        /// Number of current instructions
         /// </summary>
         private int instructionCount = 0;
 
-        private int globalAddress = 4;  // o jedna vetsi nez je funcReturnAddress
-        private int level = 0;
-        private int funcReturnAddress = 3;
-
-        private bool globalVarsDefined = false;
+        /// <summary>
+        /// Current global addres
+        /// </summary>
+        private int globalAddress = 4;  // funcReturnAddress + 1
 
         /// <summary>
-        /// Proměnná na levé straně přiřazení
+        /// Current level
         /// </summary>
-        //private VarConstItem retValTo = null;
+        private int level = 0;
 
+        /// <summary>
+        /// Address where the returned value is stored
+        /// </summary>
+        private int funcReturnAddress = 3;
+
+        /// <summary>
+        /// Flag representing whether all global variables were already defined
+        /// </summary>
+        private bool globalVarsDefined = false;
+        #endregion
+
+        /// <summary>
+        /// Constructor of the Parse tree visitor
+        /// </summary>
+        /// <param name="handler">Instance handling compilation errors</param>
+        public Visitor(ErrorHandler handler) : base()
+        {
+            this.handler = handler; 
+        }
+
+        #region Util methods
+        /// <summary>
+        /// Static method to convert string representation of boolean to 0 or 1
+        /// </summary>
+        /// <param name="value">String representation of boolean</param>
+        /// <returns>Integer representation of boolean</returns>
+        public static string BoolToInt(string value)
+        {
+            if (value.Equals("True", StringComparison.OrdinalIgnoreCase))
+            {
+                return "1";
+            }
+            else if (value.Equals("False", StringComparison.OrdinalIgnoreCase))
+            {
+                return "0";
+            }
+            else
+            {
+                throw new Exception("Invalid Bool value: " + value);
+            }
+        }
+
+        public List<Instruction> GetInstructions()
+        {
+            return this.instructions;
+        }
+
+        /// <summary>
+        /// Assigns numbers to generated instructions
+        /// </summary>
+        public void numberInstructions()
+        {
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                instructions[i].Number = i;
+            }
+        }
         #endregion
 
         #region Library Functions
+        /// <summary>
+        /// Prepares the library functions
+        /// </summary>
         public void PrepareLibraryFunctions()
         {
             AddJMP(0);
@@ -90,7 +145,11 @@ namespace Happy_language
             ChangeJMP(instructionCount, 0);
         }
 
-        public void PrepareAbsFunction()
+        /// <summary>
+        /// Prepares the Abs library function
+        /// :I Abs(: :I value :)
+        /// </summary>
+        private void PrepareAbsFunction()
         {
             AddINT(4);
             AddLOD(0, 3);
@@ -111,7 +170,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("Abs", DataType.Int, instructionCount - 13, parameters));
         }
 
-        public void PrepareMaxFunction()
+        /// <summary>
+        /// Prepares the Max library function
+        /// :I Max(: :I a, :I b :)
+        /// </summary>
+        private void PrepareMaxFunction()
         {
             AddINT(5);
             AddLIT("0");
@@ -134,7 +197,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("Max", DataType.Int, instructionCount - 14, parameters));
         }
 
-        public void PrepareMinFunction()
+        /// <summary>
+        /// Prepares the Min library function
+        /// :I Min(: :I a, :I b :)
+        /// </summary>
+        private void PrepareMinFunction()
         {
             AddINT(5);
             AddLIT("0");
@@ -157,7 +224,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("Min", DataType.Int, instructionCount - 14, parameters));
         }
 
-        public void PrepareIntToBoolFunction()
+        /// <summary>
+        /// Prepares the IntToBool library function
+        /// :B IntToBool(: :I val :)
+        /// </summary>
+        private void PrepareIntToBoolFunction()
         {
             AddINT(4);
 
@@ -177,7 +248,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("IntToBool", DataType.Bool, instructionCount - 10, parameters));
         }
 
-        public void PrepareBoolToIntFunction()
+        /// <summary>
+        /// Prepares the BoolToInt library function
+        /// :I BoolToInt(: :B val :)
+        /// </summary>
+        private void PrepareBoolToIntFunction()
         {
             AddINT(4);
             AddSTO(1, funcReturnAddress);
@@ -189,7 +264,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("BoolToInt", DataType.Int, instructionCount - 4, parameters));
         }
 
-        public void PreparePrintNewLineFunction()
+        /// <summary>
+        /// Prepares PrintNewLine library function
+        /// :V PrintNewLine(::)
+        /// </summary>
+        private void PreparePrintNewLineFunction()
         {
             AddINT(3);
             AddLIT("13");
@@ -202,7 +281,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("PrintNewLine", DataType.Void, instructionCount - 8, new List<FunctionParameter>()));
         }
 
-        public void PreparePrintASCIIFunction()
+        /// <summary>
+        /// Prepares PrintASCII library function
+        /// :V PrintASCII(: :I val :)
+        /// </summary>
+        private void PreparePrintASCIIFunction()
         {
             AddINT(4);
             AddWRI();
@@ -213,7 +296,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("PrintASCII", DataType.Void, instructionCount - 4, parameters));
         }
 
-        public void PreparePrintBoolFunction()
+        /// <summary>
+        /// Prepares the PrintBool library function
+        /// :V PrintBool(: :B val :)
+        /// </summary>
+        private void PreparePrintBoolFunction()
         {
             AddINT(4);
 
@@ -254,7 +341,11 @@ namespace Happy_language
             globalSymbolTable.AddFuncItem(new FuncItem("PrintBool", DataType.Void, instructionCount - 31, parameters));
         }
 
-        public void PreparePrintIntFunction()
+        /// <summary>
+        /// Prepares PrintInt library function
+        /// :V PrintInt(: :I val :)
+        /// </summary>
+        private void PreparePrintIntFunction()
         {
             AddINT(4);
 
@@ -297,112 +388,115 @@ namespace Happy_language
             parameters.Add(new FunctionParameter("value", DataType.Int));
             globalSymbolTable.AddFuncItem(new FuncItem("PrintInt", DataType.Void, instructionCount - 31, parameters));
         }
-
         #endregion
 
-        public static string BoolToInt(string value)
-        {
-            if (value.Equals("True", StringComparison.OrdinalIgnoreCase))
-            {
-                return "1";
-            }
-            else if (value.Equals("False", StringComparison.OrdinalIgnoreCase))
-            {
-                return "0";
-            }
-            else
-            {
-                throw new Exception("Invalid Bool value: " + value);
-            }
-        }
-
-        public List<String> GetErrors()
-        {
-            return errors;
-        }
-
-        public List<Instruction> GetInstructions()
-        {
-            return this.instructions;
-        }
-
-        public SymbolTable GetSymbolTable()
-        {
-            return this.globalSymbolTable;
-        }
-
-        public void numberInstructions()
-        {
-            int c = 0;
-
-            for (int i = 0; i < instructions.Count; i++)
-            {
-                instructions[i].Number = i;
-            }
-        }
-
         #region Instruction handling
+        /// <summary>
+        /// Add WRI instruction to the instruction list
+        /// </summary>
         public void AddWRI()
         {
             instructions.Add(new Instruction(InstructionType.WRI, 0, "0"));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add PST instruction to the instruction list
+        /// </summary>
         public void AddPST()
         {
             instructions.Add(new Instruction(InstructionType.PST, 0, "0"));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add PLD instruction to the instruction list
+        /// </summary>
         public void AddPLD()
         {
             instructions.Add(new Instruction(InstructionType.PLD, 0, "0"));
             instructionCount += 1;
         }
 
-        public void AddLIT(String value)
+        /// <summary>
+        /// Add LIT instruction to the instruction list
+        /// </summary>
+        /// <param name="value">string representation of the value to add to stack</param>
+        public void AddLIT(string value)
         {
-            Console.WriteLine(value);
             instructions.Add(new Instruction(InstructionType.LIT, 0, value));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add STO instruction to the instruction list
+        /// </summary>
+        /// <param name="level">Level of the address to store</param>
+        /// <param name="address">Address where to store</param>
         public void AddSTO(int level, int address)
         {
             instructions.Add(new Instruction(InstructionType.STO, level, address.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add OPR instruction to the instruction list
+        /// </summary>
+        /// <param name="opCode">Operator code</param>
         public void AddOPR(int opCode)
         {
             instructions.Add(new Instruction(InstructionType.OPR, 0, opCode.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add JMP instruction to the instruction list
+        /// </summary>
+        /// <param name="codeAddress">Address where to jump</param>
         public void AddJMP(int codeAddress)
         {
             instructions.Add(new Instruction(InstructionType.JMP, 0, codeAddress.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Change the address where to jump of the instruction with given index
+        /// </summary>
+        /// <param name="codeAddress">Address where to jump</param>
+        /// <param name="index">Index of the JMP instruction in the instruction list</param>
         public void ChangeJMP(int codeAddress, int index)
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMP);
             instructions[index].Value = codeAddress.ToString();
         }
 
+        /// <summary>
+        /// Add INT instruction to the instruction list
+        /// </summary>
+        /// <param name="value">Value of how much the top of the stack will be increased (or decreased if the value is negative)</param>
         public void AddINT(int value)
         {
             instructions.Add(new Instruction(InstructionType.INT, 0, value.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Adds CAL instruction to the instruction list
+        /// </summary>
+        /// <param name="level">Level of the address that will be called</param>
+        /// <param name="address">Address that will be called</param>
         public void AddCAL(int level, int address)
         {
             instructions.Add(new Instruction(InstructionType.CAL, level, address.ToString()));
             instructionCount += 1;
         }
-
+        
+        /// <summary>
+        /// Changes the CAL instruction on given index
+        /// </summary>
+        /// <param name="level">Level of the address that will be called</param>
+        /// <param name="address">Address that will be called</param>
+        /// <param name="index">Index of the instruction that will be changed</param>
         public void ChangeCAL(int level, int address, int index)
         {
             Debug.Assert(instructions[index].Type == InstructionType.CAL);
@@ -411,40 +505,74 @@ namespace Happy_language
             instructions[index].Value = address.ToString();
         }
 
+        /// <summary>
+        /// Add RET instruction to the instruction list
+        /// </summary>
+        /// <param name="level">Level of the address where to return</param>
+        /// <param name="codeAddress">Address where to return</param>
         public void AddRET(int level, int codeAddress)
         {
             instructions.Add(new Instruction(InstructionType.RET, level, codeAddress.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add LOD instruction to the instruction list
+        /// </summary>
+        /// <param name="level">Level of the address from where to load the value</param>
+        /// <param name="address">Address from where to load the value</param>
         public void AddLOD(int level, int address)
         {
             instructions.Add(new Instruction(InstructionType.LOD, level, address.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Add JMC instruction to the instruction list
+        /// </summary>
+        /// <param name="codeAddress">Address where to jump</param>
         public void AddJMC(int codeAddress)
         {
             instructions.Add(new Instruction(InstructionType.JMC, 0, codeAddress.ToString()));
             instructionCount += 1;
         }
 
+        /// <summary>
+        /// Change JMC instruction on given address
+        /// </summary>
+        /// <param name="index">Index of modified instruction</param>
+        /// <param name="codeAddress">Address where to jump</param>
         public void ChangeJMC(int index, int codeAddress)
         {
             Debug.Assert(instructions[index].Type == InstructionType.JMC);
             instructions[index].Value = codeAddress.ToString();
         }
 
+        /// <summary>
+        /// Adds instructions for logical negation
+        /// !val = val == false
+        /// </summary>
         public void AddNeg()
         {
             AddLIT("0");
             AddOPR(Instruction.EQ);
         }
 
+        /// <summary>
+        /// Add instructions for doing initial jump
+        /// </summary>
         public void DoInitialJmp()
         {
             AddJMP(instructionCount + 1);
             AddINT(4);
+        }
+
+        private void DoMainJmp(int dest)
+        {
+            AddCAL(0, dest);
+            jmpToMainIndex = instructionCount - 1;
+            AddRET(0, 0);
+            jmpToMainDone = true;
         }
 
         private void changeJMPtoMain()
@@ -460,7 +588,13 @@ namespace Happy_language
         #endregion
 
         #region Memory handling
-        private VarConstItem createConst(GrammarParser.Def_constContext context, String name)
+        /// <summary>
+        /// Creates the constant using data from current parse tree context
+        /// </summary>
+        /// <param name="context">Context</param>
+        /// <param name="name">Name of the constant</param>
+        /// <returns>Object representing created constant</returns>
+        private VarConstItem createConst(GrammarParser.Def_constContext context, string name)
         {
             DataType dt = DataType.Int;
 
@@ -478,7 +612,13 @@ namespace Happy_language
             return new VarConstItem(name, VarConstType.Const, dt, context.start.Line, addr, level);
         }
 
-        private VarConstItem createVar(GrammarParser.Def_varContext context, String name)
+        /// <summary>
+        /// Creates the variable using data from current parse tree context
+        /// </summary>
+        /// <param name="context">Context</param>
+        /// <param name="name">Name of the variable</param>
+        /// <returns>Object representing created variable</returns>
+        private VarConstItem createVar(GrammarParser.Def_varContext context, string name)
         {
             DataType dt = DataType.Int;
 
@@ -496,9 +636,14 @@ namespace Happy_language
             return new VarConstItem(name, VarConstType.Var, dt, context.start.Line, addr, level);
         }
 
+        /// <summary>
+        /// Creates the array using data from current parse tree context
+        /// </summary>
+        /// <param name="context">Context</param>
+        /// <returns>Object representing created array</returns>
         private VarConstItem createArray(GrammarParser.Array_inicializationContext context)
         {
-            String name = context.Identifier().GetText();
+            string name = context.Identifier().GetText();
             DataType dt = DataType.Int;
 
             int length = 0;
@@ -540,18 +685,14 @@ namespace Happy_language
             return new VarConstItem(name, length, VarConstType.Var, dt, context.start.Line, addr, level); ;
         }
 
-        private void DoMainJmp(int dest)
+        /// <summary>
+        /// Creates function from given parse tree context
+        /// </summary>
+        /// <param name="context">Context</param>
+        /// <returns>Object representing created function</returns>
+        private FuncItem createFunction(GrammarParser.Def_functionContext context)
         {
-            AddCAL(0, dest);
-            jmpToMainIndex = instructionCount - 1;
-            AddRET(0, 0);
-            //initialJmpDone = true;
-            jmpToMainDone = true;
-        }
-
-        private FuncItem createFunction(GrammarParser.Def_one_functionContext context)
-        {
-            String name = context.Identifier().GetText(); ;
+            string name = context.Identifier().GetText(); ;
             DataType returnDataType = DataType.Int;
             List<FunctionParameter> parameters = new List<FunctionParameter>();
 
@@ -571,6 +712,11 @@ namespace Happy_language
             return new FuncItem(name, returnDataType, instructionCount, parameters);
         }
 
+        /// <summary>
+        /// Validate the given array and if it is OK insert it in the symbol table
+        /// </summary>
+        /// <param name="array">Processed array</param>
+        /// <returns>Result of validation. Zero if OK, negative value if array is not valid</returns>
         private int processArray(VarConstItem array)
         {
             if (array.GetLength() < 0)
@@ -611,11 +757,14 @@ namespace Happy_language
                 globalAddress += array.GetLength();
             }
 
-            //AddINT(array.GetLength());
-
             return 0;
         }
 
+        /// <summary>
+        /// Validate the given variable or constant and if it is OK insert it in the symbol table
+        /// </summary>
+        /// <param name="item">Processed variable or constant</param>
+        /// <returns>0 if OK, negative value if the value or constant is not valid</returns>
         private int processVarConst(VarConstItem item)
         {
             if (inFunction)
@@ -654,7 +803,12 @@ namespace Happy_language
             return 0;
         }
 
-        public VarConstItem GetVarConst(String varConstName)
+        /// <summary>
+        /// Find the symbol name in symbol tables
+        /// </summary>
+        /// <param name="varConstName">Name of the symbol</param>
+        /// <returns></returns>
+        public VarConstItem GetVarConst(string varConstName)
         {
             if (localSymbolTable.ContainsVarConstItem(varConstName))
                 return localSymbolTable.GetVarConstItemByName(varConstName);
@@ -663,24 +817,14 @@ namespace Happy_language
 
             return null;
         }
-
-        public Boolean isExpressionFunctionCall(GrammarParser.ExpressionContext context)
-        {
-            return true;
-        }
         #endregion
 
         #region Visitors
-        public override int VisitStart([NotNull] GrammarParser.StartContext context)
-        {
-            return base.VisitStart(context);
-        }
-
-        public override int VisitDef_con_var([NotNull] GrammarParser.Def_con_varContext context)
-        {
-            return base.VisitDef_con_var(context);
-        }
-
+        /// <summary>
+        /// Constant definition
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>((int) DataType) if ok, negative value if semantic error</returns>
         public override int VisitDef_const([NotNull] GrammarParser.Def_constContext context)
         {
             int result = 0;
@@ -692,11 +836,7 @@ namespace Happy_language
 
                 if (result < 0)
                     return result;
-
-                //retValTo = newConst;
-                if (localSymbolTable == null)
-                    localSymbolTable = new SymbolTable();
-
+                
                 if (context.condition_expression() != null)
                 {
                     result = VisitCondition_expression(context.condition_expression());
@@ -706,30 +846,27 @@ namespace Happy_language
 
                     if (newConst.GetDataType() != (DataType) result)
                     {
-                        //Console.WriteLine("Type mismatch.");
                         handler.reportVisitorError(context.start.Line, context.condition_expression().start.Column, ErrorCode.assignmentMismatch,
                             "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
 
                         return Error.assignmentMismatch;
                     }
                 }
-                else if (context.function_call() != null)
-                {
-                    result = VisitFunction_call(context.function_call());
+                //else if (context.function_call() != null)
+                //{
+                //    result = VisitFunction_call(context.function_call());
 
-                    if (result < 0)
-                        return result;
+                //    if (result < 0)
+                //        return result;
 
-                    if (newConst.GetDataType() != (DataType)result)
-                    {
-                        //Console.WriteLine("Type mismatch.");
-                        handler.reportVisitorError(context.start.Line, context.function_call().start.Column, ErrorCode.assignmentMismatch,
-                            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
+                //    if (newConst.GetDataType() != (DataType)result)
+                //    {
+                //        handler.reportVisitorError(context.start.Line, context.function_call().start.Column, ErrorCode.assignmentMismatch,
+                //            "Cannot assign from " + ((DataType)result) + " to " + newConst.GetDataType());
 
-                        return Error.assignmentMismatch;
-                    }
-                    //AddLOD(level, funcReturnAddress);
-                }
+                //        return Error.assignmentMismatch;
+                //    }
+                //}
 				else if (context.expression() != null)
 				{
 					result = VisitExpression(context.expression());
@@ -760,7 +897,7 @@ namespace Happy_language
                         return Error.assignmentMismatch;
                     }
 				}
-				//retValTo = null;
+				
 				if (result < 0)
                     return result;
 
@@ -770,6 +907,11 @@ namespace Happy_language
             return result;
         }
 
+        /// <summary>
+        /// Variable definition
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>((int) DataType) if ok, negative value if semantic error</returns>
         public override int VisitDef_var([NotNull] GrammarParser.Def_varContext context)
         {
             int result = 0;
@@ -784,9 +926,6 @@ namespace Happy_language
                     if (result < 0)
                         return result;
 
-                    //retValTo = newVar;
-                    if (localSymbolTable == null)
-                        localSymbolTable = new SymbolTable();
                     if (context.condition_expression() != null)
                     {
                         result = VisitCondition_expression(context.condition_expression());
@@ -816,7 +955,6 @@ namespace Happy_language
 
                             return Error.assignmentMismatch;
                         }
-                        //AddLOD(level, inFunctionAddress);
                     }
                     else if (context.expression() != null)
                     {
@@ -849,7 +987,7 @@ namespace Happy_language
                             return Error.assignmentMismatch;
                         }
 					}
-					//retValTo = null;
+
 					if (result < 0)
                         return result;
 
@@ -864,42 +1002,11 @@ namespace Happy_language
             return result;
         }
 
-		public override int VisitTernary_operator([NotNull] GrammarParser.Ternary_operatorContext context)
-        {
-			Visit(context.condition());
-			int jmcAddress = instructionCount;
-			AddJMC(0);
-
-			int ret1 = Visit(context.expression()[0]);
-			int jmpAddress = instructionCount;
-			AddJMP(0);
-			ChangeJMC(jmcAddress, instructionCount);
-			int ret2 = Visit(context.expression()[1]);
-			ChangeJMP(instructionCount, jmpAddress);
-
-            if (ret1 < 0)
-            {
-                return ret1;
-            }
-
-
-            if (ret2 < 0)
-            {
-                return ret2;
-            }
-
-            if (ret1 != ret2)
-            {
-                handler.reportVisitorError(context.start.Line, context.start.Column, ErrorCode.subExpressionMismatch,
-                    "Subexpressions of ternary operator must have same data type");
-
-                return Error.cmpTypeMismatch;
-            }
-
-			return ret1;
-		}
-
-
+        /// <summary>
+        /// Array inicialization
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
 		public override int VisitArray_inicialization([NotNull] GrammarParser.Array_inicializationContext context)
         {
             VarConstItem newArray = createArray(context);
@@ -915,12 +1022,13 @@ namespace Happy_language
             }
             else if (context.String() != null)
             {
-                String content = context.String().GetText();
+                string content = context.String().GetText();
                 for (int i = 1; i < newArray.GetLength(); i++)
                 {
                     AddLIT(Convert.ToString(Convert.ToInt32(content[i])));
                 }
 
+                //null terminated string
                 AddLIT("0");
             }
             else if (context.number_array_assign() != null)
@@ -988,8 +1096,13 @@ namespace Happy_language
 
             return result;
         }
-
-        public override int VisitDef_one_function([NotNull] GrammarParser.Def_one_functionContext context)
+        
+        /// <summary>
+        /// Function definition
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public override int VisitDef_function([NotNull] GrammarParser.Def_functionContext context)
         {
             inFunction = true;
             globalVarsDefined = true;
@@ -997,12 +1110,17 @@ namespace Happy_language
             if (!jmpToMainDone) DoMainJmp(0);
 
             FuncItem newItem = createFunction(context);
-            if (!globalSymbolTable.ContainsFuncItem(newItem.GetName())) globalSymbolTable.AddFuncItem(newItem);
+            if (!globalSymbolTable.ContainsFuncItem(newItem.GetName()))
+            {
+                globalSymbolTable.AddFuncItem(newItem);
+            }
             else
             {
-                Console.WriteLine("Funkce s timhle jmenem uz existuje!\n");
+                handler.reportVisitorError(context.Start.Line, ErrorCode.functionAlreadyExists,
+                    "Function with name '" + newItem.GetName() + "' already defined.");
                 return Error.functionAlreadyExists;
             }
+
             AddINT(3 + newItem.GetParameters().Count);
 
             level += 1;
@@ -1015,7 +1133,7 @@ namespace Happy_language
                 inFunctionAddress += 1;
             }
 
-            int result = base.VisitDef_one_function(context);
+            int result = base.VisitDef_function(context);
             level -= 1;
 
             AddRET(0, 0);
@@ -1025,6 +1143,11 @@ namespace Happy_language
             return result;
         }
 
+        /// <summary>
+        /// Return command
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override int VisitFunction_return([NotNull] GrammarParser.Function_returnContext context)
         {
             int result = 0;
@@ -1046,6 +1169,7 @@ namespace Happy_language
 				result = VisitTernary_operator(context.ternary_operator());
 			}
 
+            //Store the result on predefined address
 			AddSTO(level, funcReturnAddress);
 
             return result;
@@ -1057,18 +1181,16 @@ namespace Happy_language
             GrammarParser.Multiple_assignContext leftSides = context.multiple_assign();
             while (leftSides != null)
             {
-                String retValToName = leftSides.Identifier().GetText();
-                VarConstItem retValTo = null;
+                string retValToName = leftSides.Identifier().GetText();
+                VarConstItem retValTo = GetVarConst(retValToName);
 
-                if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
-                else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
-                else
+                if (retValTo == null)
                 {
-                    handler.reportVisitorError(context.start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable with name '" + retValToName + "'");
-					return Error.varConstDoesNotExist;
+                    handler.reportVisitorError(context.start.Line, ErrorCode.unknownSymbol, "Unknown variable with name '" + retValToName + "'");
+					return Error.unknownSymbol;
                 }
 
-                if (retValTo.GetType() == VarConstType.Const)
+                if (retValTo.GetVarConstType() == VarConstType.Const)
                 {
                     handler.reportVisitorError(context.start.Line, ErrorCode.assignmentToConstant, "Cannot assign to a constant");
                     return Error.assignmentToConstant;
@@ -1152,18 +1274,18 @@ namespace Happy_language
         public override int VisitOne_assignment([NotNull] GrammarParser.One_assignmentContext context)
         {
 			int result = 0;
-			String retValToName = context.Identifier().GetText();
+			string retValToName = context.Identifier().GetText();
             VarConstItem retValTo = null;
 
             if (localSymbolTable.ContainsVarConstItem(retValToName)) retValTo = localSymbolTable.GetVarConstItemByName(retValToName);
             else if (globalSymbolTable.ContainsVarConstItem(retValToName)) retValTo = globalSymbolTable.GetVarConstItemByName(retValToName);
             else
             {
-                handler.reportVisitorError(context.start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable with name '" + retValToName + "'");
-                return Error.varConstDoesNotExist;
+                handler.reportVisitorError(context.start.Line, ErrorCode.unknownSymbol, "Unknown variable with name '" + retValToName + "'");
+                return Error.unknownSymbol;
             }
 
-            if (retValTo.GetType() == VarConstType.Const)
+            if (retValTo.GetVarConstType() == VarConstType.Const)
             {
                 handler.reportVisitorError(context.start.Line, ErrorCode.assignmentToConstant, "Cannot assign to a constant");
                 return Error.assignmentToConstant;
@@ -1260,24 +1382,9 @@ namespace Happy_language
             return result;
         }
 
-        public override int VisitBlok_function([NotNull] GrammarParser.Blok_functionContext context)
-        {
-            return base.VisitBlok_function(context);
-        }
-
-        public override int VisitDef_var_blok([NotNull] GrammarParser.Def_var_blokContext context)
-        {
-            return base.VisitDef_var_blok(context);
-        }
-
-        public override int VisitBlok([NotNull] GrammarParser.BlokContext context)
-        {
-            return base.VisitBlok(context);
-        }
-
         public override int VisitFunction_call([NotNull] GrammarParser.Function_callContext context)
         {
-            String fName = context.Identifier().GetText();
+            string fName = context.Identifier().GetText();
 
             FuncItem calledFce = null;
             if (globalSymbolTable.ContainsFuncItem(fName)) calledFce = globalSymbolTable.GetFuncItemByName(fName);
@@ -1338,6 +1445,41 @@ namespace Happy_language
                 AddLOD(level, funcReturnAddress);
 
             return (int) calledFce.GetReturnDataType();
+        }
+
+        public override int VisitTernary_operator([NotNull] GrammarParser.Ternary_operatorContext context)
+        {
+            Visit(context.condition());
+            int jmcAddress = instructionCount;
+            AddJMC(0);
+
+            int ret1 = Visit(context.expression()[0]);
+            int jmpAddress = instructionCount;
+            AddJMP(0);
+            ChangeJMC(jmcAddress, instructionCount);
+            int ret2 = Visit(context.expression()[1]);
+            ChangeJMP(instructionCount, jmpAddress);
+
+            if (ret1 < 0)
+            {
+                return ret1;
+            }
+
+
+            if (ret2 < 0)
+            {
+                return ret2;
+            }
+
+            if (ret1 != ret2)
+            {
+                handler.reportVisitorError(context.start.Line, context.start.Column, ErrorCode.subExpressionMismatch,
+                    "Subexpressions of ternary operator must have same data type");
+
+                return Error.subExpressionMismatch;
+            }
+
+            return ret1;
         }
 
         public override int VisitExpression([NotNull] GrammarParser.ExpressionContext context)
@@ -1456,16 +1598,13 @@ namespace Happy_language
             int result = 0;
             if (context.Identifier() != null)
             {
-                String varConstName = context.Identifier().GetText();
-                VarConstItem varConst = null;
-                if (localSymbolTable.ContainsVarConstItem(varConstName)) varConst = localSymbolTable.GetVarConstItemByName(varConstName);
-                else if (globalSymbolTable.ContainsVarConstItem(varConstName)) varConst = globalSymbolTable.GetVarConstItemByName(varConstName);
-                else
+                string varConstName = context.Identifier().GetText();
+                VarConstItem varConst = GetVarConst(varConstName);
+                if (varConst == null)
                 {
-                    //Console.WriteLine("Promena ve vyrazu neexistuje");
-                    handler.reportVisitorError(context.Start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable '" + varConstName + "'");
+                    handler.reportVisitorError(context.Start.Line, ErrorCode.unknownSymbol, "Unknown variable '" + varConstName + "'");
 
-                    return Error.varConstDoesNotExist;
+                    return Error.unknownSymbol;
                 }
 
                 int varLevel = varConst.GetLevel();
@@ -1559,8 +1698,6 @@ namespace Happy_language
                 {
                     return result;
                 }
-
-                //AddLOD(level, funcReturnAddress);
             }
             else if (context.expression() != null)
             {
@@ -1587,12 +1724,11 @@ namespace Happy_language
 
         public override int VisitAssignment_array([NotNull] GrammarParser.Assignment_arrayContext context)
         {
-            String arrayName = context.array_index().Identifier().GetText();
-            VarConstItem leftSide = null;
-            if (localSymbolTable.ContainsVarConstItem(arrayName)) leftSide = localSymbolTable.GetVarConstItemByName(arrayName);
-            else if (globalSymbolTable.ContainsVarConstItem(arrayName)) leftSide = globalSymbolTable.GetVarConstItemByName(arrayName);
-            else
-            {
+            string arrayName = context.array_index().Identifier().GetText();
+            VarConstItem leftSide = GetVarConst(arrayName);
+
+            if (leftSide == null)
+            { 
                 handler.reportVisitorError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + arrayName + "'");
 
                 return Error.arrayDoesNotExist;
@@ -1698,9 +1834,6 @@ namespace Happy_language
                 AddPST();
             }
 
-            
-
-            
             return result;
         }
 
@@ -1887,11 +2020,6 @@ namespace Happy_language
             {
                 AddLIT(BoolToInt(context.Bool().GetText()));
 
-                //if (context.Negation() != null)
-                //{
-                //    AddNeg();
-                //}
-
                 return (int) DataType.Bool;
             }
 
@@ -1939,37 +2067,6 @@ namespace Happy_language
 
                 return (int) DataType.Bool;
             }
-            
-            //if (context.Identifier() != null)
-            //{
-            //    String varConstName = context.Identifier().GetText();
-            //    VarConstItem varConst = null;
-
-            //    if (localSymbolTable.ContainsVarConstItem(varConstName)) varConst = localSymbolTable.GetVarConstItemByName(varConstName);
-            //    else if (globalSymbolTable.ContainsVarConstItem(varConstName)) varConst = globalSymbolTable.GetVarConstItemByName(varConstName);
-            //    else
-            //    {
-            //        handler.reportVisitorError(context.Start.Line, ErrorCode.varConstDoesNotExist, "Unknown variable '" + varConstName + "'");
-
-            //        return Error.varConstDoesNotExist;
-            //    }
-
-            //    if (varConst.GetDataType() != DataType.Bool)
-            //    {
-            //        handler.reportVisitorError(context.Start.Line, ErrorCode.conditionTypeMismatch, "Variable in condition must be of the Bool type");
-            //    }
-
-            //    int varLevel = varConst.GetLevel();
-            //    int levelToMove = Math.Abs(level - varLevel);
-            //    AddLOD(levelToMove, varConst.GetAddress());
-
-            //    if (context.Negation() != null)
-            //    {
-            //        AddNeg();
-            //    }
-
-            //    return (int)DataType.Bool;
-            //}
 
             int ret = Visit(context.expression());
 

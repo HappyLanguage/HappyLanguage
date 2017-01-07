@@ -8,8 +8,6 @@ namespace Happy_language
 {
     public class SymbolTable
     {
-        private int address;
-
         Dictionary<String, VarConstItem> varConstTable = new Dictionary<String, VarConstItem>();
         Dictionary<String, FuncItem> funcTable = new Dictionary<String, FuncItem>();
 

@@ -21,10 +21,10 @@ namespace Happy_language
             this.parameters = parameters;
         }
 
-        public String ToString()
+        public override string ToString()
         {
 
-            String param = "";
+            string param = "";
             for(int i = 0; i < parameters.Count; i++)
             {
                 param += parameters[i] + ";"; 

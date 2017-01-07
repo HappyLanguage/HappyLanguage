@@ -17,7 +17,7 @@ namespace Happy_language
             this.dataType = dataType;
         }
 
-        public String ToString()
+        public override string ToString()
         {
             return this.dataType + " " + this.name;
         }

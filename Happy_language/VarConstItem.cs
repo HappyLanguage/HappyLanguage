@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Happy_language
 {
-	public class VarConstItem
+    public class VarConstItem
     {
         private String name;
         private VarConstType type;
@@ -76,7 +72,7 @@ namespace Happy_language
             return this.name;
         }
 
-        public VarConstType GetType()
+        public VarConstType GetVarConstType()
         {
             return this.type;
         }

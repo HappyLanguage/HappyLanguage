@@ -8,7 +8,7 @@ namespace Happy_language
 {
     public enum ErrorCode
     {
-        varConstDoesNotExist = 1,
+        unknownSymbol = 1,
         varConstAlreadyExists = 2,
         functionDoesNotExist = 3,
         functionAlreadyExists = 4,
@@ -31,7 +31,7 @@ namespace Happy_language
 
     public class Error
     {
-        public static int varConstDoesNotExist = -1;
+        public static int unknownSymbol = -1;
         public static int varConstAlreadyExists = -2;
         public static int functionDoesNotExist = -3;
         public static int functionAlreadyExists = -4;
@@ -39,7 +39,6 @@ namespace Happy_language
         public static int arrayAlreadyExists = -6;
         public static int arrayLengthNegative = -7;
         public static int arrayOutOfBounds = -8;
-        //public static int functionReturnTypesDoNotMatch = -9;
         public static int functionWrongParametersCount = -10;
         public static int functionParameterDataTypeMismatch = -11;
         public static int arrayIndexNegative = -12;

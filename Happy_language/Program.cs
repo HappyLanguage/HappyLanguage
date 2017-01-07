@@ -6,6 +6,9 @@ using Antlr4.Runtime.Tree;
 
 namespace Happy_language
 {
+    /// <summary>
+    /// Main class of this program
+    /// </summary>
 	public class Program
     {
         /// <summary>
@@ -48,7 +51,7 @@ namespace Happy_language
         /// Name of the output file
         /// </summary>
         private static string outputFile = null;
-        
+
         /// <summary>
         /// Prints a program logo into command line
         /// </summary>
@@ -139,7 +142,7 @@ namespace Happy_language
 
             PrepareParser();
         }
-        
+
         /// <summary>
         /// Prepare the input stream
         /// </summary>
@@ -224,7 +227,7 @@ namespace Happy_language
 
             Console.WriteLine("Done.\n");
             Console.WriteLine("Generated " + visitor.GetInstructions().Count + " instructions.");
-        } 
+        }
 
         /// <summary>
         /// Write given instruction into file
@@ -234,7 +237,7 @@ namespace Happy_language
         public static void WriteInstructions(List<Instruction> instructions, String name_file)
         {
             String text = "";
-            for(int i = 0; i < instructions.Count; i++)
+            for (int i = 0; i < instructions.Count; i++)
             {
                 text += instructions[i];
             }

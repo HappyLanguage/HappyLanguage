@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Happy_language;
 using System.IO;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
@@ -12,9 +8,9 @@ using System.Diagnostics;
 
 namespace Happy_language.Tests
 {
-	[TestClass()]
-	public class TestProgram
-	{
+    [TestClass()]
+    public class TestProgram
+    {
         public static String NEW_LINE = "\r\r\n";
 
         [TestMethod()]
@@ -175,81 +171,81 @@ namespace Happy_language.Tests
         }
 
         [TestMethod()]
-		public void TestUnaryOperator1()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-1.txt", "-5");
-		}
+        public void TestUnaryOperator1()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-1.txt", "-5");
+        }
 
-		[TestMethod()]
-		public void TestUnaryOperator2()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-2.txt", "-6");
-		}
+        [TestMethod()]
+        public void TestUnaryOperator2()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-2.txt", "-6");
+        }
 
-		[TestMethod()]
-		public void TestUnaryOperator3()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-3.txt", "11");
-		}
-
-
-		[TestMethod()]
-		public void TestUnaryOperator4()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-4.txt", "1");
-		}
+        [TestMethod()]
+        public void TestUnaryOperator3()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-3.txt", "11");
+        }
 
 
-		[TestMethod()]
-		public void TestUnaryOperator5()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-5.txt", "14");
-		}
+        [TestMethod()]
+        public void TestUnaryOperator4()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-4.txt", "1");
+        }
 
 
-		[TestMethod()]
-		public void TestUnaryOperator6()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-6.txt", "-4-3-2-101234");
-		}
+        [TestMethod()]
+        public void TestUnaryOperator5()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-5.txt", "14");
+        }
 
-		[TestMethod()]
-		public void TestUnaryOperator7()
-		{
-			TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-7.txt", "-1");
-		}
 
-		[TestMethod()]
-		public void TestTernaryOperator1()
-		{
-			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-1.txt", "-5");
-		}
+        [TestMethod()]
+        public void TestUnaryOperator6()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-6.txt", "-4-3-2-101234");
+        }
 
-		[TestMethod()]
-		public void TestTernaryOperator2()
-		{
-			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-2.txt", "-5");
-		}
+        [TestMethod()]
+        public void TestUnaryOperator7()
+        {
+            TestOutputFromFile("../../../TestFiles/UnaryOperator/test-file-7.txt", "-1");
+        }
 
-		[TestMethod()]
-		public void TestTernaryOperator3()
-		{
-			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-3.txt", "12");
-		}
+        [TestMethod()]
+        public void TestTernaryOperator1()
+        {
+            TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-1.txt", "-5");
+        }
 
-		[TestMethod()]
-		public void TestTernaryOperator4()
-		{
-			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-4.txt", "-99");
-		}
+        [TestMethod()]
+        public void TestTernaryOperator2()
+        {
+            TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-2.txt", "-5");
+        }
 
-		[TestMethod()]
-		public void TestTernaryOperator5()
-		{
-			TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-5.txt", "55");
-		}
+        [TestMethod()]
+        public void TestTernaryOperator3()
+        {
+            TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-3.txt", "12");
+        }
 
-		[TestMethod()]
+        [TestMethod()]
+        public void TestTernaryOperator4()
+        {
+            TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-4.txt", "-99");
+        }
+
+        [TestMethod()]
+        public void TestTernaryOperator5()
+        {
+            TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-5.txt", "55");
+        }
+
+        [TestMethod()]
         public void TestTernaryOperator6()
         {
             TestOutputFromFile("../../../TestFiles/TernaryOperator/test-file-6.txt", "-8811-10");
@@ -328,8 +324,6 @@ namespace Happy_language.Tests
             helloParser.RemoveErrorListeners();
             helloParser.AddErrorListener(new GrammarErrorListener(handler));
 
-            String path_file_ins = "insc1.txt";
-
             try
             {
                 IParseTree tree = helloParser.start();
@@ -353,28 +347,28 @@ namespace Happy_language.Tests
             }
         }
 
-		public void TestOutputFromFile(String path, String output)
-		{
-			StreamReader pom = new System.IO.StreamReader(path);
+        public void TestOutputFromFile(String path, String output)
+        {
+            StreamReader pom = new System.IO.StreamReader(path);
 
             ErrorHandler handler = new ErrorHandler();
 
 
-			AntlrInputStream inputStream = new AntlrInputStream(pom);
-			GrammarLexer lexer = new GrammarLexer(inputStream);
-			lexer.RemoveErrorListeners();
-			lexer.AddErrorListener(new GrammarErrorListener(handler));
-			CommonTokenStream c = new CommonTokenStream(lexer);
-			GrammarParser helloParser = new GrammarParser(c);
+            AntlrInputStream inputStream = new AntlrInputStream(pom);
+            GrammarLexer lexer = new GrammarLexer(inputStream);
+            lexer.RemoveErrorListeners();
+            lexer.AddErrorListener(new GrammarErrorListener(handler));
+            CommonTokenStream c = new CommonTokenStream(lexer);
+            GrammarParser helloParser = new GrammarParser(c);
 
-			helloParser.RemoveErrorListeners();
-			helloParser.AddErrorListener(new GrammarErrorListener(handler));
+            helloParser.RemoveErrorListeners();
+            helloParser.AddErrorListener(new GrammarErrorListener(handler));
 
-			String path_file_ins = "insc1.txt";
+            String path_file_ins = "insc1.txt";
 
-			try
-			{
-				IParseTree tree = helloParser.start();
+            try
+            {
+                IParseTree tree = helloParser.start();
                 pom.Close();
 
                 if (handler.errorsOccured())
@@ -383,9 +377,9 @@ namespace Happy_language.Tests
                 }
 
                 Visitor visitor = new Visitor(handler);
-				visitor.PrepareLibraryFunctions();
-				visitor.DoInitialJmp();
-				int t = visitor.Visit(tree);
+                visitor.PrepareLibraryFunctions();
+                visitor.DoInitialJmp();
+                int t = visitor.Visit(tree);
 
                 if (handler.errorsOccured())
                 {
@@ -394,33 +388,33 @@ namespace Happy_language.Tests
 
                 visitor.numberInstructions();
 
-				Program.WriteInstructions(visitor.GetInstructions(), path_file_ins);
-			}
-			catch (ArgumentException e)
-			{
-				Console.WriteLine(e.Message);
-			}
+                Program.WriteInstructions(visitor.GetInstructions(), path_file_ins);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
-			Process interpreter = new Process();
-			interpreter.StartInfo.FileName = "../../../refint_pl0_ext.exe";
-			interpreter.StartInfo.Arguments = path_file_ins + " -s -l";
-			interpreter.StartInfo.UseShellExecute = false;
-			interpreter.StartInfo.RedirectStandardOutput = true;
+            Process interpreter = new Process();
+            interpreter.StartInfo.FileName = "../../../refint_pl0_ext.exe";
+            interpreter.StartInfo.Arguments = path_file_ins + " -s -l";
+            interpreter.StartInfo.UseShellExecute = false;
+            interpreter.StartInfo.RedirectStandardOutput = true;
 
-			interpreter.Start();
+            interpreter.Start();
 
-			StreamReader reader = new StreamReader(interpreter.StandardOutput.BaseStream);
+            StreamReader reader = new StreamReader(interpreter.StandardOutput.BaseStream);
 
-			if (!interpreter.WaitForExit(15000))
-			{
-				Assert.IsFalse(true, "proces má pravděpodně nekončnou smyčku");
-				interpreter.Kill();
-			}
+            if (!interpreter.WaitForExit(15000))
+            {
+                Assert.IsFalse(true, "Process might got stuck in infinite loop");
+                interpreter.Kill();
+            }
 
 
-			String output_from_interpret = reader.ReadToEnd();
+            String output_from_interpret = reader.ReadToEnd();
 
-			Assert.AreEqual("START PL/0\r\n" + output + " END PL/0\r\n", output_from_interpret);
-		}
-	}
+            Assert.AreEqual("START PL/0\r\n" + output + " END PL/0\r\n", output_from_interpret);
+        }
+    }
 }

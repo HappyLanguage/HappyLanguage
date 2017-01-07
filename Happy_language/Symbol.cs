@@ -1,25 +1,77 @@
-﻿using System;
-
-namespace Happy_language
+﻿namespace Happy_language
 {
+    /// <summary>
+    /// Access type of the symbol
+    /// </summary>
     public enum SymbolType
     {
+        /// <summary>
+        /// Variable
+        /// </summary>
         Var,
+
+        /// <summary>
+        /// Constant
+        /// </summary>
         Const
     }
 
+    /// <summary>
+    /// Class representing variables, constants and arrays
+    /// </summary>
     public class Symbol
     {
-        private String name;
+        /// <summary>
+        /// Name of the symbol
+        /// </summary>
+        private string name;
+
+        /// <summary>
+        /// Acess type
+        /// </summary>
         private SymbolType type;
+
+        /// <summary>
+        /// Data type
+        /// </summary>
         private DataType dataType;
+
+        /// <summary>
+        /// Address of the symbol
+        /// </summary>
         private int address;
+
+        /// <summary>
+        /// Level of memory where is the symbol located
+        /// </summary>
         private int level;
-        private Boolean array;
+
+        /// <summary>
+        /// Flag representing whether the symbol is array
+        /// </summary>
+        private bool array;
+
+        /// <summary>
+        /// Size of the symbol
+        /// </summary>
         private int length;
+
+        /// <summary>
+        /// Line where the symbol was declared
+        /// </summary>
         private int declarationLine;
 
-        public Symbol(String name, SymbolType type, DataType dataType, int declarationLine, int address, int level)
+
+        /// <summary>
+        /// Constructor for creating simple symbols - variables and constants
+        /// </summary>
+        /// <param name="name">Name of the symbol</param>
+        /// <param name="type">Access type</param>
+        /// <param name="dataType">Data type</param>
+        /// <param name="declarationLine">Line where the symbol was declared</param>
+        /// <param name="address">Address of the symbol</param>
+        /// <param name="level">Level of memory where the symbol is located</param>
+        public Symbol(string name, SymbolType type, DataType dataType, int declarationLine, int address, int level)
         {
             this.name = name;
             this.type = type;
@@ -30,7 +82,17 @@ namespace Happy_language
             this.array = false;
         }
 
-        public Symbol(String name, int length, SymbolType type, DataType dataType, int declarationLine, int address, int level)
+        /// <summary>
+        /// Constructor for creating symbols with non default size - arrays
+        /// </summary>
+        /// <param name="name">Name of the symbol</param>
+        /// <param name="length">Size of the array</param>
+        /// <param name="type">Access type</param>
+        /// <param name="dataType">Data type</param>
+        /// <param name="declarationLine">Line where the symbol was declared</param>
+        /// <param name="address">Address of the symbol</param>
+        /// <param name="level">Level of memory where the symbol is located</param>
+        public Symbol(string name, int length, SymbolType type, DataType dataType, int declarationLine, int address, int level)
         {
             this.name = name;
             this.type = type;
@@ -48,12 +110,12 @@ namespace Happy_language
             return this.length;
         }
 
-        public Boolean isArray()
+        public bool isArray()
         {
             return this.array;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             if (this.array)
             {
@@ -65,15 +127,15 @@ namespace Happy_language
                        "Lev: " + this.level + "; "
                        ;
             }
-            return "Name: " + this.name + "; " +  
-                   "Typ: " + this.type.ToString() + "; " + 
+            return "Name: " + this.name + "; " +
+                   "Typ: " + this.type.ToString() + "; " +
                    "Data t: " + this.dataType.ToString() + "; " +
-                   "Addr: " + this.address + "; " + 
+                   "Addr: " + this.address + "; " +
                    "Lev: " + this.level + "; "
                    ;
         }
 
-        public String GetName()
+        public string GetName()
         {
             return this.name;
         }

@@ -82,7 +82,6 @@ namespace Happy_language
         /// Constructor of the Parse tree visitor
         /// </summary>
         /// <param name="handler">Instance handling compilation errors</param>
-
         public Visitor(ErrorHandler handler) : base()
         {
             this.handler = handler;
@@ -769,7 +768,7 @@ namespace Happy_language
                 {
                     Symbol alreadyDeclared = localTable.GetSymbol(item.GetName());
 
-                    return handler.reportError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
+                    return handler.reportError(item.GetDeclarationLine(), ErrorCode.symbolAlreadyExists,
                         "Variable with name '" + item.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
                 }
 
@@ -783,7 +782,7 @@ namespace Happy_language
                 {
                     Symbol alreadyDeclared = localTable.GetSymbol(item.GetName());
 
-                    return handler.reportError(item.GetDeclarationLine(), ErrorCode.varConstAlreadyExists,
+                    return handler.reportError(item.GetDeclarationLine(), ErrorCode.symbolAlreadyExists,
                         "Variable with name '" + item.GetName() + "' already declared on line " + alreadyDeclared.GetDeclarationLine());
                 }
                 globalAddress += 1;
@@ -1182,7 +1181,7 @@ namespace Happy_language
                     ErrorCode.assignmentMismatch,
                     "Cannot assign from " + ((DataType)result) + " to " + leftSide.GetDataType());
             }
-            
+
             //store right side to the given address
             int varLevel = leftSide.GetLevel();
             int varAddress = leftSide.GetAddress();
@@ -1251,7 +1250,7 @@ namespace Happy_language
 
             if (leftSide == null)
             {
-                return handler.reportError(context.Start.Line, ErrorCode.arrayDoesNotExist, "Unknown array '" + arrayName + "'");
+                return handler.reportError(context.Start.Line, ErrorCode.unknownArray, "Unknown array '" + arrayName + "'");
             }
 
             int result = 0;
@@ -1364,13 +1363,13 @@ namespace Happy_language
             if (globalTable.FunctionPresent(fName)) calledFce = globalTable.GetFunction(fName);
             else
             {
-                return handler.reportError(context.start.Line, ErrorCode.functionDoesNotExist,
+                return handler.reportError(context.start.Line, ErrorCode.unknownFunction,
                     "Uknown function with name '" + fName + "'");
             }
 
             //increase top of the stack
             AddINT(3);
-            
+
             //process all parameters
             List<Symbol> usedParameters = new List<Symbol>();
             Par_in_functionContext paramContext = context.par_in_function();
@@ -1459,14 +1458,14 @@ namespace Happy_language
                 //expressions on both sides must have same type
                 if (ret1 != ret2)
                 {
-                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch,
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch,
                         "Canot perform '+' operation on conflicting data types");
                 }
 
                 //bool is not allowed here
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch, 
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch,
                         "Cannot perform '+' operation on Bool type");
                 }
 
@@ -1479,14 +1478,14 @@ namespace Happy_language
                 //expressions on both sides must have same type
                 if (ret1 != ret2)
                 {
-                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch, 
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch,
                         "Canot perform '-' operation on conflicting data types");
                 }
 
                 //bool is not allowed here
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch, 
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch,
                         "Cannot perform '-' operation on Bool type");
                 }
 
@@ -1522,14 +1521,14 @@ namespace Happy_language
                 //both sides must be of the same type
                 if (ret1 != ret2)
                 {
-                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch, 
+                    return handler.reportError(context.Start.Line, ErrorCode.assignmentMismatch,
                         "Canot perform '*' operation on conflicting data types");
                 }
 
                 //bool is not allowed here
                 if ((DataType)ret1 == DataType.Bool)
                 {
-                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch, 
+                    return handler.reportError(context.Start.Line, ErrorCode.operatorTypeMismatch,
                         "Cannot perform '*' operation on Bool type");
                 }
 
@@ -1579,7 +1578,8 @@ namespace Happy_language
                         "Unknown variable with name'" + varConstName + "'");
                 }
 
-                if (symbol.isArray()) {
+                if (symbol.isArray())
+                {
                     return handler.reportError(context.Start.Line, ErrorCode.notIndexedArray,
                         "Cannot access array without specifying the index.");
                 }
@@ -1611,11 +1611,11 @@ namespace Happy_language
                 //add unary minus if it was specified
                 if (context.Sub() != null)
                 {
-                    if ((DataType) result != DataType.Int)
+                    if ((DataType)result != DataType.Int)
                     {
                         return handler.reportError(context.Start.Line, context.array_index().Start.Column,
                             ErrorCode.operatorTypeMismatch,
-                            "Cannot use unary minus on " + (DataType) result);
+                            "Cannot use unary minus on " + (DataType)result);
                     }
                     AddOPR(Instruction.UNARY_MINUS);
                 }
@@ -1687,7 +1687,7 @@ namespace Happy_language
             Symbol array = GetSymbol(context.Identifier().GetText());
             if (array == null)
             {
-                return handler.reportError(context.Start.Line, ErrorCode.arrayDoesNotExist,
+                return handler.reportError(context.Start.Line, ErrorCode.unknownArray,
                     "Unknown array '" + context.Identifier().GetText() + "'");
             }
 
@@ -1780,7 +1780,7 @@ namespace Happy_language
             int jmpAddress = instructionCount;
             AddJMP(0);
             ChangeJMC(jmcAddress, instructionCount);
-            
+
             //process subexpression assigned when condition == false
             int ret2 = Visit(context.expression()[1]);
             if (ret2 < 0)
@@ -1981,7 +1981,7 @@ namespace Happy_language
 
             return 0;
         }
-        
+
         /// <summary>
         /// Increment in the for loop
         /// </summary>
@@ -2002,27 +2002,37 @@ namespace Happy_language
 
         #region Logical expressions
         /// <summary>
-        /// Condition used in 
+        /// Condition
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public override int VisitCondition([NotNull] ConditionContext context)
         {
+            int result = 0;
+
+            //process logical  expression
             if (context.condition_expression() != null)
             {
-                Visit(context.condition_expression());
+                result = Visit(context.condition_expression());
+
+                if (result < 0)
+                {
+                    return result;
+                }
             }
 
+            //function call and array indexing is part of the arithmetic expression so it is necessary to process it also
             if (context.expression() != null)
             {
-                int ret = Visit(context.expression());
+                result = Visit(context.expression());
 
-                if (ret < 0)
+                if (result < 0)
                 {
-                    return ret;
+                    return result;
                 }
 
-                if ((DataType)ret != DataType.Bool)
+                //but the result must be only of :B type
+                if ((DataType)result != DataType.Bool)
                 {
                     return handler.reportError(context.Start.Line, context.expression().Start.Column,
                         ErrorCode.conditionTypeMismatch, "Expression in condition must be of the Bool type");
@@ -2034,10 +2044,16 @@ namespace Happy_language
                 }
             }
 
+            //process first condition if not empty
             ConditionContext condition1 = context.GetChild<ConditionContext>(0);
             if (condition1 != null)
             {
-                Visit(condition1);
+                result = Visit(condition1);
+
+                if (result < 0)
+                {
+                    return result;
+                }
 
                 if (context.Negation() != null)
                 {
@@ -2045,32 +2061,49 @@ namespace Happy_language
                 }
             }
 
+            //process second condition if not empty
             ConditionContext condition2 = context.GetChild<ConditionContext>(1);
             if (condition2 != null)
             {
-                Visit(condition2);
+                result = Visit(condition2);
+
+                if (result < 0)
+                {
+                    return result;
+                }
             }
 
+            //process logical operator between the conditions
             ITerminalNode logicalOperator = context.Logical_operator();
             if (logicalOperator != null)
             {
+                //or
                 if (logicalOperator.GetText() == "||")
                 {
+                    //'or' is simulated this way: condition1 + condition2 >= 1
                     AddOPR(Instruction.ADD);
                     AddLIT("1");
                     AddOPR(Instruction.GEQ);
                 }
+                //and
                 else
                 {
+                    //'and' is simulated this way: condition1 * condition2
                     AddOPR(Instruction.MUL);
                 }
             }
 
-            return (int) DataType.Bool;
+            return (int)DataType.Bool;
         }
 
+        /// <summary>
+        /// Logical expression inside condition
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override int VisitCondition_expression([NotNull] Condition_expressionContext context)
         {
+            //literal
             if (context.Bool() != null)
             {
                 AddLIT(BoolToInt(context.Bool().GetText()));
@@ -2078,6 +2111,7 @@ namespace Happy_language
                 return (int)DataType.Bool;
             }
 
+            //process both sides of this condition
             int ret1 = Visit(context.condition_item()[0]);
             int ret2 = Visit(context.condition_item()[1]);
 
@@ -2096,6 +2130,7 @@ namespace Happy_language
                     "Cannot compare values of different data types");
             }
 
+            //generate given comparison operator
             switch (context.Operator_condition().GetText())
             {
                 case "==": AddOPR(Instruction.EQ); break;
@@ -2109,8 +2144,14 @@ namespace Happy_language
             return (int)DataType.Bool;
         }
 
+        /// <summary>
+        /// Item inside condition expression
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override int VisitCondition_item([NotNull] Condition_itemContext context)
         {
+            //literal
             if (context.Bool() != null)
             {
                 AddLIT(BoolToInt(context.Bool().GetText()));
@@ -2122,6 +2163,7 @@ namespace Happy_language
                 return (int)DataType.Bool;
             }
 
+            //arithmetic expression
             int ret = Visit(context.expression());
 
             if (context.Negation() != null)
@@ -2138,7 +2180,7 @@ namespace Happy_language
             return ret;
         }
         #endregion
-        
+
         #endregion
     }
 }

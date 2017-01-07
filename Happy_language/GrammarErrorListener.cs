@@ -1,15 +1,16 @@
 ﻿using Antlr4.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace Happy_language
-{ 
-    public class GrammarErrorListener:BaseErrorListener, IAntlrErrorListener<int>
+{
+    /// <summary>
+    /// Class listening for grammar errors
+    /// </summary>
+    public class GrammarErrorListener : BaseErrorListener, IAntlrErrorListener<int>
     {
+        /// <summary>
+        /// Handler to which the errors are reported
+        /// </summary>
         private ErrorHandler handler;
 
         public GrammarErrorListener(ErrorHandler handler)

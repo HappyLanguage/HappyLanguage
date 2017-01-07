@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Happy_language
 {
+    /// <summary>
+    /// All instrution types that are used by this compiler
+    /// </summary>
     public enum InstructionType
     {
         LIT,
@@ -17,13 +16,17 @@ namespace Happy_language
         CAL,
         LOD,
         JMC,
-        WRI,
-        PST,
-        PLD
+        WRI, // only in extended pl/0
+        PST, // only in extended pl/0
+        PLD  // only in extended pl/0
     }
 
+    /// <summary>
+    /// Class representing generated instructions
+    /// </summary>
     public class Instruction
     {
+        /************************ Operations ************************/
         public const int UNARY_MINUS = 1;
         public const int ADD = 2;
         public const int SUB = 3;
@@ -37,6 +40,7 @@ namespace Happy_language
         public const int GEQ = 11;
         public const int GREATER = 12;
         public const int LEQ = 13;
+        /************************************************************/
 
         public Instruction(InstructionType type, int level, string value)
         {
@@ -70,7 +74,10 @@ namespace Happy_language
         }
 
 
-
+        /// <summary>
+        /// Get the instruction data in format that is avalaible with pl/0 interpreter
+        /// </summary>
+        /// <returns>Instruction data in string</returns>
         public override string ToString()
         {
             return Number + " " + Type.ToString() + " " + Level + " " + Value + Environment.NewLine;

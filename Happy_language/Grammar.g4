@@ -66,7 +66,8 @@ def_function_list
 	| ;
 
 def_function
-	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right Start_block block_function function_return End_block;
+	: Function_def function_return_data_typ Identifier Bracket_left parameters  Bracket_right
+		Start_block block_function function_return End_block;
 
 parameters
 	: data_type Identifier
